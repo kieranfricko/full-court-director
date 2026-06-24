@@ -1,0 +1,554 @@
+/* Themes: color states, emphasis treatments, and competition/status variants. */
+
+.side-game-win {
+  border-left-color: #22c55e;
+}
+
+.side-game-loss {
+  border-left-color: #ef4444;
+}
+
+.message-urgent {
+  border-left-color: #ef4444;
+  background: rgba(127, 29, 29, 0.55);
+}
+
+.message-match-win {
+  border-left-color: #22c55e;
+}
+
+.message-match-loss {
+  border-left-color: #ef4444;
+}
+
+.message-urgent::after {
+  background: #ef4444;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 72px;
+}
+
+.role-starter {
+  background: #22c55e;
+  color: #052e16;
+}
+
+.role-sixth {
+  background: #38bdf8;
+  color: #082f49;
+}
+
+.role-reserve {
+  background: #64748b;
+  color: #f8fafc;
+}
+
+.bracket-winner {
+  color: #22c55e;
+}
+
+.attr-bad,
+.attr-weak {
+  background: #475569;
+  color: #e2e8f0;
+}
+
+.attr-average {
+  background: #1d4ed8;
+  color: #dbeafe;
+}
+
+.attr-good {
+  background: #facc15;
+  color: #422006;
+}
+
+.attr-great,
+.attr-elite {
+  background: #16a34a;
+  color: #dcfce7;
+}
+
+.out-position-warning {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(250, 204, 21, 0.18);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #facc15;
+  cursor: help;
+}
+
+.minutes-value-valid {
+  color: #22c55e !important;
+}
+
+.minutes-value-warning {
+  color: #facc15 !important;
+}
+
+.minutes-value-invalid {
+  color: #ef4444 !important;
+}
+
+.danger-button {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border: 1px solid rgba(239, 68, 68, 0.55) !important;
+  color: #fecaca !important;
+}
+
+.danger-button:hover {
+  background: rgba(239, 68, 68, 0.32) !important;
+  color: white !important;
+}
+
+.contract-warning {
+  color: #fecaca;
+  font-weight: bold;
+}
+
+.salary-negative {
+  color: #fecaca !important;
+}
+
+.salary-positive {
+  color: #bbf7d0 !important;
+}
+
+.projected-pick-card.user-pick {
+  border-color: rgba(250, 204, 21, 0.55);
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.projected-pick-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(2, 8, 23, 0.5);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  color: #67e8f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 1000;
+}
+
+.projected-pick-info strong {
+  display: block;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.projected-pick-info span {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.rookie-status-pill {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  background: rgba(250, 204, 21, 0.14);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+.rookie-status-pill.signed {
+  background: rgba(34, 197, 94, 0.14);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.grade-dot.good {
+  background: #0ea5e9;
+}
+
+.grade-dot.average {
+  background: #f59e0b;
+}
+
+/* 0.8F Energy Gauge */
+.energy-gauge {
+  width: 54px;
+  height: 54px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.energy-gauge-ring {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background:
+    conic-gradient(
+      var(--energy-color) calc(var(--energy) * 1%),
+      rgba(15, 23, 42, 0.9) 0
+    );
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.35);
+}
+
+.energy-gauge-center strong {
+  color: white;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.energy-gauge-center span {
+  font-size: 7px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-top: 3px;
+}
+
+.energy-danger {
+  --energy-color: #ef4444;
+}
+
+/* 0.8F Energy + Injury UI */
+.energy-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(3, 18, 55, 0.72);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  border-radius: 999px;
+  padding: 5px 8px;
+  min-width: 50px;
+  justify-content: center;
+}
+
+.energy-mini-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--energy-color);
+  box-shadow: 0 0 8px var(--energy-color);
+}
+
+.energy-mini strong {
+  color: white;
+  font-size: 12px;
+}
+
+.availability-badge.injured {
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  color: #fecaca;
+}
+
+.injury-list-tabs button.active {
+  color: #ffffff;
+  border-bottom-color: #eb4343;
+}
+
+.injury-status-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.injury-status-out {
+  background: rgba(220, 58, 58, 0.18);
+  color: #ff7171;
+}
+
+.injury-status-rehab {
+  background: rgba(245, 164, 42, 0.16);
+  color: #ffc057;
+}
+
+.injury-status-day {
+  background: rgba(76, 153, 255, 0.16);
+  color: #7eb8ff;
+}
+
+.injury-status-healthy {
+  background: rgba(69, 189, 111, 0.16);
+  color: #73e39b;
+}
+
+.injury-red-link-button {
+  color: #ff5757;
+}
+
+.medical-approach-option.active {
+  border-color: rgba(255, 98, 98, 0.35);
+}
+
+.energy-good {
+  --energy-color: #22c55e;
+  color: #69dc84;
+  font-weight: 700;
+}
+
+.energy-mid {
+  --energy-color: #a3e635;
+  color: #f1c144;
+  font-weight: 700;
+}
+
+.energy-low {
+  --energy-color: #f59e0b;
+  color: #ef6464;
+  font-weight: 700;
+}
+
+.empty-role-badge {
+  opacity: 0.65;
+  border-style: dashed;
+}
+
+.player-page-tabs button.active {
+  background: rgba(34, 211, 238, 0.14);
+  color: #67e8f9;
+}
+
+/* Player attribute rating colors */
+.attr-green {
+  color: #7CFC00 !important;
+}
+
+.attr-gray {
+  color: #cbd5e1 !important;
+}
+
+.attr-yellow {
+  color: #facc15 !important;
+}
+
+.attr-red {
+  color: #ef4444 !important;
+}
+
+.gm-hub-message-filters button.active {
+  background: rgba(34, 211, 238, 0.16);
+  color: #67e8f9;
+}
+
+.gm-hub-item.urgent:hover {
+  border-color: rgba(239, 68, 68, 0.65);
+  background: rgba(127, 29, 29, 0.26);
+}
+
+.redesigned-fa-tabs button.active {
+  background: rgba(34, 211, 238, 0.16);
+  color: #67e8f9;
+  border-color: rgba(103, 232, 249, 0.42);
+}
+
+.interest-good {
+  color: #22c55e !important;
+}
+
+.fa-neg-year-buttons button.active {
+  border-color: #67e8f9;
+  background: rgba(34, 211, 238, 0.16);
+  color: #67e8f9;
+}
+
+.finance-good {
+  color: #22c55e !important;
+}
+
+.finance-warning {
+  color: #facc15 !important;
+}
+
+.finance-bad {
+  color: #ef4444 !important;
+}
+
+.fa-neg-note.good span {
+  border: 2px solid #22c55e;
+  color: #15803d;
+}
+
+.fa-neg-note.warning span {
+  border: 2px solid #facc15;
+  color: #a16207;
+}
+
+.fa-offer-meter-fill.weak {
+  background: linear-gradient(90deg, #dc2626, #ef4444) !important;
+}
+
+.contract-year-tab-button.active {
+  background: #67e8f9;
+  color: #06122d;
+  border-color: #67e8f9;
+}
+
+.simple-injury-status-healthy {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.32);
+}
+
+.simple-injury-status-limited,
+.simple-injury-status-day {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fde68a;
+  border: 1px solid rgba(250, 204, 21, 0.32);
+}
+
+.simple-injury-status-out {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.38);
+}
+
+.gm-hub-item.urgent {
+  border-color: rgba(239, 68, 68, 0.48);
+  background: rgba(127, 29, 29, 0.24);
+  box-shadow: inset 3px 0 0 rgba(239, 68, 68, 0.95);
+}
+
+.offseason-timeline-item.active {
+  border-color: rgba(250, 204, 21, 0.85);
+  background: rgba(113, 63, 18, 0.24);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.13);
+}
+
+.award-finalist-card.winner {
+  border-color: #facc15;
+  box-shadow: 0 0 30px rgba(250, 204, 21, 0.38);
+}
+
+.award-winner-left .award-finalist-card {
+  min-height: 430px;
+}
+
+.award-winner-left .award-card-image-wrap {
+  height: 330px;
+}
+
+.award-winner-note {
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.identity-option-card.active,
+.identity-option-card:hover {
+  border-color: #d946ef;
+  box-shadow: 0 0 0 1px rgba(217, 70, 239, 0.3);
+  background: rgba(55, 48, 163, 0.38);
+}
+
+.identity-player-choice:hover,
+.identity-player-choice.active {
+  background: rgba(55, 48, 163, 0.52);
+  border-color: rgba(216, 180, 254, 0.4);
+}
+
+.message-match-win::after {
+  background: #22c55e;
+}
+
+.message-match-loss::after {
+  background: #ef4444;
+}
+
+.negotiation-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rookie-sign-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gm-hair-red {
+  background: #9a3412;
+}
+
+.gm-hub-dock button.active {
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
+  box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.28);
+}
+
+.gm-hub-messages-view.active {
+  display: block;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.gm-hub-panel.active {
+  display: block;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.fa-main-negotiate-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.finance-legend-win {
+  background: #22c55e;
+}
+
+.finance-chart-win-line {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.finance-chart-win-dot {
+  fill: #22c55e;
+  stroke: rgba(2, 8, 23, 0.9);
+  stroke-width: 2;
+}
+
+.next-scout-coverage-option.active {
+  outline: 3px solid #ffffff;
+}
+
+.injury-severity-dots span.active {
+  background: #ff9747;
+}
+
+.revise-player-list button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.identity-player-choice.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

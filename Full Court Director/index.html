@@ -1,0 +1,4522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Full Court Director</title>
+
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/component.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+</head>
+
+<body>
+   <!-- START SCREEN -->
+  <div id="start-screen" class="start-screen">
+    <div class="new-start-shell">
+
+      <!-- START HOME PANEL -->
+      <section id="start-home-panel" class="start-flow-panel active-start-panel">
+        <div class="start-simple-card">
+          <div class="start-title-kicker">Basketball Management</div>
+
+          <h1 class="start-logo-text simple-logo">
+            <span>Full Court</span>
+            <span>Director</span>
+          </h1>
+
+          <p class="start-subtitle">
+            Build the franchise. Control the game.
+          </p>
+
+          <div class="start-home-buttons">
+            <button type="button" class="start-primary-button" onclick="showStartPanel('gm-creation-panel')">
+              Start New Save
+            </button>
+
+            <button type="button" class="start-test-button" onclick="startQuickTestSave()">
+              Quick Test Save
+            </button>
+
+            <button type="button" class="start-secondary-button" onclick="openRosterPickerPopup()">
+              LOAD ROSTERS
+            </button>
+
+            <input
+              type="file"
+              id="community-roster-file-input"
+              accept=".json"
+              style="display:none"
+              onchange="importCommunityRosterFile(event)"
+            />
+
+            <div id="active-roster-label" class="active-roster-label">
+              Active Roster: Default Fictional Roster
+            </div>
+
+            <button type="button" class="start-secondary-button" onclick="loadGame()">
+              Load Old Save
+            </button>
+          </div>
+
+          <p class="start-cloud-save">
+            Local save system enabled
+          </p>
+        </div>
+      </section>
+
+      <!-- GM CREATION PANEL -->
+      <section id="gm-creation-panel" class="start-flow-panel">
+        <div class="start-setup-card">
+          <div class="setup-header-row">
+            <div>
+              <div class="start-title-kicker">Create Your General Manager</div>
+              <h1>General Manager Profile</h1>
+              <p>
+                Build the person who will run the franchise.
+              </p>
+            </div>
+
+            <button type="button" class="start-secondary-button small-start-button" onclick="showStartPanel('start-home-panel')">
+              Back
+            </button>
+          </div>
+
+          <div class="gm-creation-grid">
+            <div class="gm-form-card">
+              <h2>GM Information</h2>
+
+              <div class="gm-form-grid">
+                <div class="gm-field">
+                  <label for="gm-first-name">First Name</label>
+                  <input id="gm-first-name" type="text" value="first name" />
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-last-name">Last Name</label>
+                  <input id="gm-last-name" type="text" value="last name" />
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-age">Age</label>
+                  <input id="gm-age" type="number" min="18" max="90" value="35" />
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-nationality">Nationality</label>
+                  <input id="gm-nationality" type="text" value="United States" />
+                </div>
+
+                <div class="gm-field full-field">
+                  <label for="gm-hometown">Hometown</label>
+                  <input id="gm-hometown" type="text" value="Philadelphia, Pennsylvania" />
+                </div>
+
+                <div class="gm-field full-field">
+                  <label for="gm-background">Background</label>
+                  <select id="gm-background">
+                    <option>Former Scout</option>
+                    <option>Former Agent</option>
+                    <option>Former Coach</option>
+                    <option>Analytics Executive</option>
+                    <option>Former Player</option>
+                    <option>Business Executive</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="gm-face-card">
+              <h2>GM Face</h2>
+
+              <div id="gm-preview-card" class="gm-preview-card">
+                <div id="gm-preview-face" class="gm-preview-face">
+                  <div id="gm-preview-hair" class="gm-preview-hair"></div>
+                  <div id="gm-preview-glasses" class="gm-preview-glasses"></div>
+                  <div id="gm-preview-beard" class="gm-preview-beard"></div>
+                </div>
+
+                <h3 id="gm-preview-name">last name first nameo</h3>
+                <p id="gm-preview-description">Former Scout from Philadelphia, Pennsylvania</p>
+              </div>
+
+              <div class="gm-form-grid">
+                <div class="gm-field">
+                  <label for="gm-skin-tone">Skin Tone</label>
+                  <select id="gm-skin-tone" onchange="updateGMPreview()">
+                    <option value="light">Light</option>
+                    <option value="medium">Medium</option>
+                    <option value="tan">Tan</option>
+                    <option value="brown">Brown</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-hair-style">Hair Style</label>
+                  <select id="gm-hair-style" onchange="updateGMPreview()">
+                    <option value="short">Short</option>
+                    <option value="fade">Fade</option>
+                    <option value="curly">Curly</option>
+                    <option value="bald">Bald</option>
+                  </select>
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-hair-color">Hair Color</label>
+                  <select id="gm-hair-color" onchange="updateGMPreview()">
+                    <option value="brown">Brown</option>
+                    <option value="black">Black</option>
+                    <option value="blonde">Blonde</option>
+                    <option value="gray">Gray</option>
+                    <option value="red">Red</option>
+                  </select>
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-facial-hair">Facial Hair</label>
+                  <select id="gm-facial-hair" onchange="updateGMPreview()">
+                    <option value="none">None</option>
+                    <option value="beard">Beard</option>
+                    <option value="goatee">Goatee</option>
+                    <option value="mustache">Mustache</option>
+                  </select>
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-glasses">Glasses</label>
+                  <select id="gm-glasses" onchange="updateGMPreview()">
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </div>
+
+                <div class="gm-field">
+                  <label for="gm-suit-color">Suit Color</label>
+                  <select id="gm-suit-color" onchange="updateGMPreview()">
+                    <option value="navy">Navy</option>
+                    <option value="black">Black</option>
+                    <option value="gray">Gray</option>
+                    <option value="blue">Blue</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="setup-action-row">
+            <button type="button" class="start-secondary-button" onclick="showStartPanel('start-home-panel')">
+              Back
+            </button>
+
+            <button type="button" class="start-primary-button" onclick="continueToTeamSelect()">
+              Continue to Team Select
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEAM SELECT PANEL -->
+<section id="team-select-panel" class="start-flow-panel">
+  <div class="start-setup-card team-select-setup-card">
+    <div class="setup-header-row team-grid-header-row">
+      <div>
+        <div class="start-title-kicker">Choose Your Franchise</div>
+        <h1>Select Your Team</h1>
+        <p>
+          Pick the organization your GM will lead. Click a team to start your career.
+        </p>
+      </div>
+
+      <button type="button" class="start-secondary-button small-start-button" onclick="showStartPanel('gm-creation-panel')">
+        Back
+      </button>
+    </div>
+
+    <!-- Keep this hidden select for old startGame() code compatibility -->
+    <select id="team-select" class="hidden-start-team-select" aria-hidden="true"></select>
+
+    <div id="start-team-grid" class="start-team-grid"></div>
+  </div>
+</section>
+
+    </div>
+  </div>
+    <!-- GAME SCREEN -->
+  <div id="game-screen" class="game-screen hidden">
+    <aside class="sidebar">
+      <button type="button" class="active" data-section="dashboard" onclick="showMainSection('dashboard')">
+  Dashboard
+</button>
+
+<button type="button" data-section="league" onclick="showMainSection('league')">
+  League
+</button>
+
+<button type="button" data-section="team" onclick="showMainSection('team')">
+  Team
+</button>
+
+<button type="button" data-section="gameplan" onclick="showMainSection('gameplan')">
+  Gameplan
+</button>
+
+<button type="button" data-section="stats" onclick="showMainSection('stats')">
+  Stats
+</button>
+
+<div class="sidebar-divider"></div>
+
+<button type="button" data-section="draft" onclick="showMainSection('draft')">
+  Draft
+</button>
+
+<button type="button" data-section="trade" onclick="showMainSection('trade')">
+  Trades
+</button>
+
+<button type="button" data-section="free-agency" onclick="showMainSection('free-agency')">
+  Free Agency
+</button>
+
+<div class="sidebar-divider"></div>
+
+<button type="button" data-section="news" onclick="showMainSection('news')">
+  News
+</button>
+
+<button type="button" data-section="schedule" onclick="showMainSection('schedule')">
+  Calendar
+</button>
+
+<button type="button" data-section="competitions" onclick="showMainSection('competitions')">
+  Competitions
+</button>
+
+<button type="button" data-section="front-office" onclick="showMainSection('front-office')">
+  Front Office
+</button>
+
+<button type="button" data-section="history" onclick="showMainSection('history')">
+  History
+</button>
+
+<button type="button" data-section="settings" onclick="showMainSection('settings')">
+  Settings
+</button>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-header">
+        <div>
+          <h1 id="header-team-name">Full Court Director</h1>
+          <p id="header-role">General Manager</p>
+        </div>
+
+        <div class="header-right">
+          <span id="header-season">2026-27</span>
+          <span id="header-date">Sep 25, 2026</span>
+          <span id="header-record">0-0</span>
+
+          <button type="button" onclick="simDay()">
+            Advance
+          </button>
+        </div>
+      </header>
+
+      <nav id="secondary-nav" class="secondary-nav"></nav>
+            <!-- DASHBOARD SCREEN -->
+      <section id="dashboard-screen" class="screen active-screen">
+        <div class="new-dashboard">
+
+
+          <div class="dashboard-schedule-event-row">
+  <div class="dashboard-schedule-left">
+
+          <!-- TOP TEAM SCHEDULE STRIP -->
+          <div class="dashboard-schedule-card">
+            <div class="dashboard-section-title-row">
+              <h2>Team Schedule</h2>
+            </div>
+
+            <div class="dashboard-schedule-carousel">
+
+              <div id="dashboard-schedule-track" class="dashboard-schedule-track">
+                <div id="dashboard-recent-results" class="dashboard-schedule-items"></div>
+                <div id="dashboard-upcoming-games" class="dashboard-schedule-items"></div>
+              </div>
+
+            </div>
+          </div>
+</div>
+
+  <div id="dashboard-next-big-event-card" class="dashboard-next-big-event-card"></div>
+</div>
+          <!-- MAIN DASHBOARD ROW -->
+          <div class="dashboard-main-grid">
+
+            <!-- GAME CENTER CARD -->
+<div class="dashboard-today-game-card">
+
+  <div id="dashboard-game-center-normal">
+    <div class="dashboard-game-center-header">
+      <div>
+        <span>Game Center</span>
+        <h2 id="dashboard-game-countdown">Next Game</h2>
+      </div>
+
+      <strong id="dashboard-game-type">Regular Season</strong>
+    </div>
+
+    <div class="dashboard-today-content">
+      <div class="dashboard-today-left">
+        <h1 id="dashboard-date">Sep 25, 2026</h1>
+        <p id="dashboard-season-phase">Training Camp</p>
+
+        <div id="dashboard-next-game-meta" class="dashboard-next-game-meta">
+          <div>
+            <span>Time</span>
+            <strong id="dashboard-next-game-time">7:30 PM</strong>
+          </div>
+
+          <div>
+            <span>Location</span>
+            <strong id="dashboard-next-game-location">No Game</strong>
+          </div>
+
+          <div>
+            <span>Arena</span>
+            <strong id="dashboard-next-game-arena">--</strong>
+          </div>
+
+          <div>
+            <span>Arena Capacity</span>
+            <strong id="dashboard-next-game-arena-capacity">--</strong>
+          </div>
+        </div>
+      </div>
+
+      <div id="dashboard-matchup-display" class="dashboard-matchup-display">
+        <div class="dashboard-matchup-team">
+          <div id="dashboard-user-logo" class="dashboard-fake-logo">FC</div>
+          <strong id="dashboard-team-name">Team Name</strong>
+          <span id="dashboard-record">0-0</span>
+        </div>
+
+        <div class="dashboard-vs">VS</div>
+
+        <div class="dashboard-matchup-team">
+          <div id="dashboard-opponent-logo" class="dashboard-fake-logo opponent">OPP</div>
+          <strong id="dashboard-next-opponent-name">No Game</strong>
+          <span id="dashboard-next-opponent-record">--</span>
+        </div>
+      </div>
+
+      <div id="dashboard-team-comparison" class="dashboard-team-comparison">
+        <div>
+          <strong id="dashboard-comparison-user-record">0-0</strong>
+          <span>Record</span>
+        </div>
+
+        <div>
+          <strong id="dashboard-comparison-user-ppg">0.0</strong>
+          <span>PTS/G</span>
+        </div>
+
+        <div>
+          <strong id="dashboard-comparison-user-rank">--</strong>
+          <span>Conf Rank</span>
+        </div>
+
+        <div>
+          <strong id="dashboard-comparison-opponent-record">--</strong>
+          <span>Record</span>
+        </div>
+
+        <div>
+          <strong id="dashboard-comparison-opponent-ppg">--</strong>
+          <span>PTS/G</span>
+        </div>
+
+        <div>
+          <strong id="dashboard-comparison-opponent-rank">--</strong>
+          <span>Conf Rank</span>
+        </div>
+      </div>
+
+      <div class="dashboard-action-row">
+        <button type="button" class="dashboard-advance-button" onclick="simDay()">
+          Advance
+        </button>
+
+        <div class="dashboard-context-button-slot">
+          <button
+            id="dashboard-context-action-button"
+            type="button"
+            class="dashboard-context-action-button roster hidden"
+            onclick="handleDashboardContextAction()"
+          >
+            Review Roster
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard-offseason-hub" class="dashboard-offseason-hub hidden"></div>
+
+</div>
+            
+
+<!-- GENERAL MANAGER HUB -->
+<div class="dashboard-gm-hub-card">
+  <div class="gm-hub-device">
+    <div class="gm-hub-header">
+      <div class="gm-hub-title-block">
+        <h2>General Manager Hub</h2>
+        <p>Your daily front office command center</p>
+      </div>
+
+      <div class="gm-hub-header-actions">
+
+      <button
+        id="gm-hub-phone-button"
+        type="button"
+        class="gm-hub-phone-button idle"
+        onclick="openGMHubPhoneModal()"
+      >
+        <span class="gm-phone-icon">☎</span>
+
+        <span class="gm-phone-text">
+          <strong class="gm-phone-title">Cell Phone</strong>
+        </span>
+
+        <span id="gm-hub-phone-badge" class="gm-hub-phone-badge hidden">0</span>
+      </button>
+
+      <button
+        type="button"
+        class="gm-hub-trash-header-button"
+        onclick="openGMHubTrashPanel()"
+      >
+        🗑 Trash
+      </button>
+</div>
+    </div>
+
+    <div class="gm-hub-screen">
+      <div id="gm-hub-panel-desk" class="gm-hub-panel active">
+        <div class="gm-hub-panel-title">
+          <h3>Desk</h3>
+
+          <div class="gm-hub-mini-filters gm-hub-title-filters">
+            <button id="gm-desk-filter-all" type="button" class="active" onclick="setGMHubDeskFilter('all')">All</button>
+            <button id="gm-desk-filter-urgent" type="button" onclick="setGMHubDeskFilter('urgent')">Urgent</button>
+            <button id="gm-desk-filter-actions" type="button" onclick="setGMHubDeskFilter('actions')">Actions</button>
+            <button id="gm-desk-filter-events" type="button" onclick="setGMHubDeskFilter('events')">Events</button>
+            <button id="gm-desk-filter-reminders" type="button" onclick="setGMHubDeskFilter('reminders')">Reminders</button>
+          </div>
+        </div>
+
+        <div id="gm-hub-desk-list" class="gm-hub-list"></div>
+      </div>
+
+    <div id="gm-hub-panel-reports" class="gm-hub-panel">
+      <div class="gm-hub-panel-title">
+        <h3>Reports</h3>
+
+        <div class="gm-hub-mini-filters gm-hub-title-filters">
+          <button id="gm-report-filter-all" type="button" class="active" onclick="setGMHubReportFilter('all')">All</button>
+          <button id="gm-report-filter-games" type="button" onclick="setGMHubReportFilter('games')">Games</button>
+          <button id="gm-report-filter-scouting" type="button" onclick="setGMHubReportFilter('scouting')">Scouting</button>
+          <button id="gm-report-filter-medical" type="button" onclick="setGMHubReportFilter('medical')">Medical</button>
+        </div>
+      </div>
+
+      <div id="gm-hub-reports-list" class="gm-hub-list"></div>
+    </div>
+
+    <div id="gm-hub-panel-moves" class="gm-hub-panel">
+      <div class="gm-hub-panel-title">
+        <h3>Moves</h3>
+
+        <div class="gm-hub-mini-filters gm-hub-title-filters">
+          <button id="gm-move-filter-all" type="button" class="active" onclick="setGMHubMoveFilter('all')">All</button>
+          <button id="gm-move-filter-trades" type="button" onclick="setGMHubMoveFilter('trades')">Trades</button>
+          <button id="gm-move-filter-signings" type="button" onclick="setGMHubMoveFilter('signings')">Signings</button>
+          <button id="gm-move-filter-waivers" type="button" onclick="setGMHubMoveFilter('waivers')">Waivers</button>
+          <button id="gm-move-filter-extensions" type="button" onclick="setGMHubMoveFilter('extensions')">Extensions</button>
+          <button id="gm-move-filter-staff" type="button" onclick="setGMHubMoveFilter('staff')">Staff</button>
+        </div>
+      </div>
+
+      <div id="gm-hub-moves-list" class="gm-hub-list"></div>
+    </div>
+
+      <div id="gm-hub-panel-courtlink" class="gm-hub-panel">
+        <div class="gm-hub-panel-title">
+          <h3>CourtLink</h3>
+          <span>League feed, media posts, and fan reactions</span>
+        </div>
+
+        <div id="gm-hub-courtlink-list" class="courtlink-feed"></div>
+      </div>
+    </div>
+
+    <div class="gm-hub-dock">
+      <button type="button" class="active" onclick="setGMHubApp('desk')" data-gm-app="desk">
+        <span class="gm-hub-badge" id="gm-hub-badge-desk">0</span>
+        <strong>DESK</strong>
+        <small>Desk</small>
+      </button>
+
+      <button type="button" onclick="setGMHubApp('reports')" data-gm-app="reports">
+        <span class="gm-hub-badge" id="gm-hub-badge-reports">0</span>
+        <strong>RPT</strong>
+        <small>Reports</small>
+      </button>
+
+      <button type="button" onclick="setGMHubApp('moves')" data-gm-app="moves">
+        <span class="gm-hub-badge" id="gm-hub-badge-moves">0</span>
+        <strong>MOV</strong>
+        <small>Moves</small>
+      </button>
+
+      <button type="button" onclick="setGMHubApp('courtlink')" data-gm-app="courtlink">
+        <span class="gm-hub-badge hidden" id="gm-hub-badge-courtlink">0</span>
+        <strong>CL</strong>
+        <small>CourtLink</small>
+      </button>
+    </div>
+  </div>
+</div>
+
+          <!-- BOTTOM DASHBOARD ROW -->
+          <div class="dashboard-bottom-grid">
+
+            <!-- MINI STANDINGS -->
+            <div class="dashboard-standings-card">
+              <h2 id="dashboard-standings-title">Conference Standings</h2>
+              <div id="dashboard-standings-list" class="dashboard-standings-list"></div>
+            </div>
+
+            <!-- STATS CENTER -->
+            <div class="dashboard-stats-center-card">
+              <div class="dashboard-section-title-row">
+                <h2>Stats Center</h2>
+                <button type="button" onclick="showMainSection('stats')">View Full Stats ›</button>
+              </div>
+
+              <div id="dashboard-stats-center" class="dashboard-stats-center"></div>
+            </div>
+
+            <!-- CLUB OVERVIEW -->
+            <div class="dashboard-club-overview-card">
+              <h2>Club Overview</h2>
+
+              <div class="dashboard-club-grid">
+                <div>
+                  <span>Record</span>
+                  <strong id="dashboard-club-record">0-0</strong>
+                  <small id="dashboard-club-rank">--</small>
+                </div>
+
+                <div>
+                  <span>Team Chemistry</span>
+                  <strong id="dashboard-chemistry">82</strong>
+                  <small>Good</small>
+                </div>
+
+                <div>
+                  <span>Team Level</span>
+                  <strong id="dashboard-overall">Unknown</strong>
+                  <small id="dashboard-team-level-label">Team Level</small>
+                </div>
+
+                <div>
+                  <span>Payroll</span>
+                  <strong id="dashboard-payroll">$0M</strong>
+                  <small id="dashboard-payroll-rank">League Rank</small>
+                </div>
+
+                <div>
+                  <span>Cap Space</span>
+                  <strong id="dashboard-cap-space">$0M</strong>
+                  <small id="dashboard-cap-status">Cap Status</small>
+                </div>
+
+                <div>
+                  <span>Owner Happiness</span>
+                  <strong id="dashboard-owner-happiness">73</strong>
+                  <small>Satisfied</small>
+                </div>
+
+                <div>
+                  <span>Playoff Odds</span>
+                  <strong id="dashboard-playoff-odds">--</strong>
+                  <small>Projected</small>
+                </div>
+
+                <div>
+                  <span>Conf. Rank</span>
+                  <strong id="dashboard-conference-rank">--</strong>
+                  <small id="dashboard-conference">Conference</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-quick-links hidden">
+            <button type="button" onclick="showMainSection('team')">View Squad</button>
+            <button type="button" onclick="showMainSection('gameplan')">Set Gameplan</button>
+            <button type="button" onclick="showMainSection('free-agency')">Free Agency</button>
+            <button type="button" onclick="showMainSection('league')">League</button>
+          </div>
+
+        </div>
+      </section>
+            <!-- FULL INBOX SCREEN -->
+      <section id="full-inbox-screen" class="screen">
+        <h2>Inbox</h2>
+
+        <div class="card">
+          <h2>Full Inbox</h2>
+          <p class="page-description">
+            All messages, results, warnings, and league updates will appear here.
+          </p>
+
+          <div id="full-inbox-list" class="message-list full-inbox-list"></div>
+        </div>
+      </section>
+
+     <!-- TEAM: ROSTER SCREEN -->
+<section id="roster-screen" class="screen">
+  <div id="roster-status-box" class="roster-status-box compact-roster-status-box"></div>
+
+  <div class="card team-roster-table-card">
+    <h2>Roster</h2>
+
+    <div class="table-scroll">
+      <table class="team-roster-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Name</th>
+            <th>#</th>
+            <th>Age</th>
+            <th>Pos</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>Energy</th>
+            <th>Morale</th>
+            <th>Salary</th>
+            <th>Years</th>
+            <th>GP</th>
+            <th>PPG</th>
+            <th>RPG</th>
+            <th>APG</th>
+          </tr>
+        </thead>
+
+        <tbody id="roster-table"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+ <!-- TEAM: CONTRACT STATUS SCREEN -->
+<section id="contracts-screen" class="screen">
+  <div class="contracts-page-redesign">
+
+    <div class="contracts-layout-redesign">
+
+      <!-- LEFT: MAIN CONTRACT TABLE -->
+      <div class="contracts-main-panel">
+        <div class="contracts-panel-header">
+          <div>
+            <h2>Contract Status</h2>
+            <p id="contracts-selected-year-label">
+              Select a season to view salary commitments.
+            </p>
+          </div>
+        </div>
+
+        <div class="table-scroll">
+          <table class="contracts-year-table">
+            <thead>
+              <tr id="contracts-table-head-row">
+                <!-- Filled by JavaScript -->
+              </tr>
+            </thead>
+
+            <tbody id="contracts-table-body">
+              <!-- Filled by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <div class="contracts-cap-summary">
+          <div>
+            <span>Total Payroll</span>
+            <strong id="contracts-total-payroll">$0M</strong>
+          </div>
+
+          <div>
+            <span>Cap Space</span>
+            <strong id="contracts-cap-space">$0M</strong>
+          </div>
+
+          <div>
+            <span>Roster Spots</span>
+            <strong id="contracts-roster-spots">0 / 15</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: SALARY CAP VISUAL -->
+      <aside class="contracts-cap-panel">
+        <div class="contracts-cap-header">
+          <h2>Salary Cap</h2>
+          <p id="contracts-cap-year-label">2026-27</p>
+        </div>
+
+        <div class="contracts-cap-graphic-wrap">
+          <div class="contracts-cap-scale-labels">
+            <span>$220M</span>
+            <span>$200M</span>
+            <span>$180M</span>
+            <span>$160M</span>
+            <span>$140M</span>
+            <span>$120M</span>
+            <span>$100M</span>
+            <span>$80M</span>
+            <span>$60M</span>
+            <span>$40M</span>
+            <span>$20M</span>
+            <span>$0</span>
+          </div>
+
+          <div class="contracts-cap-graphic" id="contracts-cap-graphic">
+            <!-- Marker lines and salary blocks filled by JavaScript -->
+          </div>
+        </div>
+
+        <div class="contracts-cap-legend">
+          <h3>Salary Key</h3>
+          <div id="contracts-cap-legend-list">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+     <!-- TEAM: FINANCES SCREEN -->
+<section id="finances-screen" class="screen">
+  <div class="finances-page-redesign">
+
+    <div class="finance-top-cards">
+      <div class="finance-kpi-card">
+        <span>Season Revenue</span>
+        <strong id="finance-season-revenue">$0M</strong>
+      </div>
+
+      <div class="finance-kpi-card">
+        <span>Average Attendance</span>
+        <strong id="finance-average-attendance">0</strong>
+      </div>
+
+      <div class="finance-kpi-card">
+        <span>Fan Interest</span>
+        <strong id="finance-fan-interest">0</strong>
+      </div>
+
+      <div class="finance-kpi-card">
+        <span>Ticket Price</span>
+        <strong id="finance-ticket-price-card">$85</strong>
+      </div>
+
+      <div class="finance-kpi-card">
+        <span>Owner Confidence</span>
+        <strong id="finance-owner-confidence">0</strong>
+      </div>
+    </div>
+
+    <div class="finance-dashboard-layout">
+
+      <!-- MAIN LEFT SECTION -->
+      <div class="finance-main-panel">
+        <div class="finance-panel-header">
+          <h2>Ticket Revenue, Attendance & Win %</h2>
+          <p>
+            Monthly business performance based on ticket price, fan interest, attendance, and team results.
+          </p>
+        </div>
+
+        <div id="finance-combo-chart" class="finance-combo-chart">
+          <!-- Filled by JavaScript -->
+        </div>
+      </div>
+
+      <!-- RIGHT SECTION -->
+      <aside class="finance-side-panel">
+
+        <div class="finance-control-card">
+          <h2>Ticket Price</h2>
+
+          <div class="ticket-price-control">
+            <button type="button" onclick="adjustTicketPrice(-5)">−</button>
+            <strong id="finance-ticket-price-control">$85</strong>
+            <button type="button" onclick="adjustTicketPrice(5)">+</button>
+          </div>
+
+          <p id="finance-ticket-price-note">
+            Higher prices can increase revenue per fan but may lower attendance.
+          </p>
+        </div>
+
+        <div class="finance-pie-card">
+          <h2>Revenue Breakdown</h2>
+
+          <div class="finance-pie-wrap">
+            <div id="finance-revenue-pie" class="finance-revenue-pie"></div>
+          </div>
+
+          <div id="finance-revenue-legend" class="finance-revenue-legend">
+            <!-- Filled by JavaScript -->
+          </div>
+        </div>
+
+        <div class="finance-notes-card">
+          <h2>Finance Notes</h2>
+          <div id="finance-notes-list" class="finance-notes-list"></div>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+      <!-- TEAM: TRAINING SCREEN -->
+      <section id="training-screen" class="screen">
+        <h2>Training</h2>
+
+        <div class="card">
+          <h2>Training Focus</h2>
+          <p class="page-description">
+            Placeholder page. Later you will set team training and individual player development plans.
+          </p>
+
+          <button type="button">Shooting Focus</button>
+          <button type="button">Defensive Focus</button>
+          <button type="button">Conditioning Focus</button>
+          <button type="button">Youth Development</button>
+        </div>
+      </section>
+            <!-- FRONT OFFICE: MAIN OVERVIEW SCREEN -->
+      <section id="front-office-overview-screen" class="screen">
+        <div class="front-office-page">
+
+          <div class="front-office-top-bar">
+            <div>
+              <h2>Front Office</h2>
+              <p>Manage your general manager profile, staff structure, budget, and organization identity.</p>
+            </div>
+
+            <div class="front-office-status-strip">
+              <div>
+                <span>Staff Budget</span>
+                <strong id="front-office-budget">$18.7M / $24.0M</strong>
+              </div>
+
+              <div>
+                <span>Staff Chemistry</span>
+                <strong id="front-office-chemistry">92</strong>
+              </div>
+
+              <div>
+                <span>Organization</span>
+                <strong id="front-office-grade">A+</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="front-office-gm-grid">
+            <div class="card front-office-gm-card">
+              <h2>General Manager</h2>
+
+              <div class="front-office-gm-profile">
+                <div id="front-office-gm-face" class="front-office-gm-face">GM</div>
+
+                <div>
+                  <span>Current General Manager</span>
+                  <strong id="front-office-gm-name">Your GM</strong>
+                  <p id="front-office-gm-info">Your background and hometown will appear here.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card front-office-owner-card">
+              <h2>Owner Confidence</h2>
+
+              <div class="front-office-big-number">
+                <strong id="front-office-owner-confidence">73</strong>
+                <span>Satisfied</span>
+              </div>
+
+              <p>Owner confidence will eventually affect job security and expectations.</p>
+            </div>
+
+            <div class="card front-office-reputation-card">
+              <h2>GM Reputation</h2>
+
+              <div class="front-office-big-number">
+                <strong id="front-office-reputation">New GM</strong>
+                <span id="front-office-background-label">Former Scout</span>
+              </div>
+
+              <p>Your reputation will grow through wins, trades, draft success, and championships.</p>
+            </div>
+          </div>
+
+          <div class="front-office-main-actions">
+            <button type="button" onclick="showTab('staff-overview-screen')">View Staff Overview</button>
+            <button type="button" onclick="showTab('coaching-staff-screen')">Manage Coaching Staff</button>
+            <button type="button" onclick="showTab('staff-market-screen')">Staff Search</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FRONT OFFICE: STAFF OVERVIEW SCREEN -->
+            <!-- FRONT OFFICE: STAFF OVERVIEW SCREEN -->
+      <section id="staff-overview-screen" class="screen">
+        <div class="staff-overview-page compact-staff-overview">
+
+          <div class="staff-page-header">
+            <div>
+              <h2>Staff Overview</h2>
+              <p>Quick view of your coaching, scouting, medical, and analytics staff.</p>
+            </div>
+          </div>
+
+          <div class="staff-summary-row compact-summary-row">
+            <div class="staff-summary-card active">
+              <div>
+                <span>Coaching Staff</span>
+                <strong id="staff-coaching-count">12 / 15</strong>
+              </div>
+            </div>
+
+            <div class="staff-summary-card">
+              <div>
+                <span>Scouting Squad</span>
+                <strong id="staff-scouting-count">12 / 15</strong>
+              </div>
+            </div>
+
+            <div class="staff-summary-card">
+              <div>
+                <span>Medical & Performance</span>
+                <strong id="staff-medical-count">8 / 10</strong>
+              </div>
+            </div>
+
+            <div class="staff-summary-card">
+              <div>
+                <span>Analytics Staff</span>
+                <strong id="staff-analytics-count">1 / 2</strong>
+              </div>
+            </div>
+
+            <div class="staff-summary-card">
+              <div>
+                <span>Staff Chemistry</span>
+                <strong id="staff-chemistry-score">92</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="compact-staff-grid">
+
+            <!-- COACHING SUMMARY -->
+            <div class="card compact-staff-card">
+              <div class="compact-staff-header">
+                <div>
+                  <h2>Coaching Staff</h2>
+                  <p>Head coach, assistants, and specialty coaches.</p>
+                </div>
+
+                <button type="button" onclick="showTab('coaching-staff-screen')">
+                  View Details
+                </button>
+              </div>
+
+              <div class="compact-staff-list">
+                <div class="compact-staff-row head-role">
+                  <span>Head Coach</span>
+                  <strong>Jason Kidd</strong>
+                  <small>Modern Offensive</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>1st Assistant</span>
+                  <strong>Mike Brown</strong>
+                  <small>Offense</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Assistant Coach</span>
+                  <strong>James Borrego</strong>
+                  <small>Defense</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Assistant Coach</span>
+                  <strong>Jordi Fernandez</strong>
+                  <small>Player Development</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Shooting Coach</span>
+                  <strong>Chip Engelland</strong>
+                  <small>Shooting</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Player Dev. Coach</span>
+                  <strong>Noah LaFave</strong>
+                  <small>Development</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- SCOUTING SUMMARY -->
+            <div class="card compact-staff-card">
+              <div class="compact-staff-header">
+                <div>
+                  <h2>Scouting Squad</h2>
+                  <p>College, G League, and international scouting.</p>
+                </div>
+
+                <button type="button" onclick="showTab('scouting-squad-screen')">
+                  View Details
+                </button>
+              </div>
+
+              <div class="compact-staff-list">
+                <div class="compact-staff-row head-role">
+                  <span>Lead Scout</span>
+                  <strong>Jeffrey Weltman</strong>
+                  <small>College</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>G League Scout</span>
+                  <strong>Drew Hanlen</strong>
+                  <small>G League</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>G League Scout</span>
+                  <strong>Melvin Hunt</strong>
+                  <small>G League</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>College Scout</span>
+                  <strong>Mark Hughes</strong>
+                  <small>College</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Europe Scout</span>
+                  <strong>Nenad Trunic</strong>
+                  <small>International</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Europe Scout</span>
+                  <strong>Goran Sasic</strong>
+                  <small>International</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- MEDICAL SUMMARY -->
+            <div class="card compact-staff-card">
+              <div class="compact-staff-header">
+                <div>
+                  <h2>Medical & Performance</h2>
+                  <p>Health, rehab, recovery, and player performance.</p>
+                </div>
+
+                <button type="button" onclick="showTab('medical-staff-screen')">
+                  View Details
+                </button>
+              </div>
+
+              <div class="compact-staff-list">
+                <div class="compact-staff-row head-role">
+                  <span>Head Athletic Trainer</span>
+                  <strong>Aaron Goodwin</strong>
+                  <small>Injury Prevention</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Assistant Trainer</span>
+                  <strong>Sara Henson</strong>
+                  <small>Rehab</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Physical Therapist</span>
+                  <strong>Kevin Wilk</strong>
+                  <small>Therapy</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Performance Coach</span>
+                  <strong>Chris Johnson</strong>
+                  <small>Performance</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Nutritionist</span>
+                  <strong>Kelly Schoenfeld</strong>
+                  <small>Nutrition</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Sports Psychologist</span>
+                  <strong>Dr. Amy Clair</strong>
+                  <small>Mental Prep</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- ANALYTICS / BUDGET SUMMARY -->
+            <div class="card compact-staff-card">
+              <div class="compact-staff-header">
+                <div>
+                  <h2>Organization Staff</h2>
+                  <p>Budget, analytics, and overall staff structure.</p>
+                </div>
+
+                <button type="button" onclick="showTab('organization-screen')">
+                  View Details
+                </button>
+              </div>
+
+              <div class="compact-staff-list">
+                <div class="compact-staff-row head-role">
+                  <span>Head of Analytics</span>
+                  <strong>Kirk Goldsberry</strong>
+                  <small>Analytics</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Staff Budget</span>
+                  <strong>$19.6M / $24.0M</strong>
+                  <small>Available</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Staff Chemistry</span>
+                  <strong>92</strong>
+                  <small>Excellent</small>
+                </div>
+
+                <div class="compact-staff-row">
+                  <span>Organization Grade</span>
+                  <strong>A+</strong>
+                  <small>Elite</small>
+                </div>
+
+                <div class="compact-staff-row empty-staff-row">
+                  <span>Open Slot</span>
+                  <strong>Data Analyst</strong>
+                  <small>Available</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="staff-bottom-bar compact-staff-bottom">
+            <button type="button" onclick="showTab('staff-market-screen')">Staff Search</button>
+
+            <div class="staff-grade-legend">
+              <span><b class="grade-dot excellent"></b> Strong Staff</span>
+              <span><b class="grade-dot good"></b> Good Staff</span>
+              <span><b class="grade-dot average"></b> Average Staff</span>
+              <span><b class="grade-dot poor"></b> Needs Upgrade</span>
+            </div>
+
+            <button type="button" onclick="showTab('organization-screen')">Staff Strategy & Budget</button>
+          </div>
+
+        </div>
+      </section>
+            <!-- FRONT OFFICE: COACHING STAFF SCREEN -->
+      <section id="coaching-staff-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>Coaching Staff</h2>
+              <p>Manage your head coach, assistants, and specialty development coaches.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Head Coach Profile</h2>
+
+            <div class="head-coach-feature-card standalone-coach-card">
+              <div class="head-coach-badge">HC</div>
+              <div class="head-coach-photo">HC</div>
+
+              <div class="head-coach-main-info">
+                <span>Head Coach</span>
+                <h3 id="coaching-head-coach-name">Jason Kidd</h3>
+                <p>Age: 48</p>
+                <p>Experience: 18 yrs</p>
+                <p>Contract: 3 yrs / $6.8M</p>
+                <p>Expires: 2034</p>
+              </div>
+
+              <div class="head-coach-grades">
+                <div><span>Coaching Style</span><strong>Modern Offensive</strong></div>
+                <div><span>Offense</span><strong>A+</strong></div>
+                <div><span>Defense</span><strong>B+</strong></div>
+                <div><span>Player Development</span><strong>A</strong></div>
+                <div><span>Motivation</span><strong>A</strong></div>
+              </div>
+
+              <div class="head-coach-rating">94</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="staff-column-header">
+              <div>
+                <h2>Assistant Coaches</h2>
+                <p>Assistants help with gameplan, player development, defense, offense, and culture.</p>
+              </div>
+
+              <button type="button">+ Add Assistant</button>
+            </div>
+
+            <div id="assistant-coaches-list" class="staff-mini-card-grid">
+              <div class="staff-mini-card">
+                <span>1st Assistant</span>
+                <strong>Mike Brown</strong>
+                <p>Offense <b>A</b></p>
+                <small>3 yrs · $2.1M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Assistant Coach</span>
+                <strong>James Borrego</strong>
+                <p>Defense <b>A-</b></p>
+                <small>2 yrs · $1.6M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Assistant Coach</span>
+                <strong>Jordi Fernandez</strong>
+                <p>Player Dev. <b>A</b></p>
+                <small>2 yrs · $1.2M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Assistant Coach</span>
+                <strong>Lindsay Harding</strong>
+                <p>Player Dev. <b>A-</b></p>
+                <small>2 yrs · $1.1M</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="staff-column-header">
+              <div>
+                <h2>Specialty Coaches</h2>
+                <p>Specialty coaches develop specific areas of the roster.</p>
+              </div>
+
+              <button type="button">+ Add Specialty Coach</button>
+            </div>
+
+            <div id="specialty-coaches-list" class="staff-mini-card-grid">
+              <div class="staff-mini-card">
+                <span>Shooting Coach</span>
+                <strong>Chip Engelland</strong>
+                <p>Shooting <b>A+</b></p>
+                <small>2 yrs · $0.8M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Player Dev. Coach</span>
+                <strong>Noah LaFave</strong>
+                <p>Player Dev. <b>A</b></p>
+                <small>2 yrs · $0.7M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Big Man Coach</span>
+                <strong>Damon Stoudamire</strong>
+                <p>Big Man Dev. <b>A-</b></p>
+                <small>2 yrs · $0.6M</small>
+              </div>
+
+              <div class="staff-mini-card">
+                <span>Strength Coach</span>
+                <strong>Mike Mancias</strong>
+                <p>Physical Dev. <b>A</b></p>
+                <small>2 yrs · $0.6M</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FRONT OFFICE: SCOUTING SQUAD SCREEN -->
+      <section id="scouting-squad-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>Scouting Squad</h2>
+              <p>Manage the scouts who find draft prospects, international talent, and future trade targets.</p>
+            </div>
+          </div>
+
+          <div class="staff-scouting-layout">
+            <div class="card">
+              <div class="staff-column-header">
+                <div>
+                  <h2>G League Scouts</h2>
+                  <p>These scouts focus on overlooked players and developmental talent.</p>
+                </div>
+
+                <button type="button">+ Add Scout</button>
+              </div>
+
+              <div class="staff-mini-card-grid two-wide">
+                <div class="staff-mini-card">
+                  <span>G League Scout</span>
+                  <strong>Drew Hanlen</strong>
+                  <p>Eye for Talent <b>A</b></p>
+                  <small>2 yrs · $0.4M</small>
+                </div>
+
+                <div class="staff-mini-card">
+                  <span>G League Scout</span>
+                  <strong>Melvin Hunt</strong>
+                  <p>Player Eval. <b>A-</b></p>
+                  <small>2 yrs · $0.4M</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="staff-column-header">
+                <div>
+                  <h2>College Scouts</h2>
+                  <p>College scouts help build your draft board and improve report accuracy.</p>
+                </div>
+
+                <button type="button">+ Add Scout</button>
+              </div>
+
+              <div class="staff-mini-card-grid">
+                <div class="staff-mini-card"><span>College Scout</span><strong>Jeffrey Weltman</strong><p>Eye for Talent <b>A</b></p><small>$0.5M</small></div>
+                <div class="staff-mini-card"><span>College Scout</span><strong>Mark Hughes</strong><p>Player Eval. <b>A-</b></p><small>$0.5M</small></div>
+                <div class="staff-mini-card"><span>College Scout</span><strong>T.J. Parker</strong><p>Recruiting <b>A-</b></p><small>$0.4M</small></div>
+                <div class="staff-mini-card"><span>College Scout</span><strong>Nick Perlman</strong><p>Analytics <b>A</b></p><small>$0.5M</small></div>
+                <div class="staff-mini-card"><span>College Scout</span><strong>Brandon Williams</strong><p>International <b>B+</b></p><small>$0.4M</small></div>
+                <div class="staff-mini-card"><span>College Scout</span><strong>Derrick Alston</strong><p>Relationships <b>A-</b></p><small>$0.4M</small></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="staff-column-header">
+                <div>
+                  <h2>International Scouts</h2>
+                  <p>International scouts find overseas prospects and hidden talent.</p>
+                </div>
+
+                <button type="button">+ Add Scout</button>
+              </div>
+
+              <div class="staff-mini-card-grid two-wide">
+                <div class="staff-mini-card"><span>Europe Scout</span><strong>Nenad Trunic</strong><p>Europe <b>A-</b></p><small>3 yrs · $0.5M</small></div>
+                <div class="staff-mini-card"><span>Europe Scout</span><strong>Goran Sasic</strong><p>Europe <b>A-</b></p><small>2 yrs · $0.4M</small></div>
+                <div class="staff-mini-card"><span>Europe Scout</span><strong>Massimo Cancella</strong><p>International <b>A-</b></p><small>2 yrs · $0.4M</small></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FRONT OFFICE: MEDICAL STAFF SCREEN -->
+      <section id="medical-staff-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>Medical Staff</h2>
+              <p>Manage the staff responsible for injury prevention, rehab, player health, and performance.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="staff-column-header">
+              <div>
+                <h2>Medical & Performance Department</h2>
+                <p>This staff will matter more once fatigue and injuries become deeper systems.</p>
+              </div>
+
+              <button type="button">+ Add Staff</button>
+            </div>
+
+            <div id="medical-staff-list" class="staff-mini-card-grid medical-grid">
+              <div class="staff-mini-card"><span>Head Athletic Trainer</span><strong>Aaron Goodwin</strong><p>Injury Prevention <b>A+</b></p><small>3 yrs · $0.7M</small></div>
+              <div class="staff-mini-card"><span>Assistant Trainer</span><strong>Sara Henson</strong><p>Rehab <b>A</b></p><small>2 yrs · $0.4M</small></div>
+              <div class="staff-mini-card"><span>Physical Therapist</span><strong>Kevin Wilk</strong><p>Therapy <b>A+</b></p><small>3 yrs · $0.6M</small></div>
+              <div class="staff-mini-card"><span>Performance Coach</span><strong>Chris Johnson</strong><p>Performance <b>A</b></p><small>2 yrs · $0.3M</small></div>
+              <div class="staff-mini-card"><span>Nutritionist</span><strong>Kelly Schoenfeld</strong><p>Nutrition <b>A</b></p><small>2 yrs · $0.3M</small></div>
+              <div class="staff-mini-card"><span>Sleep Coach</span><strong>Chris Winter</strong><p>Recovery <b>A-</b></p><small>2 yrs · $0.3M</small></div>
+              <div class="staff-mini-card"><span>Sports Psychologist</span><strong>Dr. Amy Clair</strong><p>Mental Prep <b>A</b></p><small>2 yrs · $0.3M</small></div>
+              <div class="staff-mini-card"><span>Rehab Specialist</span><strong>Jordan Duncan</strong><p>Rehab <b>A-</b></p><small>2 yrs · $0.3M</small></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="staff-column-header">
+              <div>
+                <h2>Analytics & Data Staff</h2>
+                <p>Data-driven insight to gain a competitive edge.</p>
+              </div>
+
+              <button type="button">+ Add Staff</button>
+            </div>
+
+            <div class="staff-mini-card-grid two-wide">
+              <div class="staff-mini-card">
+                <span>Head of Analytics</span>
+                <strong>Kirk Goldsberry</strong>
+                <p>Analytics <b>A+</b></p>
+                <small>3 yrs · $0.9M</small>
+              </div>
+
+              <button type="button" class="staff-add-empty-card">
+                + Add Analytics Staff
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- FRONT OFFICE: LEAGUE STAFF SCREEN -->
+      <section id="league-staff-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>League Staff</h2>
+              <p>View coaching, scouting, medical, and analytics staff for every team in the league.</p>
+            </div>
+
+            <div class="league-staff-team-picker">
+              <label for="league-staff-team-select">Select Team</label>
+              <select id="league-staff-team-select" onchange="displayLeagueStaffBrowser()"></select>
+            </div>
+          </div>
+
+          <div class="league-staff-summary-grid">
+            <div class="summary-card">
+              <span>Team</span>
+              <strong id="league-staff-team-name">Team Name</strong>
+            </div>
+
+            <div class="summary-card">
+              <span>Head Coach</span>
+              <strong id="league-staff-head-coach">Vacant</strong>
+            </div>
+
+            <div class="summary-card">
+              <span>Total Staff</span>
+              <strong id="league-staff-total-count">0</strong>
+            </div>
+
+            <div class="summary-card">
+              <span>Staff Payroll</span>
+              <strong id="league-staff-payroll">$0.0M</strong>
+            </div>
+          </div>
+
+          <div class="league-staff-layout">
+            <div class="card league-staff-head-card">
+              <h2>Head Coach</h2>
+
+              <div class="league-head-coach-box">
+                <div class="head-coach-photo">HC</div>
+
+                <div>
+                  <span>Head Coach</span>
+                  <h3 id="league-staff-coach-name">Vacant</h3>
+                  <p id="league-staff-coach-info">No coach info.</p>
+                </div>
+
+                <div class="league-coach-grade-grid">
+                  <div><span>Style</span><strong id="league-staff-coach-style">-</strong></div>
+                  <div><span>Offense</span><strong id="league-staff-coach-offense">-</strong></div>
+                  <div><span>Defense</span><strong id="league-staff-coach-defense">-</strong></div>
+                  <div><span>Development</span><strong id="league-staff-coach-development">-</strong></div>
+                  <div><span>Motivation</span><strong id="league-staff-coach-motivation">-</strong></div>
+                  <div><span>Reputation</span><strong id="league-staff-coach-reputation">-</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>Assistant Coaches</h2>
+              <div id="league-staff-assistants-list" class="compact-staff-list"></div>
+            </div>
+
+            <div class="card">
+              <h2>Scouting Squad</h2>
+              <div id="league-staff-scouts-list" class="compact-staff-list"></div>
+            </div>
+
+            <div class="card">
+              <h2>Medical & Performance</h2>
+              <div id="league-staff-medical-list" class="compact-staff-list"></div>
+            </div>
+
+            <div class="card">
+              <h2>Analytics Staff</h2>
+              <div id="league-staff-analytics-list" class="compact-staff-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- FRONT OFFICE: ORGANIZATION SCREEN -->
+      <section id="organization-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>Organization</h2>
+              <p>View your organization identity, budget, chemistry, owner confidence, and long-term front office direction.</p>
+            </div>
+          </div>
+
+          <div class="organization-grid">
+            <div class="card">
+              <h2>Organization Grade</h2>
+              <div class="front-office-big-number">
+                <strong id="organization-grade">A+</strong>
+                <span>Elite Organization</span>
+              </div>
+              <p>Later this will be based on winning, staff quality, owner trust, finances, and player development.</p>
+            </div>
+
+            <div class="card">
+              <h2>Staff Budget</h2>
+              <div class="front-office-big-number">
+                <strong>$19.6M</strong>
+                <span>of $24.0M used</span>
+              </div>
+              <p>Budget control will eventually matter when signing or extending staff.</p>
+            </div>
+
+            <div class="card">
+              <h2>Staff Chemistry</h2>
+              <div class="front-office-big-number">
+                <strong>92</strong>
+                <span>Excellent</span>
+              </div>
+              <p>High staff chemistry will eventually boost development and organization stability.</p>
+            </div>
+
+            <div class="card">
+              <h2>Owner Confidence</h2>
+              <div class="front-office-big-number">
+                <strong>73</strong>
+                <span>Satisfied</span>
+              </div>
+              <p>Owner confidence will eventually affect job security.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FRONT OFFICE: STAFF MARKET SCREEN -->
+      <section id="staff-market-screen" class="screen">
+        <div class="front-office-page">
+          <div class="staff-page-header">
+            <div>
+              <h2>Staff Market</h2>
+              <p>Search available coaches, scouts, medical staff, and analytics staff.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Available Staff</h2>
+            <p class="page-description">
+              Hiring is not active yet. This screen will eventually let you sign staff and replace weaker departments.
+            </p>
+
+            <div class="staff-market-placeholder">
+              Staff hiring market not added yet.
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+<!-- STATS: PLAYER STATS SCREEN -->
+<section id="player-stats-screen" class="screen">
+  <div class="stats-redesign-page">
+    <div class="stats-redesign-header">
+      <div>
+        <span>Stats</span>
+        <h2>Player Stats</h2>
+        <p>Your team player stats. Click a player name to open their profile. Click a column header to sort.</p>
+      </div>
+    </div>
+
+    <div class="stats-redesign-card">
+      <h2>Your Player Stats</h2>
+
+      <div class="table-scroll stats-table-scroll">
+        <table class="stats-redesign-table">
+          <thead>
+            <tr>
+              <th onclick="sortPlayerStats('name')">Player</th>
+              <th onclick="sortPlayerStats('games')">G</th>
+              <th onclick="sortPlayerStats('starts')">GS</th>
+              <th onclick="sortPlayerStats('minutesTotal')">MIN</th>
+              <th onclick="sortPlayerStats('minutes')">MPG</th>
+              <th onclick="sortPlayerStats('pointsTotal')">PTS</th>
+              <th onclick="sortPlayerStats('points')">PPG</th>
+              <th onclick="sortPlayerStats('reboundsTotal')">REB</th>
+              <th onclick="sortPlayerStats('rebounds')">RPG</th>
+              <th onclick="sortPlayerStats('assistsTotal')">AST</th>
+              <th onclick="sortPlayerStats('assists')">APG</th>
+              <th onclick="sortPlayerStats('orbTotal')">ORB</th>
+              <th onclick="sortPlayerStats('orb')">ORBPG</th>
+              <th onclick="sortPlayerStats('drbTotal')">DRB</th>
+              <th onclick="sortPlayerStats('drb')">DRBPG</th>
+              <th onclick="sortPlayerStats('stealsTotal')">STL</th>
+              <th onclick="sortPlayerStats('steals')">SPG</th>
+              <th onclick="sortPlayerStats('blocksTotal')">BLK</th>
+              <th onclick="sortPlayerStats('blocks')">BPG</th>
+              <th onclick="sortPlayerStats('fgm')">FGM</th>
+              <th onclick="sortPlayerStats('fga')">FGA</th>
+              <th onclick="sortPlayerStats('fg')">FG%</th>
+              <th onclick="sortPlayerStats('threeMade')">3PM</th>
+              <th onclick="sortPlayerStats('threeAttempted')">3PA</th>
+              <th onclick="sortPlayerStats('three')">3P%</th>
+              <th onclick="sortPlayerStats('ftm')">FTM</th>
+              <th onclick="sortPlayerStats('fta')">FTA</th>
+              <th onclick="sortPlayerStats('ft')">FT%</th>
+              <th onclick="sortPlayerStats('turnovers')">TOV</th>
+            </tr>
+          </thead>
+
+          <tbody id="player-stats-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS: TEAM STATS SCREEN -->
+<section id="team-stats-screen" class="screen">
+  <div class="stats-redesign-page">
+    <div class="stats-redesign-header">
+      <div>
+        <span>Stats</span>
+        <h2>Team Stats</h2>
+        <p>All 30 teams ranked by wins. Your team is highlighted.</p>
+      </div>
+    </div>
+
+    <div class="stats-redesign-card">
+      <h2>All Team Stats</h2>
+
+      <div class="table-scroll stats-table-scroll">
+        <table class="stats-redesign-table team-stats-redesign-table">
+          <thead>
+            <tr>
+              <th onclick="sortTeamStats('team')">Team</th>
+              <th onclick="sortTeamStats('wins')">W</th>
+              <th onclick="sortTeamStats('losses')">L</th>
+              <th onclick="sortTeamStats('ppg')">PPG</th>
+              <th onclick="sortTeamStats('oppPpg')">OPP PPG</th>
+              <th onclick="sortTeamStats('rpg')">RPG</th>
+              <th onclick="sortTeamStats('apg')">APG</th>
+              <th onclick="sortTeamStats('spg')">SPG</th>
+              <th onclick="sortTeamStats('bpg')">BPG</th>
+              <th onclick="sortTeamStats('fg')">FG%</th>
+              <th onclick="sortTeamStats('three')">3P%</th>
+              <th onclick="sortTeamStats('ft')">FT%</th>
+              <th onclick="sortTeamStats('tov')">TOV</th>
+            </tr>
+          </thead>
+
+          <tbody id="all-team-stats-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS: LEAGUE LEADERS SCREEN -->
+<section id="league-leaders-screen" class="screen">
+  <div class="stats-redesign-page">
+    <div class="stats-redesign-header">
+      <div>
+        <span>Stats</span>
+        <h2>League Leaders</h2>
+        <p>Top five players in every major stat category. Free agents are not included.</p>
+      </div>
+    </div>
+
+    <div id="league-leaders-grid" class="stats-leaders-card-grid"></div>
+  </div>
+</section>
+
+<!-- STATS: SEASON HIGHS SCREEN -->
+<section id="season-highs-screen" class="screen">
+  <div class="stats-redesign-page">
+    <div class="stats-redesign-header">
+      <div>
+        <span>Stats</span>
+        <h2>Season Highs</h2>
+        <p>Top five single-game performances from saved box scores.</p>
+      </div>
+    </div>
+
+    <div id="season-highs-grid" class="stats-leaders-card-grid"></div>
+  </div>
+</section>
+
+    <!-- GAMEPLAN: ROTATION SCREEN -->
+<section id="gameplan-screen" class="screen">
+  <div class="gameplan-card-board rotation-card-board-redesign">
+    <div class="gameplan-card-board-header">
+      <div>
+        <h2>Rotation</h2>
+        <p>
+          Drag players between spots, set minutes, and build your game-night lineup.
+        </p>
+      </div>
+
+      <div id="rotation-minutes-total" class="gameplan-minutes-total">
+        <span>Total Minutes</span>
+        <strong id="gameplan-total-minutes">240 / 240</strong>
+      </div>
+    </div>
+
+    <p id="rotation-warning-text" class="rotation-warning-text hidden">
+      Rotation warning.
+    </p>
+
+    <div class="gameplan-lineup-section">
+      <div class="gameplan-lineup-label-row">
+        <h3>Starting Five</h3>
+        <span>PG · SG · SF · PF · C</span>
+      </div>
+
+      <div id="gameplan-starters-row" class="gameplan-starters-row"></div>
+    </div>
+
+    <div class="gameplan-lineup-section">
+      <div class="gameplan-lineup-label-row">
+        <h3>Bench / Reserves</h3>
+        <span>Bench 6-17</span>
+      </div>
+
+      <div id="rotation-bench-board" class="gameplan-bench-board">
+        <div id="gameplan-bench-row-one" class="gameplan-bench-row"></div>
+        <div id="gameplan-bench-row-two" class="gameplan-bench-row"></div>
+      </div>
+    </div>
+  </div>
+</section>
+      <!-- GAMEPLAN: INJURY REPORT SCREEN -->
+<section id="injury-report-screen" class="screen">
+  <div class="simple-injury-page">
+
+    <div class="simple-injury-header">
+      <div>
+        <h2>Injury Report</h2>
+        <p>Quick view of player availability, energy, and medical recommendations.</p>
+      </div>
+    </div>
+
+    <div class="simple-injury-summary-grid">
+      <div class="simple-injury-summary-card healthy">
+        <span>Healthy</span>
+        <strong id="simple-injury-healthy-count">0</strong>
+      </div>
+
+      <div class="simple-injury-summary-card limited">
+        <span>Limited</span>
+        <strong id="simple-injury-limited-count">0</strong>
+      </div>
+
+      <div class="simple-injury-summary-card out">
+        <span>Out</span>
+        <strong id="simple-injury-out-count">0</strong>
+      </div>
+
+      <div class="simple-injury-summary-card risk">
+        <span>Team Risk</span>
+        <strong id="simple-injury-team-risk">Low</strong>
+      </div>
+    </div>
+
+    <div class="simple-injury-layout">
+
+      <div class="simple-injury-main-card">
+        <div class="simple-injury-card-header">
+          <h3>Player Availability</h3>
+          <p>Sorted by injury and energy concern first.</p>
+        </div>
+
+        <div class="table-scroll">
+          <table class="simple-injury-table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Status</th>
+                <th>Injury / Energy</th>
+                <th>Return</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+
+            <tbody id="simple-injury-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="simple-injury-notes-card">
+        <h3>Medical Notes</h3>
+        <div id="simple-injury-notes-list" class="simple-injury-notes-list"></div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+      <!-- GAMEPLAN: TEAM IDENTITY SCREEN -->
+<section id="gameplan-identity-screen" class="screen">
+  <div id="gameplan-identity-root"></div>
+</section>
+
+      <!-- GAMEPLAN: PLAYER ROLES SCREEN -->
+<section id="player-roles-screen" class="screen">
+  <div id="player-roles-root"></div>
+</section>
+
+      <!-- GAMEPLAN: OPPONENT PLANS SCREEN -->
+<section id="opponent-plans-screen" class="screen">
+  <div id="opponent-plans-root"></div>
+</section>
+
+      <!-- GAMEPLAN: NEXT GAME PLAN SCREEN -->
+        <section id="next-game-screen" class="screen">
+  <div id="next-game-scout-root"></div>
+</section>
+        <!-- GAMEPLAN: PRACTICE SCREEN -->
+<section id="practices-screen" class="screen">
+  <div class="practices-page">
+
+    <aside class="practice-player-list-panel">
+      <div class="practice-player-list-header">
+        <h2>Practices</h2>
+        <p>Select a player to set their development plan.</p>
+      </div>
+
+      <div id="practice-player-list" class="practice-player-list">
+        <!-- Filled by JavaScript -->
+      </div>
+    </aside>
+
+    <section class="practice-detail-panel">
+      <div id="practice-selected-player-panel" class="practice-selected-player-panel">
+        <!-- Filled by JavaScript -->
+      </div>
+    </section>
+
+  </div>
+</section>
+
+<!-- NEWS: TOP STORIES -->
+<section id="news-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div id="news-scoreboard-track" class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>Top Stories</h2>
+      <p>Major league headlines will appear here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS: LEAGUE HEADLINES -->
+<section id="news-league-headlines-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>League Headlines</h2>
+      <p>League-wide stories will appear here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS: TRADE RUMORS -->
+<section id="news-trade-rumors-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>Trade Rumors</h2>
+      <p>Trade rumors and front office reports will appear here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS: DRAFT BUZZ -->
+<section id="news-draft-buzz-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>Draft Buzz</h2>
+      <p>Draft scouting news and prospect rumors will appear here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS: INJURIES -->
+<section id="news-injuries-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>Injuries</h2>
+      <p>Injury updates will appear here.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS: AWARD WATCH -->
+<section id="news-award-watch-screen" class="screen">
+  <div class="news-page">
+    <div class="news-scoreboard-bar">
+      <div class="news-scoreboard-track"></div>
+
+      <button type="button" class="news-scoreboard-full-button">
+        Full<br>Scoreboard »
+      </button>
+    </div>
+
+    <div class="news-content">
+      <h2>Award Watch</h2>
+      <p>Award race stories will appear here.</p>
+    </div>
+  </div>
+</section>
+
+            <!-- SCHEDULE: CALENDAR SCREEN -->
+      <section id="calendar-screen" class="screen">
+        <div class="calendar-top-bar">
+          <div>
+            <h2>Calendar</h2>
+            <p>
+              Current Date:
+              <span id="calendar-current-date">Sep 25, 2026</span>
+              |
+              Phase:
+              <span id="calendar-season-phase">Training Camp</span>
+            </p>
+          </div>
+
+          <div class="calendar-controls">
+            <button type="button" onclick="previousCalendarMonth()">Previous Month</button>
+            <span id="calendar-month-label">September 2026</span>
+            <button type="button" onclick="nextCalendarMonth()">Next Month</button>
+            <button type="button" onclick="goToCurrentMonth()">Today</button>
+          </div>
+        </div>
+
+        <div class="calendar-month-grid">
+          <div class="calendar-weekday">Monday</div>
+          <div class="calendar-weekday">Tuesday</div>
+          <div class="calendar-weekday">Wednesday</div>
+          <div class="calendar-weekday">Thursday</div>
+          <div class="calendar-weekday">Friday</div>
+          <div class="calendar-weekday">Saturday</div>
+          <div class="calendar-weekday">Sunday</div>
+
+          <div id="calendar-grid-days" class="calendar-days"></div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE: TEAM SCHEDULE SCREEN -->
+      <section id="schedule-screen" class="screen">
+        <h2>Schedule</h2>
+
+        <div class="schedule-summary-grid">
+          <div class="summary-card">
+            <span>Total Regular Season Games</span>
+            <strong id="schedule-total-games">82</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Home Games</span>
+            <strong id="schedule-home-games">41</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Away Games</span>
+            <strong id="schedule-away-games">41</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Games Played</span>
+            <strong id="schedule-games-played">0 / 82</strong>
+          </div>
+
+          <div class="summary-card wide-summary">
+            <span>Next Game</span>
+            <strong id="schedule-next-game">None</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Team Schedule</h2>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Competition</th>
+                  <th>Opponent</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody id="schedule-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+     <!-- SCHEDULE / LEAGUE: STANDINGS SCREEN -->
+<section id="standings-screen" class="screen">
+  <div class="league-standings-page">
+
+    <div class="league-standings-layout">
+
+      <!-- EAST -->
+      <div class="league-standings-card">
+        <div class="league-standings-title league-standings-title-east">
+          <h3>Eastern Conference</h3>
+        </div>
+
+        <div class="table-scroll">
+          <table class="league-standings-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>W</th>
+                <th>L</th>
+                <th>PCT</th>
+              </tr>
+            </thead>
+
+            <tbody id="east-standings-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WEST -->
+      <div class="league-standings-card">
+        <div class="league-standings-title league-standings-title-west">
+          <h3>Western Conference</h3>
+        </div>
+
+        <div class="table-scroll">
+          <table class="league-standings-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>W</th>
+                <th>L</th>
+                <th>PCT</th>
+              </tr>
+            </thead>
+
+            <tbody id="west-standings-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- CALENDAR: LEAGUE SCHEDULE SCREEN -->
+<section id="league-schedule-screen" class="screen">
+  <div id="league-schedule-root"></div>
+</section>
+      <!-- SCHEDULE: THE CUP SCREEN -->
+      <section id="cup-screen" class="screen">
+        <h2>The Cup</h2>
+
+        <div class="cup-layout">
+          <div class="card">
+            <h2>Group Standings</h2>
+            <div id="cup-groups-container" class="cup-groups-container"></div>
+          </div>
+
+          <div class="card">
+            <h2>Knockout Bracket</h2>
+            <div id="cup-bracket-container" class="bracket-container"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Cup Status</h2>
+          <div id="cup-status-box"></div>
+        </div>
+      </section>
+
+      <!-- SCHEDULE: PLAYOFFS SCREEN -->
+      <section id="playoffs-screen" class="screen">
+        <h2>Playoffs</h2>
+
+        <div class="playoff-stack">
+          <div class="card">
+            <h2>The Finals</h2>
+            <div id="finals-bracket" class="bracket-container"></div>
+          </div>
+
+          <div class="card">
+            <h2>Eastern Conference Bracket</h2>
+            <div id="east-playoff-bracket" class="bracket-container"></div>
+          </div>
+
+          <div class="card">
+            <h2>Western Conference Bracket</h2>
+            <div id="west-playoff-bracket" class="bracket-container"></div>
+          </div>
+
+          <div class="card">
+            <h2>Play-In Tournament</h2>
+            <div id="playin-bracket" class="playin-container"></div>
+          </div>
+        </div>
+      </section>
+            <!-- DRAFT: SCOUTING SCREEN -->
+      <section id="scouting-screen" class="screen">
+        <div class="draft-page-header">
+          <div>
+            <h1>The Draft</h1>
+            <p>Scout prospects, study the draft class, and build your future roster.</p>
+          </div>
+
+          <button id="enter-draft-button-draft-tab" type="button" class="primary-action-button hidden" onclick="enterDraftNight()">
+            Enter Draft
+          </button>
+        </div>
+
+        <div class="draft-board-status-grid">
+          <div class="draft-status-card card">
+            <span>Draft Class</span>
+            <strong id="draft-class-year">2026</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Class Strength</span>
+            <strong id="draft-class-strength">Average Class</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Scouts Left</span>
+            <strong id="draft-scouts-left">10 / 10</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Active Reports</span>
+            <strong id="draft-active-reports-count">0</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Next Reset</span>
+            <strong id="draft-next-scout-reset">Nov 1</strong>
+          </div>
+        </div>
+
+        <div class="draft-controls-card card">
+          <div class="draft-control-group">
+            <label for="draft-search-input">Search</label>
+            <input id="draft-search-input" type="text" placeholder="Search prospects..." oninput="updateDraftScoutingFilters()" />
+          </div>
+
+          <div class="draft-control-group">
+            <label for="draft-position-filter">Position</label>
+            <select id="draft-position-filter" onchange="updateDraftScoutingFilters()">
+              <option value="All">All Positions</option>
+              <option value="PG">PG</option>
+              <option value="SG">SG</option>
+              <option value="SF">SF</option>
+              <option value="PF">PF</option>
+              <option value="C">C</option>
+            </select>
+          </div>
+
+          <div class="draft-control-group">
+            <label for="draft-range-filter">Projected Range</label>
+            <select id="draft-range-filter" onchange="updateDraftScoutingFilters()">
+              <option value="All">All Ranges</option>
+              <option value="Top 3">Top 3</option>
+              <option value="Top 5">Top 5</option>
+              <option value="Top 10">Top 10</option>
+              <option value="Lottery">Lottery</option>
+              <option value="1st Round">1st Round</option>
+              <option value="Early 2nd">Early 2nd</option>
+              <option value="2nd Round">2nd Round</option>
+              <option value="Undrafted">Undrafted</option>
+            </select>
+          </div>
+
+          <div class="draft-control-group">
+            <label for="draft-scouting-filter">Scouting Level</label>
+            <select id="draft-scouting-filter" onchange="updateDraftScoutingFilters()">
+              <option value="All">All Levels</option>
+              <option value="0">Unscouted</option>
+              <option value="1">Basic Report</option>
+              <option value="2">Detailed Report</option>
+              <option value="3">Advanced Report</option>
+              <option value="4">Full Report</option>
+            </select>
+          </div>
+
+          <div class="draft-table-count">
+            <span id="draft-visible-count">70 prospects</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Scouting Database</h2>
+          <p class="page-description">All prospects in the current draft class.</p>
+
+          <div class="draft-table-wrap">
+            <table class="draft-prospect-table">
+              <thead>
+                <tr>
+                  <th onclick="sortDraftScoutingTable('mockRank')">Rank</th>
+                  <th onclick="sortDraftScoutingTable('name')">Prospect</th>
+                  <th onclick="sortDraftScoutingTable('primaryPosition')">Pos</th>
+                  <th onclick="sortDraftScoutingTable('age')">Age</th>
+                  <th onclick="sortDraftScoutingTable('height')">Height</th>
+                  <th onclick="sortDraftScoutingTable('collegeOrClub')">School/Club</th>
+                  <th onclick="sortDraftScoutingTable('projectedRange')">Range</th>
+                  <th onclick="sortDraftScoutingTable('stats')">Stats</th>
+                  <th onclick="sortDraftScoutingTable('scoutingLevel')">Scouted</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody id="draft-scouting-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Active Scouting Reports</h2>
+          <div id="active-scouting-reports-list" class="active-scouting-reports-list">
+            <p>No active scouting reports.</p>
+          </div>
+        </div>
+
+        <!-- Compatibility IDs for newer displayDraftScoutingPage helpers -->
+        <div class="hidden">
+          <input id="scouting-search" />
+          <select id="scouting-position-filter"><option>All Positions</option></select>
+          <select id="scouting-range-filter"><option>All Ranges</option></select>
+          <select id="scouting-level-filter"><option>All Levels</option></select>
+          <span id="scouts-left-this-month">10 / 10</span>
+          <span id="active-scouting-count">0</span>
+          <span id="next-scout-reset">Nov 1</span>
+          <span id="draft-prospect-count">70 prospects</span>
+          <tbody id="scouting-table-body"></tbody>
+          <div id="active-scouting-reports"></div>
+        </div>
+      </section>
+
+      <!-- DRAFT: DRAFT BOARD SCREEN -->
+      <section id="draft-board-screen" class="screen">
+        <div class="draft-page-header">
+          <div>
+            <h1>Draft Board</h1>
+            <p>Your personal prospect ranking. Add players from scouting, then build your board for draft night.</p>
+          </div>
+        </div>
+
+        <div class="draft-board-status-grid">
+          <div class="draft-status-card card">
+            <span>Draft Class</span>
+            <strong id="draft-board-year">2026</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Players on Board</span>
+            <strong id="draft-board-count">0</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Highest Ranked</span>
+            <strong id="draft-board-top-player">None</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Scouts Left</span>
+            <strong id="draft-board-scouts-left">10 / 10</strong>
+          </div>
+        </div>
+
+        <div class="draft-board-layout">
+          <div class="draft-board-main card">
+            <h2>Your Draft Board</h2>
+            <p class="page-description">Move prospects up or down to create your personal draft-night ranking.</p>
+
+            <div id="draft-board-list" class="draft-board-list">
+              <div class="draft-board-empty">
+                No prospects added yet. Go to Scouting and click Board on prospects you like.
+              </div>
+            </div>
+          </div>
+
+          <div class="draft-board-side card">
+            <h2>Board Tools</h2>
+
+            <div class="draft-board-tip">
+              <strong>How to use this</strong>
+              <p>
+                This is not the mock draft. This is your personal ranking.
+                During draft night, this board helps you decide who to take when you are on the clock.
+              </p>
+            </div>
+
+            <div class="draft-board-tip">
+              <strong>Scouting matters</strong>
+              <p>
+                The more you scout a prospect, the tighter their attribute ranges become.
+                A player can look risky early but become a clear target after more reports.
+              </p>
+            </div>
+
+            <button type="button" class="secondary-action-button" onclick="clearDraftBoardConfirm()">
+              Clear Board
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- DRAFT: MOCK DRAFTS SCREEN -->
+      <section id="mock-drafts-screen" class="screen">
+        <div class="mock-draft-topbar card">
+          <div class="mock-draft-title-block">
+            <span id="mock-draft-year">2026</span>
+            <strong>Mock Draft</strong>
+            <small id="mock-draft-date">Opening Mock</small>
+          </div>
+
+          <div class="mock-draft-meta">
+            <div>
+              <span>Class Strength</span>
+              <strong id="mock-draft-class-strength">Average Class</strong>
+            </div>
+
+            <div>
+              <span>Mock Picks</span>
+              <strong id="mock-draft-pick-count">60</strong>
+            </div>
+
+            <div>
+              <span>View</span>
+              <select id="mock-draft-view-filter" onchange="updateMockDraftFilters()">
+                <option value="Full">Full Mock</option>
+                <option value="Your Picks">Your Picks</option>
+              </select>
+            </div>
+
+            <div>
+              <span>Position</span>
+              <select id="mock-draft-position-filter" onchange="updateMockDraftFilters()">
+                <option value="All">All Positions</option>
+                <option value="PG">PG</option>
+                <option value="SG">SG</option>
+                <option value="SF">SF</option>
+                <option value="PF">PF</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-draft-search-row">
+          <input
+            id="mock-draft-search-input"
+            type="text"
+            placeholder="Search prospects, teams, schools..."
+            oninput="updateMockDraftFilters()"
+          />
+
+          <select id="mock-draft-round-filter" onchange="updateMockDraftFilters()">
+            <option value="All">All Rounds</option>
+            <option value="1">Round 1</option>
+            <option value="2">Round 2</option>
+          </select>
+        </div>
+
+        <div class="mock-draft-board-wrapper">
+          <div class="mock-round-section" id="mock-round-one-section">
+            <div class="mock-round-header">
+              <h2>1st Round Draft</h2>
+              <span>Picks 1-30</span>
+            </div>
+
+            <div id="mock-draft-round-one-board" class="mock-draft-board-grid"></div>
+          </div>
+
+          <div class="mock-round-section" id="mock-round-two-section">
+            <div class="mock-round-header">
+              <h2>2nd Round Draft</h2>
+              <span>Picks 31-60</span>
+            </div>
+
+            <div id="mock-draft-round-two-board" class="mock-draft-board-grid"></div>
+          </div>
+        </div>
+
+        <div id="mock-draft-empty-state" class="mock-draft-empty-state card hidden">
+          No mock draft picks match those filters.
+        </div>
+      </section>
+
+<!-- FREE AGENCY NEGOTIATION RESULT POPUP -->
+<div id="fa-neg-result-popup" class="fa-neg-result-popup hidden">
+  <div id="fa-neg-result-card" class="fa-neg-result-card">
+    <h2 id="fa-neg-result-title">Offer Result</h2>
+    <p id="fa-neg-result-message">Result message.</p>
+
+    <button id="fa-neg-result-button" type="button" onclick="closeFreeAgentNegotiationResultPopup()">
+      Continue
+    </button>
+  </div>
+</div>
+
+      <!-- DRAFT: LOTTERY SCREEN -->
+      <section id="lottery-odds-screen" class="screen">
+        <div class="content-card lottery-reveal-page">
+          <div class="lottery-reveal-header">
+            <h1>DRAFT LOTTERY</h1>
+            <p id="lottery-reveal-subtitle">Reveal the top 14 picks one at a time.</p>
+          </div>
+
+          <div class="lottery-reveal-layout">
+            <div class="lottery-reveal-board-card">
+              <div class="lottery-board-title">Draft Order</div>
+              <div class="lottery-board-grid" id="lottery-board-grid"></div>
+            </div>
+
+            <div class="lottery-reveal-control-card">
+              <div class="lottery-control-block">
+                <div class="lottery-control-label">Current Reveal</div>
+                <div id="lottery-current-pick-number" class="lottery-current-pick-number">Pick 14</div>
+                <div id="lottery-current-team-name" class="lottery-current-team-name">Waiting to begin</div>
+              </div>
+
+              <div class="lottery-control-block">
+                <div class="lottery-control-label">Status</div>
+                <div id="lottery-reveal-status" class="lottery-reveal-status">Ready to reveal</div>
+              </div>
+
+              <div class="lottery-control-actions">
+                <button id="lottery-next-pick-button" type="button" class="primary-action-button" onclick="revealNextLotteryPick()">
+                  Reveal Pick #14
+                </button>
+
+                <button id="lottery-finish-button" type="button" class="secondary-action-button hidden" onclick="finishLotteryReveal()">
+                  Finish Lottery
+                </button>
+
+                <button id="lottery-skip-button" type="button" class="secondary-action-button" onclick="skipDraftLottery()">
+                  Skip Lottery
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden compatibility with old lottery odds display -->
+          <div class="hidden">
+            <strong id="lottery-status">Not Run</strong>
+            <strong id="lottery-user-pick">-</strong>
+            <strong id="lottery-user-odds">0.0%</strong>
+            <tbody id="lottery-odds-table-body"></tbody>
+            <div id="projected-draft-order-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DRAFT NIGHT SCREEN -->
+      <section id="draft-night-screen" class="screen">
+        <div class="draft-night-event">
+          <div class="draft-night-broadcast-header">
+            <div class="draft-night-blue-panel"></div>
+
+            <div class="draft-night-title">
+              <span id="draft-night-year-label">2026</span>
+              <strong>DRAFT</strong>
+              <small>Full Court Director Draft Night</small>
+            </div>
+
+            <div class="draft-night-red-panel"></div>
+          </div>
+
+          <div class="draft-night-round-one-board">
+            <div class="draft-night-board-header">
+              <h2>1st Round Draft Board</h2>
+              <span id="draft-night-current-status">Waiting to begin...</span>
+            </div>
+
+            <div id="draft-night-round-one-picks" class="draft-night-picks-grid"></div>
+          </div>
+
+          <div class="draft-night-main-grid">
+            <div class="draft-night-clock-card">
+              <div class="draft-night-card-title">On The Clock</div>
+
+              <div class="draft-night-team-block">
+                <div id="draft-night-team-abbrev" class="draft-night-team-logo-text">---</div>
+
+                <div>
+                  <h2 id="draft-night-on-clock-team">Team Name</h2>
+                  <p id="draft-night-pick-info">Round 1 · Pick 1</p>
+                </div>
+              </div>
+
+              <div id="draft-night-timer" class="draft-night-timer">01:00</div>
+              <div class="draft-night-timer-label">Time Remaining</div>
+
+              <div id="draft-night-user-warning" class="draft-night-user-warning hidden">
+                Your pick is on the clock. Choose a prospect before time expires.
+              </div>
+
+              <div class="draft-night-action-row">
+                <button type="button" class="primary-action-button" onclick="simDraftNextPick()">Sim Next Pick</button>
+                <button type="button" class="secondary-action-button" onclick="simDraftToUserPick()">Sim To User Pick</button>
+                <button type="button" class="secondary-action-button" onclick="simDraftToEnd()">Sim To End Of Draft</button>
+              </div>
+            </div>
+
+            <div class="draft-night-tools-card">
+              <div class="draft-night-tool-tabs">
+                <button id="draft-night-tab-prospects" type="button" class="active" onclick="showDraftNightToolTab('prospects')">Prospects</button>
+                <button id="draft-night-tab-board" type="button" onclick="showDraftNightToolTab('board')">My Board</button>
+                <button id="draft-night-tab-scouting" type="button" onclick="showDraftNightToolTab('scouting')">Scouting</button>
+                <button id="draft-night-tab-mock" type="button" onclick="showDraftNightToolTab('mock')">Mock Draft</button>
+              </div>
+
+              <div id="draft-night-tool-panel-title" class="draft-night-panel-title">
+                Prospects Remaining
+              </div>
+
+              <div id="draft-night-tool-panel" class="draft-night-tool-panel"></div>
+            </div>
+          </div>
+
+          <div class="draft-night-round-two-board">
+            <div class="draft-night-board-header">
+              <h2>2nd Round Draft Board</h2>
+              <span>Picks 31-60</span>
+            </div>
+
+            <div id="draft-night-round-two-picks" class="draft-night-round-two-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DRAFT: LOTTERY RULES SCREEN -->
+<section id="lottery-rules-screen" class="screen">
+  <div id="lottery-rules-root"></div>
+</section>
+
+      <!-- ROOKIE SIGNING SCREEN -->
+      <section id="rookie-signing-screen" class="screen">
+        <div class="draft-page-header">
+          <div>
+            <h1>Rookie Signing</h1>
+            <p>Sign your drafted players, manage roster space, and prepare for the next season.</p>
+          </div>
+        </div>
+
+        <div class="draft-board-status-grid">
+          <div class="draft-status-card card">
+            <span>Draft Class</span>
+            <strong id="rookie-signing-year">2027</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Roster Space</span>
+            <strong id="rookie-signing-roster-space">0 / 15</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Unsigned Rookies</span>
+            <strong id="rookie-signing-unsigned-count">0</strong>
+          </div>
+
+          <div class="draft-status-card card">
+            <span>Signed Rookies</span>
+            <strong id="rookie-signing-signed-count">0</strong>
+          </div>
+        </div>
+
+        <div class="rookie-signing-layout">
+          <div class="rookie-signing-main card">
+            <div class="draft-table-header">
+              <div>
+                <h2>Your Drafted Players</h2>
+                <p>These players are your draft rights. Sign them if you have roster space.</p>
+              </div>
+            </div>
+
+            <div id="rookie-rights-list" class="rookie-rights-list"></div>
+          </div>
+
+          <div class="rookie-signing-side card">
+            <h2>Roster Management</h2>
+
+            <div class="rookie-signing-note">
+              <strong>Roster Limit</strong>
+              <p>You can only carry 15 players. If your roster is full, release a player before signing more rookies.</p>
+            </div>
+
+            <div class="rookie-signing-note">
+              <strong>Rookie Contracts</strong>
+              <p>Contracts are based on draft position. Higher picks cost more and receive longer guaranteed deals.</p>
+            </div>
+
+            <button type="button" class="primary-action-button" onclick="finishRookieSigning()">Finish Rookie Signing</button>
+          </div>
+        </div>
+
+        <div class="rookie-roster-card card">
+          <div class="draft-table-header">
+            <div>
+              <h2>Current Roster</h2>
+              <p>Release players here if you need space for your drafted rookies.</p>
+            </div>
+          </div>
+
+          <div id="rookie-current-roster-list" class="rookie-current-roster-list"></div>
+        </div>
+      </section>
+
+      <!-- DRAFT: PREVIOUS DRAFT SCREEN -->
+      <section id="previous-draft-screen" class="screen">
+        <div class="draft-page-header">
+          <div>
+            <h1>Previous Draft</h1>
+            <p>Review completed drafts from previous seasons.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Previous Draft Results</h2>
+          <div id="previous-draft-results">
+            <p>Placeholder page. Later this will show the last completed draft class.</p>
+          </div>
+        </div>
+      </section>
+     
+<section id="transfers-screen" class="screen">
+  <div class="trade-room-header">
+
+    <div class="trade-room-header-actions">
+      <div class="trade-room-pill">
+        <span>Date</span>
+        <strong id="trade-room-date">Sep 25, 2026</strong>
+      </div>
+
+      <div class="trade-room-pill deadline-pill">
+        <span>Deadline</span>
+        <strong id="trade-room-deadline">Open</strong>
+      </div>
+
+      <div class="trade-room-pill leak-pill">
+        <span>Leak Risk</span>
+        <strong id="trade-room-leak-risk">0%</strong>
+      </div>
+
+      <div id="trade-room-legal-status" class="trade-room-status-pill illegal">
+        <span>Status</span>
+        <strong>Not Legal</strong>
+      </div>
+
+      <button type="button" class="trade-room-add-button" onclick="openTradeAddTeamMenu()">
+        + Add Team
+      </button>
+
+      <button type="button" class="trade-room-call-button" onclick="beginTradeNegotiation()">
+        📞 Begin Negotiations
+      </button>
+
+      <button type="button" class="trade-room-clear-button" onclick="clearTradeRoom()">
+        Clear Trade
+      </button>
+
+      <button type="button" class="trade-room-clear-button trade-room-save-board-button" onclick="saveCurrentTradeBuilderToBoard()">
+        Save To Board
+      </button>
+
+    </div>
+  </div>
+
+  <div id="trade-add-team-menu" class="trade-add-team-menu hidden"></div>
+
+  <div id="trade-room-grid" class="trade-room-grid"></div>
+
+  <div id="trade-send-player-modal" class="trade-send-player-modal hidden"></div>
+</section>
+
+<!-- TRADE: FORMAL OFFERS SCREEN -->
+<section id="formal-offers-screen" class="screen">
+  <div id="formal-offers-root"></div>
+</section>
+
+<!-- TRADE: THE BOARD SCREEN -->
+<section id="trade-board-screen" class="screen">
+  <div class="trade-board-page">
+    <div class="trade-board-header">
+      <div>
+        <span>Front Office Trade Board</span>
+        <h1>The Board</h1>
+        <p>Track every live trade concept your front office is considering.</p>
+      </div>
+
+      <div class="trade-board-header-actions">
+        <button type="button" onclick="saveCurrentTradeBuilderToBoard()">
+          Save Current Builder Deal
+        </button>
+
+        <button type="button" onclick="renderTradeBoardScreen()">
+          Refresh Board
+        </button>
+      </div>
+    </div>
+
+    <div class="trade-board-summary-row">
+      <div>
+        <span>Total Deals</span>
+        <strong id="trade-board-total-count">0</strong>
+      </div>
+
+      <div>
+        <span>Concepts</span>
+        <strong id="trade-board-concept-count">0</strong>
+      </div>
+
+      <div>
+        <span>Formal Offers</span>
+        <strong id="trade-board-formal-count">0</strong>
+      </div>
+
+      <div>
+        <span>Agreed Upon</span>
+        <strong id="trade-board-agreed-count">0</strong>
+      </div>
+    </div>
+
+    <div id="trade-board-list" class="trade-board-list"></div>
+  </div>
+</section>
+
+<section id="trade-call-screen" class="screen">
+  <div id="trade-call-root"></div>
+</section>
+
+<section id="trade-block-screen" class="screen">
+  <h2>Trade Block</h2>
+  <p>Coming Soon</p>
+</section>
+
+<section id="trade-rumors-screen" class="screen">
+  <h2>Rumors</h2>
+  <p>Coming Soon</p>
+</section>
+
+<section id="trade-deadline-screen" class="screen">
+  <h2>Trade Deadline</h2>
+  <p>Coming Soon</p>
+</section>
+
+<section id="team-intel-screen" class="screen">
+  <h2>Team Intel</h2>
+  <p>Coming Soon</p>
+</section>
+
+<!-- TRADE: GM INTEL SCREEN -->
+<section id="gm-intel-screen" class="screen">
+  <div id="gm-intel-root"></div>
+</section>
+
+
+      <!-- FREE AGENCY SCREEN -->
+<section id="free-agency-screen" class="screen">
+  <div class="free-agency-page-header">
+    <div>
+      <h2>Free Agency</h2>
+      <p id="free-agency-window-message">Free agency opens June 30 and closes April 1.</p>
+    </div>
+  </div>
+
+  <div class="free-agency-summary-grid fa-redesign-summary">
+    <div class="summary-card">
+      <span>Market Status</span>
+      <strong id="free-agency-status">Closed</strong>
+      <small id="free-agency-period-label">Offseason</small>
+    </div>
+
+    <div class="summary-card">
+      <span>Cap Space</span>
+      <strong id="free-agency-cap-space">$0M</strong>
+      <small id="free-agency-cap-status">Available</small>
+    </div>
+
+    <div class="summary-card">
+      <span>Open Roster Spots</span>
+      <strong id="free-agency-roster-count">0 / 15</strong>
+      <small>Standard contracts</small>
+    </div>
+
+    <div class="summary-card">
+      <span>Top Need</span>
+      <strong id="free-agency-top-need">Point Guard</strong>
+      <small>Placeholder for now</small>
+    </div>
+
+    <div class="summary-card">
+      <span>Free Agency Recap</span>
+      <strong id="free-agency-recap-main">0 Signings</strong>
+      <small id="free-agency-recap-sub">0 agreements · 0 trades</small>
+    </div>
+
+    <!-- Compatibility ID for newer FA helpers -->
+    <strong id="free-agency-roster-size" class="hidden">0 / 15</strong>
+    <strong id="free-agency-payroll" class="hidden">$0M</strong>
+  </div>
+
+  <div class="free-agency-main-grid">
+    <div class="free-agency-market-card">
+      <div class="dashboard-section-title-row">
+        <h2>Free Agent Market</h2>
+        <button type="button" onclick="displayFreeAgency()">Refresh Market</button>
+      </div>
+
+      <div class="free-agency-filter-row">
+  <select id="fa-position-filter" onchange="setFreeAgencyPositionFromDropdown()">
+    <option value="ALL">All Positions</option>
+    <option value="PG">Point Guards</option>
+    <option value="SG">Shooting Guards</option>
+    <option value="SF">Small Forwards</option>
+    <option value="PF">Power Forwards</option>
+    <option value="C">Centers</option>
+  </select>
+
+  <select id="fa-type-filter" onchange="displayFreeAgency()">
+    <option value="ALL">All Types</option>
+    <option value="Unrestricted">Unrestricted</option>
+    <option value="Restricted">Restricted</option>
+    <option value="Player Option">Player Option</option>
+    <option value="Team Option">Team Option</option>
+  </select>
+
+  <select id="fa-age-filter" onchange="displayFreeAgency()">
+    <option value="ALL">All Ages</option>
+    <option value="24">24 and Under</option>
+    <option value="29">25 to 29</option>
+    <option value="30">30 and Older</option>
+  </select>
+
+  <select id="fa-sort-filter" onchange="setFreeAgencySortFromDropdown()">
+    <option value="salary-desc">Asking Price</option>
+    <option value="interest-desc">Interest</option>
+    <option value="age-asc">Youngest</option>
+    <option value="name-asc">Name</option>
+  </select>
+
+  <input id="fa-search-input" type="text" placeholder="Search free agents..." oninput="displayFreeAgency()">
+</div>
+
+      <div class="table-scroll free-agency-market-table-wrap">
+        <table class="free-agency-market-table">
+          <thead>
+            <tr>
+              <th onclick="sortFreeAgents('name')">Player</th>
+              <th onclick="sortFreeAgents('position')">Pos</th>
+              <th onclick="sortFreeAgents('age')">Age</th>
+              <th onclick="sortFreeAgents('level')">Media Reputation</th>
+              <th onclick="sortFreeAgents('type')">Type</th>
+              <th onclick="sortFreeAgents('salary')">Asking Price</th>
+              <th onclick="sortFreeAgents('years')">Years</th>
+              <th onclick="sortFreeAgents('interest')">Interest</th>
+              <th>Market</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="free-agency-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="free-agency-player-panel-card">
+      <div class="dashboard-section-title-row">
+        <h2>Negotiation / Player Interest</h2>
+      </div>
+
+      <div id="free-agency-selected-player-panel" class="free-agency-selected-player-panel">
+        <div class="fa-panel-empty">
+          Select a free agent to view market details.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="free-agency-bottom-grid">
+    <div class="free-agency-mini-card">
+      <div class="dashboard-section-title-row">
+        <h2>Top Available</h2>
+      </div>
+
+      <div id="free-agency-top-available-list" class="free-agency-mini-list"></div>
+    </div>
+
+    <div class="free-agency-mini-card">
+      <div class="dashboard-section-title-row">
+        <h2>Market Buzz</h2>
+      </div>
+
+      <div id="free-agency-market-buzz-list" class="free-agency-buzz-list"></div>
+    </div>
+
+    <div class="free-agency-mini-card">
+      <div class="dashboard-section-title-row">
+        <h2>Biggest Deals</h2>
+        <button type="button" onclick="showFreeAgencyDealsList()">View All Deals ›</button>
+      </div>
+
+      <div id="free-agency-biggest-deals-list" class="free-agency-mini-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FREE AGENCY NEGOTIATION SCREEN -->
+<section id="free-agency-negotiation-screen" class="screen">
+  <div class="fa-negotiation-page">
+    <div class="fa-negotiation-header">
+      <button type="button" class="fa-neg-back-button" onclick="cancelFreeAgentNegotiation()">
+        ← Back to Free Agency
+      </button>
+
+      <div class="fa-neg-title-block">
+        <h2>Free Agency Negotiation</h2>
+        <span id="fa-neg-subtitle">Contract discussion</span>
+      </div>
+
+      <div class="fa-neg-header-info">
+        <div>
+          <span>Date</span>
+          <strong id="fa-neg-date">--</strong>
+        </div>
+
+        <div>
+          <span>Cap Space</span>
+          <strong id="fa-neg-cap-space">$0M</strong>
+        </div>
+
+        <div>
+          <span>Roster Spots</span>
+          <strong id="fa-neg-roster-spots">0</strong>
+        </div>
+      </div>
+    </div>
+
+<div class="fa-negotiation-grid">
+  <!-- LEFT COLUMN -->
+  <div class="fa-neg-left-column">
+    <div class="fa-neg-card">
+      <h3>Player Information</h3>
+
+      <div class="fa-neg-player-identity">
+        <div class="fa-neg-player-silhouette" id="fa-neg-player-face"></div>
+
+        <div>
+          <span id="fa-neg-player-position-age">--</span>
+          <h2 id="fa-neg-player-name">Player Name</h2>
+          <p id="fa-neg-player-type">Player Type</p>
+        </div>
+      </div>
+
+      <div class="fa-neg-info-list">
+        <div>
+          <span>Media Reputation</span>
+          <strong id="fa-neg-media-reputation">Unknown</strong>
+        </div>
+
+        <div>
+          <span>Projected Ceiling</span>
+          <strong id="fa-neg-projected-ceiling">Unknown</strong>
+        </div>
+
+        <div>
+          <span>Free Agent Type</span>
+          <strong id="fa-neg-free-agent-type">UFA</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Player Priorities</h3>
+
+      <div id="fa-neg-priorities" class="fa-neg-priorities"></div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Agent / Camp Information</h3>
+
+      <div class="fa-neg-agent-row">
+        <div class="fa-neg-agent-avatar">A</div>
+
+        <div>
+          <strong id="fa-neg-agent-name">Player Representative</strong>
+          <span id="fa-neg-agent-title">Agent</span>
+        </div>
+      </div>
+
+      <div class="fa-neg-info-list">
+        <div>
+          <span>Camp Mood</span>
+          <strong id="fa-neg-camp-mood">Open to offers</strong>
+        </div>
+
+        <div>
+          <span>Negotiation Tone</span>
+          <strong id="fa-neg-tone">Calm</strong>
+        </div>
+      </div>
+
+      <div class="fa-neg-camp-message">
+        <span>Message from camp</span>
+        <p id="fa-neg-camp-message">
+          “We’re looking for the right combination of money, role, and team direction.”
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div class="fa-neg-center-column">
+    <div class="fa-neg-card">
+      <h3>Your Offer</h3>
+
+      <div class="fa-neg-offer-builder">
+        <div class="fa-neg-offer-row" id="fa-offer-field-salary">
+          <label>Salary Per Year</label>
+
+          <div class="fa-neg-stepper">
+            <button type="button" onclick="adjustFreeAgentOfferSalary(-1)">− $1M</button>
+            <strong id="fa-neg-offer-salary">$0M</strong>
+            <button type="button" onclick="adjustFreeAgentOfferSalary(1)">+ $1M</button>
+          </div>
+
+          <small id="fa-neg-salary-note">Current offer</small>
+        </div>
+
+        <div class="fa-neg-offer-row" id="fa-offer-field-years">
+          <label>Years</label>
+
+          <div class="fa-neg-year-buttons">
+            <button type="button" onclick="setFreeAgentOfferYears(1)">1</button>
+            <button type="button" onclick="setFreeAgentOfferYears(2)">2</button>
+            <button type="button" onclick="setFreeAgentOfferYears(3)">3</button>
+            <button type="button" onclick="setFreeAgentOfferYears(4)">4</button>
+            <button type="button" onclick="setFreeAgentOfferYears(5)">5</button>
+          </div>
+
+          <small id="fa-neg-years-note">Current offer</small>
+        </div>
+
+        <div class="fa-neg-offer-row" id="fa-offer-field-role">
+          <label>Role Promise</label>
+
+          <select id="fa-neg-role-promise" onchange="updateFreeAgentNegotiationScreen()">
+            <option value="No Promise">No Promise</option>
+            <option value="Bench">Bench</option>
+            <option value="Rotation">Rotation</option>
+            <option value="Sixth Man">Sixth Man</option>
+            <option value="Starter">Starter</option>
+            <option value="Star Player">Star Player</option>
+          </select>
+
+          <small id="fa-neg-role-note">Current offer</small>
+        </div>
+
+        <div class="fa-neg-offer-row" id="fa-offer-field-minutes">
+          <label>Minutes Promise</label>
+
+          <select id="fa-neg-minutes-promise" onchange="updateFreeAgentNegotiationScreen()">
+            <option value="No Promise">No Promise</option>
+            <option value="10+ MPG">10+ MPG</option>
+            <option value="15+ MPG">15+ MPG</option>
+            <option value="20+ MPG">20+ MPG</option>
+            <option value="25+ MPG">25+ MPG</option>
+            <option value="30+ MPG">30+ MPG</option>
+          </select>
+
+          <small id="fa-neg-minutes-note">Current offer</small>
+        </div>
+
+        <div class="fa-neg-offer-row" id="fa-offer-field-optional">
+          <label>Optional Promise</label>
+
+          <select id="fa-neg-optional-promise" onchange="updateFreeAgentNegotiationScreen()">
+            <option value="None">None</option>
+            <option value="Compete for playoffs">Compete for playoffs</option>
+            <option value="Development focus">Development focus</option>
+            <option value="Feature role in offense">Feature role in offense</option>
+            <option value="Veteran leadership role">Veteran leadership role</option>
+          </select>
+
+          <small id="fa-neg-optional-note">Current offer</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Offer Strength</h3>
+
+      <div class="fa-offer-meter-shell">
+        <div id="fa-offer-meter-fill" class="fa-offer-meter-fill"></div>
+      </div>
+
+      <div class="fa-offer-meter-labels">
+        <span>Weak Offer</span>
+        <span>Competitive</span>
+        <span>Strong</span>
+        <span>Likely Accepted</span>
+      </div>
+
+      <p id="fa-neg-offer-summary" class="fa-neg-offer-summary">
+        Build an offer to see how the player’s camp views it.
+      </p>
+    </div>
+
+    <div class="fa-neg-button-row">
+      <button type="button" id="fa-neg-submit-button" class="fa-neg-submit" onclick="submitFreeAgentNegotiationOffer()">
+        Submit Offer
+      </button>
+
+      <button type="button" class="fa-neg-suggest" onclick="suggestFreeAgentOffer()">
+        Suggest Offer
+      </button>
+
+      <button type="button" class="fa-neg-cancel" onclick="cancelFreeAgentNegotiation()">
+        Cancel Offer
+      </button>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="fa-neg-right-column">
+    <div class="fa-neg-card">
+      <h3>Financial Impact</h3>
+
+      <div class="fa-neg-finance-grid">
+        <div>
+          <h4>Before Offer</h4>
+          <div class="fa-neg-finance-list">
+            <span>Cap Space</span><strong id="fa-neg-before-cap">$0M</strong>
+            <span>Payroll</span><strong id="fa-neg-before-payroll">$0M</strong>
+            <span>Tax Room</span><strong id="fa-neg-before-tax-room">$0M</strong>
+            <span>First Apron Room</span><strong id="fa-neg-before-first-apron">$0M</strong>
+            <span>Second Apron Room</span><strong id="fa-neg-before-second-apron">$0M</strong>
+          </div>
+        </div>
+
+        <div>
+          <h4>After Offer</h4>
+          <div class="fa-neg-finance-list">
+            <span>Cap Space</span><strong id="fa-neg-after-cap">$0M</strong>
+            <span>Payroll</span><strong id="fa-neg-after-payroll">$0M</strong>
+            <span>Tax Room</span><strong id="fa-neg-after-tax-room">$0M</strong>
+            <span>First Apron Room</span><strong id="fa-neg-after-first-apron">$0M</strong>
+            <span>Second Apron Room</span><strong id="fa-neg-after-second-apron">$0M</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Asking Price</h3>
+
+      <div class="fa-neg-asking-grid">
+        <div>
+          <span>Expected Salary</span>
+          <strong id="fa-neg-expected-salary">$0M / year</strong>
+        </div>
+
+        <div>
+          <span>Expected Years</span>
+          <strong id="fa-neg-expected-years">1</strong>
+        </div>
+
+        <div>
+          <span>Expected Role</span>
+          <strong id="fa-neg-expected-role">Rotation</strong>
+        </div>
+
+        <div>
+          <span>Expected Minutes</span>
+          <strong id="fa-neg-expected-minutes">15+ MPG</strong>
+        </div>
+
+        <div>
+          <span>Current Interest</span>
+          <strong id="fa-neg-current-interest">Neutral</strong>
+        </div>
+
+        <div>
+          <span>Market Status</span>
+          <strong id="fa-neg-market-status">Watching</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Roster Fit</h3>
+
+      <div class="fa-neg-info-list">
+        <div>
+          <span>Position Need</span>
+          <strong id="fa-neg-position-need">Medium</strong>
+        </div>
+
+        <div>
+          <span>Projected Role</span>
+          <strong id="fa-neg-projected-role">Rotation</strong>
+        </div>
+
+        <div>
+          <span>Fit With Gameplan</span>
+          <strong id="fa-neg-gameplan-fit">Good</strong>
+        </div>
+      </div>
+
+      <div class="fa-neg-fit-summary">
+        <p id="fa-neg-fit-summary">
+          This player could fill a rotation need.
+        </p>
+      </div>
+    </div>
+
+    <div class="fa-neg-card">
+      <h3>Market Competition</h3>
+
+      <div class="fa-neg-info-list">
+        <div>
+          <span>Other Teams Interested</span>
+          <strong id="fa-neg-other-teams">2</strong>
+        </div>
+
+        <div>
+          <span>Market Heat</span>
+          <strong id="fa-neg-market-heat">Active</strong>
+        </div>
+
+        <div>
+          <span>Best Known Competing Offer</span>
+          <strong>Unknown</strong>
+        </div>
+      </div>
+
+      <div class="fa-neg-fit-summary">
+        <p id="fa-neg-rumor-line">
+          Several teams are monitoring this player’s asking price.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+<div class="fa-neg-notes-strip">
+  <h3>Negotiation Notes</h3>
+  <div id="fa-neg-notes-list" class="fa-neg-notes-list"></div>
+</div>
+</section>
+
+      <!-- LEAGUE: TEAMS SCREEN -->
+      <section id="league-screen" class="screen">
+        <h2>League</h2>
+
+        <div class="card">
+          <h2>Continental Basketball League</h2>
+          <p class="page-description">
+            Click a team name to open its team profile and view the roster.
+          </p>
+
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>Conference</th>
+                  <th>Record</th>
+                  <th>Roster</th>
+                  <th>Payroll</th>
+                  <th>Cap Space</th>
+                  <th>Team Level</th>
+                </tr>
+              </thead>
+
+              <tbody id="league-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEAGUE: ROSTERS SCREEN -->
+      <section id="league-rosters-screen" class="screen">
+        <div class="league-rosters-page">
+          <div class="league-rosters-header">
+            <h2>Rosters</h2>
+            <p>View every team’s projected starting five and sixth man by division.</p>
+          </div>
+
+          <div id="league-rosters-board" class="league-rosters-board"></div>
+        </div>
+      </section>
+
+      <!-- LEAGUE: TRANSACTIONS SCREEN -->
+<!-- LEAGUE: TRANSACTIONS SCREEN -->
+<section id="league-transactions-screen" class="screen">
+  <div class="league-wire-page">
+    <div class="league-wire-hero">
+      <div>
+        <div class="league-wire-kicker">Official League Wire</div>
+        <h2>Transactions</h2>
+        <p>
+          Player movement, signings, waivers, trades, draft selections, and G-League activity for the current season.
+        </p>
+      </div>
+
+      <div class="league-wire-season-box">
+        <span>Season</span>
+        <strong id="league-transactions-season-label">2026-27</strong>
+      </div>
+    </div>
+
+    <div class="league-wire-toolbar">
+      <div class="league-wire-filter">
+        <label for="league-transaction-type-filter">Transaction Type</label>
+        <select id="league-transaction-type-filter">
+          <option value="ALL">All Transactions</option>
+          <option value="FREE_AGENCY">Free Agency</option>
+          <option value="SIGNING">Signings</option>
+          <option value="AGREEMENT">Agreements</option>
+          <option value="TRADE">Trades</option>
+          <option value="WAIVED">Waived</option>
+          <option value="G_LEAGUE">G-League Transactions</option>
+          <option value="DRAFT">Draft</option>
+        </select>
+      </div>
+
+      <div class="league-wire-filter">
+        <label for="league-transaction-team-filter">Team</label>
+        <select id="league-transaction-team-filter">
+          <option value="ALL">All Teams</option>
+        </select>
+      </div>
+
+      <div class="league-wire-filter">
+        <label for="league-transaction-sort-filter">Sort</label>
+        <select id="league-transaction-sort-filter">
+          <option value="RECENT">Most Recent</option>
+          <option value="BIGGEST_NAMES">Biggest Names</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="league-wire-content">
+  <div class="league-wire-list-wrap">
+        <div class="league-wire-list-header">
+          <span>Movement</span>
+          <span>Team / Player</span>
+        </div>
+
+        <div id="league-transactions-list" class="league-transactions-list">
+          <div class="league-transactions-empty">
+            <div class="empty-transaction-icon">↔</div>
+            <h3>No transactions recorded yet</h3>
+            <p>
+              Once signings, trades, waivers, draft picks, or G-League moves happen, they will appear here.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- LEAGUE: POWER RANKINGS SCREEN -->
+<section id="power-rankings-screen" class="screen">
+  <div class="power-rankings-page">
+    <div class="power-rankings-hero">
+      <div>
+        <h2>Power Rankings</h2>
+        <p id="power-rankings-updated-label">Updated weekly on Sundays</p>
+      </div>
+    </div>
+
+    <div id="power-rankings-board" class="power-rankings-board"></div>
+  </div>
+</section>
+
+            <!-- LEAGUE: STAFF MOVEMENT SCREEN -->
+<section id="staff-movement-screen" class="screen">
+  <div class="league-wire-page">
+    <div class="league-wire-hero">
+      <div>
+        <div class="league-wire-kicker">Front Office Wire</div>
+        <h2>Staff Movement</h2>
+        <p>
+          Staff hires, firings, extensions, retirements, and front office changes will appear here later.
+        </p>
+      </div>
+    </div>
+
+    <div class="league-staff-placeholder">
+      <div class="empty-transaction-icon">⌂</div>
+      <h3>Staff movement tracking is not active yet</h3>
+      <p>
+        This page is ready for the future staff system.
+      </p>
+    </div>
+  </div>
+</section>
+
+      <!-- LEAGUE: AWARDS RACE SCREEN -->
+      <section id="awards-race-screen" class="screen">
+        <h2>Awards Race</h2>
+
+        <div class="card">
+          <h2>Awards Race</h2>
+          <p class="page-description">
+            Placeholder page. Later this will show MVP, Defensive Player of the Year, Rookie of the Year, and more.
+          </p>
+        </div>
+      </section>
+
+      <!-- LEAGUE: AWARDS CEREMONY SCREEN -->
+<section id="awards-ceremony-screen" class="screen">
+  <div id="awards-ceremony-root"></div>
+</section>
+
+      <!-- LEAGUE / HISTORY: RECORDS SCREEN -->
+      <section id="records-screen" class="screen">
+        <h2>Records</h2>
+
+        <div class="card">
+          <h2>League Records</h2>
+          <p class="page-description">
+            Placeholder page. Later this will show all-time and single-season records.
+          </p>
+        </div>
+      </section>
+
+      <!-- HISTORY SCREEN -->
+      <section id="history-screen" class="screen">
+  <div class="history-page">
+    <div class="history-page-header">
+      <div>
+        <p class="section-kicker">Franchise History</p>
+        <h2>History</h2>
+        <span id="history-current-team">--</span>
+      </div>
+
+      <div class="history-current-card">
+        <span>Current Season</span>
+        <strong id="history-current-season">--</strong>
+        <em id="history-current-record">--</em>
+      </div>
+    </div>
+
+    <div class="history-tabs">
+      <button class="active" onclick="showHistoryTab('seasons')">Seasons</button>
+      <button onclick="showHistoryTab('champions')">Champions</button>
+      <button onclick="showHistoryTab('cup')">Cup Winners</button>
+      <button onclick="showHistoryTab('records')">Records</button>
+      <button onclick="showHistoryTab('retired')">Retired Players</button>
+    </div>
+
+    <div class="history-panels">
+      <div id="history-tab-seasons" class="history-panel active-history-panel">
+        <div class="history-card wide">
+          <h3>Season History</h3>
+          <div id="history-seasons-list" class="history-list"></div>
+        </div>
+      </div>
+
+      <div id="history-tab-champions" class="history-panel">
+        <div class="history-card wide">
+          <h3>Champions</h3>
+          <div id="history-champions-list" class="history-list"></div>
+        </div>
+      </div>
+
+      <div id="history-tab-cup" class="history-panel">
+        <div class="history-card wide">
+          <h3>The Cup Winners</h3>
+          <div id="history-cup-winners-list" class="history-list"></div>
+        </div>
+      </div>
+
+      <div id="history-tab-records" class="history-panel">
+        <div class="history-card wide">
+          <h3>League Records</h3>
+          <div id="history-records-list" class="history-list">
+            <div class="history-empty">No league records yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="history-tab-retired" class="history-panel">
+        <div class="history-card wide">
+          <h3>Retired Players</h3>
+          <div id="history-retired-players-list" class="history-list">
+            <div class="history-empty">No retired players yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+      <!-- HISTORY: RETIRED PLAYERS SCREEN -->
+      <section id="retired-players-screen" class="screen">
+        <h2>Retired Players</h2>
+
+        <div class="card">
+          <h2>Retired Players</h2>
+          <p class="page-description">
+            Placeholder page. Later this will list retired players from your save.
+          </p>
+        </div>
+      </section>
+
+      <!-- SETTINGS SCREEN -->
+      <section id="settings-screen" class="screen">
+        <h2>Settings</h2>
+
+        <div class="card">
+          <h2>Career Controls</h2>
+
+          <button type="button" onclick="saveGame()">Save Career</button>
+          <button type="button" onclick="loadGame()">Load Career</button>
+          <button type="button" onclick="resetCareer()">Reset Career</button>
+        </div>
+        <div class="settings-card">
+  <h3>Community Rosters</h3>
+  <p>Upload a roster JSON file made by the community.</p>
+
+  <input
+    type="file"
+    id="community-roster-file-input"
+    accept=".json"
+    onchange="importCommunityRosterFile(event)"
+  />
+</div>
+      </section>
+
+      <!-- SETTINGS: PREFERENCES SCREEN -->
+      <section id="preferences-screen" class="screen">
+        <h2>Preferences</h2>
+
+        <div class="card">
+          <h2>Preferences</h2>
+          <p class="page-description">
+            Placeholder page. Later this will include display, simulation, and gameplay settings.
+          </p>
+        </div>
+      </section>
+
+      <!-- SETTINGS: HELP SCREEN -->
+      <section id="help-screen" class="screen">
+        <h2>Help / Manual</h2>
+
+        <div class="card">
+          <h2>Help / Manual</h2>
+          <p class="page-description">
+            Placeholder page. Later this will explain rules, controls, and game systems.
+          </p>
+        </div>
+      </section>
+
+<!-- PLAYER PROFILE FULL SCREEN -->
+<section id="player-profile-screen" class="screen">
+  <div class="player-page-topbar">
+    <button type="button" class="secondary-button" onclick="closePlayerProfile()">
+      ← Back
+    </button>
+
+    <div class="player-page-topbar-actions">
+      <button type="button" class="secondary-button" onclick="togglePlayerActionsMenu()">
+        Actions ▾
+      </button>
+
+      <div id="player-actions-menu" class="player-actions-menu hidden">
+        <button id="profile-release-button" type="button" class="danger-button hidden">
+          Release Player
+        </button>
+
+        <button id="profile-extension-button" type="button" class="secondary-button hidden">
+          Extension Negotiations
+        </button>
+
+        <button id="profile-sign-button" type="button" class="primary-button hidden">
+          Negotiate
+        </button>
+
+        <button type="button" class="secondary-button" disabled>
+          Add to Trade Block
+        </button>
+
+        <button type="button" class="secondary-button" disabled>
+          Change Role
+        </button>
+
+        <button type="button" class="secondary-button" disabled>
+          Set Minutes Promise
+        </button>
+
+        <button type="button" class="secondary-button" disabled>
+          Rest Player
+        </button>
+      </div>
+
+      <button type="button" class="secondary-button" onclick="openPreviousProfilePlayer()">
+        Prev
+      </button>
+
+      <button type="button" class="secondary-button" onclick="openNextProfilePlayer()">
+        Next
+      </button>
+    </div>
+  </div>
+
+  <div class="player-page-shell">
+    <aside class="player-page-left">
+      <div class="player-page-identity-card">
+        <div class="player-page-number" id="profile-jersey-background">00</div>
+
+        <div class="player-page-silhouette" id="profile-player-portrait">
+          <img id="profile-player-portrait-img" src="images/players/default-silhouette.png" alt="Player portrait" onerror="this.style.display='none'; this.parentElement.classList.add('missing-silhouette');">
+        </div>
+
+        <h1 id="profile-player-name">Player Name</h1>
+        <p id="profile-player-subtitle">PG | Secondary Position</p>
+
+        <div class="player-page-team-logo" id="profile-team-logo"></div>
+
+        <div class="player-page-basic-grid">
+          <div><span>Team</span><strong id="profile-team">-</strong></div>
+          <div><span>Age</span><strong id="profile-age">-</strong></div>
+          <div><span>Height</span><strong id="profile-height">-</strong></div>
+          <div><span>Weight</span><strong id="profile-weight">-</strong></div>
+          <div><span>Nation</span><strong id="profile-country">-</strong></div>
+          <div><span>Years Pro</span><strong id="profile-years-pro">-</strong></div>
+        </div>
+      </div>
+
+      <div class="player-page-card">
+        <h3>Player Bio</h3>
+        <p id="profile-scouting-bio" class="player-page-bio">
+          Scouting summary will appear here.
+        </p>
+      </div>
+
+      <div class="player-page-card">
+        <h3>Social Media Followers</h3>
+        <strong id="profile-social-followers" class="player-social-number">0</strong>
+      </div>
+    </aside>
+
+    <main class="player-page-main">
+      <div class="player-page-top-grid">
+        <div class="player-page-card jersey-card">
+          <h3>Jersey</h3>
+          <div id="profile-jersey-card" class="profile-jersey-card">
+            <span id="profile-jersey-name">PLAYER</span>
+            <strong id="profile-jersey-number">00</strong>
+          </div>
+          <p id="profile-jersey-sales-rank">Jersey Sales Rank: --</p>
+        </div>
+
+        <div class="player-page-card">
+          <h3>Awards</h3>
+          <div id="profile-awards-preview" class="profile-awards-preview">
+            No awards yet.
+          </div>
+        </div>
+
+        <div class="player-page-card">
+          <h3>Role & Expectations</h3>
+          <div class="player-page-info-list">
+            <div><span>Current Role</span><strong id="profile-role">-</strong></div>
+            <div><span>Expected Role</span><strong id="profile-expected-role">Auto</strong></div>
+            <div><span>Morale</span><strong id="profile-morale">-</strong></div>
+            <div><span>Availability</span><strong id="profile-availability">Available</strong></div>
+          </div>
+        </div>
+
+        <div class="player-page-card">
+          <h3>Development Trend</h3>
+          <strong id="profile-development-trend" class="development-trend-label">Stable</strong>
+          <p id="profile-development-summary">Development details will expand in a future update.</p>
+        </div>
+      </div>
+
+      <div class="player-page-tabs">
+        <button type="button" class="active" onclick="showPlayerProfileTab('stats')">Stats</button>
+        <button type="button" onclick="showPlayerProfileTab('contract')">Contract</button>
+        <button type="button" onclick="showPlayerProfileTab('fitness')">Fitness</button>
+        <button type="button" onclick="showPlayerProfileTab('development')">Development</button>
+        <button type="button" onclick="showPlayerProfileTab('morale')">Morale</button>
+        <button type="button" onclick="showPlayerProfileTab('tendencies')">Tendencies</button>
+        <button type="button" onclick="showPlayerProfileTab('analysis')">Analysis</button>
+        <button type="button" onclick="showPlayerProfileTab('awards')">Awards</button>
+      </div>
+
+      <div id="player-profile-tab-stats" class="player-profile-tab active">
+        <div class="player-page-card profile-season-stats-card">
+          <h3>Season Statistics</h3>
+
+          <div class="profile-season-stats-table-wrap">
+            <table class="profile-season-stats-table">
+              <thead>
+                <tr>
+                  <th>Season</th>
+                  <th>Team</th>
+                  <th>GP</th>
+                  <th>MPG</th>
+                  <th>PPG</th>
+                  <th>RPG</th>
+                  <th>APG</th>
+                  <th>SPG</th>
+                  <th>BPG</th>
+                  <th>FG%</th>
+                  <th>3PT%</th>
+                  <th>FT%</th>
+                </tr>
+              </thead>
+              <tbody id="profile-season-stats-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-contract" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Contract</h3>
+          <div class="profile-info-grid">
+            <div><span>Contract</span><strong id="profile-contract">-</strong></div>
+            <div><span>Salary</span><strong id="profile-salary">-</strong></div>
+            <div><span>Years Remaining</span><strong id="profile-contract-years">-</strong></div>
+            <div><span>Expected Salary</span><strong id="profile-expected-salary">-</strong></div>
+            <div><span>Expected Years</span><strong id="profile-expected-years">-</strong></div>
+            <div><span>Interest</span><strong id="profile-interest">-</strong></div>
+          </div>
+
+          <div id="profile-contract-years-table" class="profile-contract-years-table"></div>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-fitness" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Fitness & Injuries</h3>
+          <div class="profile-info-grid">
+            <div><span>Energy</span><strong id="profile-energy">100 / 100</strong></div>
+            <div><span>Status</span><strong id="profile-fitness-status">Available</strong></div>
+            <div><span>Injury</span><strong id="profile-injury-name">None</strong></div>
+            <div><span>Time Out</span><strong id="profile-injury-time">--</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-development" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Development</h3>
+          <p class="profile-placeholder-note">Development tracking will be added in the development update.</p>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-morale" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Morale</h3>
+          <p id="profile-morale-summary" class="profile-placeholder-note">Morale details will appear here.</p>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-tendencies" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Tendencies</h3>
+          <p class="profile-placeholder-note">Tendency bars are planned for a future update.</p>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-analysis" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Analysis</h3>
+          <p class="profile-placeholder-note">Analysis is planned for a future update.</p>
+        </div>
+      </div>
+
+      <div id="player-profile-tab-awards" class="player-profile-tab">
+        <div class="player-page-card">
+          <h3>Awards</h3>
+          <div id="profile-awards-full">No awards yet.</div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="player-page-right">
+      <div class="player-page-card">
+        <h3>Season Stats</h3>
+        <div class="profile-stats-grid">
+          <div><span>G</span><strong id="profile-stat-games">0</strong></div>
+          <div><span>GS</span><strong id="profile-stat-starts">0</strong></div>
+          <div><span>MPG</span><strong id="profile-stat-minutes">0.0</strong></div>
+          <div><span>PPG</span><strong id="profile-stat-points">0.0</strong></div>
+          <div><span>RPG</span><strong id="profile-stat-rebounds">0.0</strong></div>
+          <div><span>APG</span><strong id="profile-stat-assists">0.0</strong></div>
+          <div><span>SPG</span><strong id="profile-stat-steals">0.0</strong></div>
+          <div><span>BPG</span><strong id="profile-stat-blocks">0.0</strong></div>
+          <div><span>TOPG</span><strong id="profile-stat-turnovers">0.0</strong></div>
+          <div><span>FG%</span><strong id="profile-stat-fg">.000</strong></div>
+          <div><span>3P%</span><strong id="profile-stat-three">.000</strong></div>
+          <div><span>FT%</span><strong id="profile-stat-ft">.000</strong></div>
+        </div>
+      </div>
+
+      <div class="player-page-card">
+        <h3>Last 5 Games</h3>
+        <div id="profile-last-five-games" class="profile-placeholder-note">No recent games yet.</div>
+      </div>
+
+      <div class="player-page-card">
+        <h3>Last 10 Averages</h3>
+        <div id="profile-last-ten-averages" class="profile-placeholder-note">No recent games yet.</div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+  <!-- PLAYER PROFILE OVERLAY -->
+  <div id="player-profile-overlay" class="player-profile-overlay hidden">
+    <div class="player-profile-modal">
+      <div class="player-profile-header">
+        <div class="player-portrait-placeholder" id="profile-player-initials"></div>
+
+        <div class="player-profile-title-block">
+          <h2 id="profile-player-name">Player Name</h2>
+          <p id="profile-player-subtitle">PG | Lead Guard</p>
+
+        </div>
+
+        <button type="button" class="player-profile-close" onclick="closePlayerProfile()">Close</button>
+      </div>
+
+      <div class="profile-action-row">
+        <button id="profile-release-button" type="button" class="danger-button hidden" onclick="confirmReleaseCurrentProfilePlayer()">
+          Release Player
+        </button>
+
+        <button id="profile-extension-button" type="button" class="secondary-button hidden" onclick="openExtensionOfferForCurrentProfilePlayer()">
+          Offer Extension
+        </button>
+
+        <button id="profile-sign-button" type="button" class="primary-button hidden" onclick="openFreeAgentOfferForCurrentProfilePlayer()">
+          Negotiate
+        </button>
+      </div>
+
+      <div class="player-profile-grid">
+        <div class="profile-card">
+          <h3>Player Info</h3>
+
+          <div class="profile-info-grid">
+            <div><span>Team</span><strong id="profile-team">-</strong></div>
+            <div><span>Age</span><strong id="profile-age">-</strong></div>
+            <div><span>Position</span><strong id="profile-position">-</strong></div>
+            <div><span>Secondary Positions</span><strong id="profile-secondary-positions">-</strong></div>
+            <div><span>Height</span><strong id="profile-height">-</strong></div>
+            <div><span>Weight</span><strong id="profile-weight">-</strong></div>
+            <div><span>Country</span><strong id="profile-country">-</strong></div>
+            <div><span>College / Previous Club</span><strong id="profile-college">-</strong></div>
+            <div><span>Draft Info</span><strong id="profile-draft-info">-</strong></div>
+            <div><span>Years Pro</span><strong id="profile-years-pro">-</strong></div>
+            <div><span>Hand</span><strong id="profile-handedness">-</strong></div>
+            <div><span>Morale</span><strong id="profile-morale">-</strong></div>
+            <div><span>Energy</span><strong id="profile-energy">100</strong></div>
+            <div><span>Status</span><strong id="profile-availability">Available</strong></div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h3>Contract / Role</h3>
+
+          <div class="profile-info-grid">
+            <div><span>Role</span><strong id="profile-role">-</strong></div>
+            <div><span>Contract</span><strong id="profile-contract">-</strong></div>
+            <div><span>Salary</span><strong id="profile-salary">-</strong></div>
+            <div><span>Years Remaining</span><strong id="profile-contract-years">-</strong></div>
+            <div><span>Expected Salary</span><strong id="profile-expected-salary">-</strong></div>
+            <div><span>Expected Years</span><strong id="profile-expected-years">-</strong></div>
+            <div><span>Interest</span><strong id="profile-interest">-</strong></div>
+            <div><span>Player Type</span><strong id="profile-player-type">-</strong></div>
+          </div>
+        </div>
+
+        <div class="profile-card profile-wide-card">
+          <h3>Season Statistics</h3>
+          <p class="profile-placeholder-note">
+            Use the full player profile Stats tab to review this player's current season production.
+          </p>
+        </div>
+
+        <div class="profile-card profile-wide-card">
+          <h3>Season Stats</h3>
+
+          <div class="profile-stats-grid">
+            <div><span>G</span><strong id="profile-stat-games">0</strong></div>
+            <div><span>GS</span><strong id="profile-stat-starts">0</strong></div>
+            <div><span>MPG</span><strong id="profile-stat-minutes">0.0</strong></div>
+            <div><span>PPG</span><strong id="profile-stat-points">0.0</strong></div>
+            <div><span>RPG</span><strong id="profile-stat-rebounds">0.0</strong></div>
+            <div><span>APG</span><strong id="profile-stat-assists">0.0</strong></div>
+            <div><span>SPG</span><strong id="profile-stat-steals">0.0</strong></div>
+            <div><span>BPG</span><strong id="profile-stat-blocks">0.0</strong></div>
+            <div><span>TOPG</span><strong id="profile-stat-turnovers">0.0</strong></div>
+            <div><span>FG%</span><strong id="profile-stat-fg">.000</strong></div>
+            <div><span>3P%</span><strong id="profile-stat-three">.000</strong></div>
+            <div><span>FT%</span><strong id="profile-stat-ft">.000</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM PROFILE OVERLAY -->
+<div id="team-profile-overlay" class="team-profile-overlay hidden">
+  <div class="team-profile-modal team-profile-modal-redesign">
+
+    <div class="team-profile-action-bar">
+  <button type="button" class="team-profile-back-button" onclick="closeTeamProfile()">
+    ← Back
+  </button>
+
+  <button type="button" class="team-profile-nav-button" onclick="openPreviousTeamProfile()">
+    Prev
+  </button>
+
+  <button type="button" class="team-profile-nav-button" onclick="openNextTeamProfile()">
+    Next
+  </button>
+</div>
+
+    <div class="team-profile-redesign-grid">
+
+      <!-- LEFT: FULL TEAM ROSTER -->
+      <aside class="team-profile-roster-panel">
+        <div class="team-profile-panel-title">
+          <h3>Roster</h3>
+          <span id="team-profile-roster-size">0 / 15</span>
+        </div>
+
+        <div id="team-profile-full-roster-list" class="team-profile-full-roster-list">
+          <!-- Filled by JavaScript -->
+        </div>
+      </aside>
+
+      <!-- RIGHT: TEAM OVERVIEW -->
+      <section class="team-profile-main-panel">
+
+        <div id="team-profile-hero" class="team-profile-hero">
+          <div class="team-profile-hero-left">
+  <div id="team-profile-logo" class="team-profile-logo">
+    TM
+  </div>
+
+  <div>
+    <div id="team-profile-division-label" class="team-profile-division-label">
+      Conference · Division
+    </div>
+
+    <h2 id="team-profile-name">Team Name</h2>
+
+    <p id="team-profile-subtitle">
+      Conference | Record
+    </p>
+  </div>
+</div>
+
+          <div class="team-profile-record-box">
+            <span>Record</span>
+            <strong id="team-profile-record">0-0</strong>
+          </div>
+        </div>
+
+        <div class="team-profile-tabs">
+  <button type="button" class="active" data-team-profile-tab="overview">
+    Overview
+  </button>
+
+  <button type="button" data-team-profile-tab="stats">
+    Stats
+  </button>
+
+  <button type="button" data-team-profile-tab="history">
+    History
+  </button>
+</div>
+
+        <div id="team-profile-overview-tab" class="team-profile-tab-panel active-team-profile-tab">
+
+          <div class="team-profile-info-row">
+            <div class="team-profile-big-card">
+              <span>Conference Place</span>
+              <strong id="team-profile-rank">-</strong>
+            </div>
+
+            <div class="team-profile-big-card">
+              <span>Previous Year Finish</span>
+              <strong id="team-profile-previous-finish">---</strong>
+            </div>
+
+            <div class="team-profile-big-card">
+              <span>Cap Space</span>
+              <strong id="team-profile-cap-space">$0M</strong>
+            </div>
+          </div>
+
+          <div class="team-profile-detail-grid">
+            <div class="team-profile-detail-card">
+              <h3>Front Office</h3>
+
+              <div class="team-profile-staff-row">
+                <span>General Manager</span>
+                <strong id="team-profile-gm">Placeholder GM</strong>
+              </div>
+
+              <div class="team-profile-staff-row">
+                <span>Head Coach</span>
+                <strong id="team-profile-head-coach">Placeholder Head Coach</strong>
+              </div>
+            </div>
+
+            <div class="team-profile-detail-card">
+              <h3>Team Snapshot</h3>
+
+              <div class="team-profile-staff-row">
+                <span>Payroll</span>
+                <strong id="team-profile-payroll">$0M</strong>
+              </div>
+
+              <div class="team-profile-staff-row">
+                <span>Team Level</span>
+                <strong id="team-profile-level">Unknown</strong>
+              </div>
+
+              <div class="team-profile-staff-row">
+                <span>Roster Spots</span>
+                <strong id="team-profile-roster-size-secondary">0 / 15</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+<div id="team-profile-stats-tab" class="team-profile-tab-panel">
+  <div class="team-profile-stats-card">
+    <h3>Player Stats</h3>
+
+    <div class="table-scroll">
+      <table class="team-profile-stats-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>PPG</th>
+            <th>RPG</th>
+            <th>APG</th>
+            <th>MPG</th>
+          </tr>
+        </thead>
+
+        <tbody id="team-profile-player-stats-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+        <div id="team-profile-history-tab" class="team-profile-tab-panel">
+          <div class="team-profile-history-placeholder">
+            <h3>History</h3>
+            <p>
+              Team history, previous season finishes, playoff results, and franchise records will appear here later.
+            </p>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </div>
+</div>
+
+  <!-- FREE AGENT OFFER OVERLAY -->
+  <div id="free-agent-offer-overlay" class="modal-overlay hidden">
+    <div class="modal-box contract-offer-box">
+      <h2 id="free-agent-offer-title">Negotiate</h2>
+      <p id="free-agent-offer-message">Contract details.</p>
+
+      <div class="offer-details-grid">
+        <div>
+          <span>Expected Salary</span>
+          <strong id="offer-expected-salary">$0M</strong>
+        </div>
+
+        <div>
+          <span>Expected Years</span>
+          <strong id="offer-expected-years">1</strong>
+        </div>
+
+        <div>
+          <span>Interest</span>
+          <strong id="offer-interest">Neutral</strong>
+        </div>
+
+        <div>
+          <span>Roster</span>
+          <strong id="offer-roster-count">0 / 15</strong>
+        </div>
+      </div>
+
+      <div class="modal-button-row">
+        <button type="button" onclick="signCurrentFreeAgentOffer()">Sign Player</button>
+        <button type="button" class="secondary-button" onclick="closeFreeAgentOffer()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RELEASE CONFIRM OVERLAY -->
+  <div id="release-confirm-overlay" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2>Release Player</h2>
+      <p id="release-confirm-message">Are you sure?</p>
+
+      <div class="modal-button-row">
+        <button type="button" class="danger-button" onclick="releaseCurrentConfirmedPlayer()">Release Player</button>
+        <button type="button" class="secondary-button" onclick="closeReleaseConfirm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOX SCORE OVERLAY -->
+  <div id="box-score-overlay" class="box-score-overlay hidden">
+    <div class="box-score-modal">
+      <div class="box-score-header">
+        <div id="box-score-team-left" class="box-score-team">
+          <span class="box-score-team-name">Team A</span>
+          <span class="box-score-team-score">0</span>
+        </div>
+
+        <div class="box-score-center">
+          <strong>Final</strong>
+          <span id="box-score-date">Date</span>
+          <span id="box-score-competition">Competition</span>
+        </div>
+
+        <div id="box-score-team-right" class="box-score-team">
+          <span class="box-score-team-name">Team B</span>
+          <span class="box-score-team-score">0</span>
+        </div>
+
+        <button type="button" class="box-score-close" onclick="closeBoxScore()">Close</button>
+      </div>
+
+      <div class="box-score-body">
+        <div class="box-score-table-card">
+          <h3 id="box-score-left-title">Team A</h3>
+
+          <div class="table-scroll">
+            <table class="box-score-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>MIN</th>
+                  <th>FG</th>
+                  <th>3PT</th>
+                  <th>FT</th>
+                  <th>REB</th>
+                  <th>AST</th>
+                  <th>STL</th>
+                  <th>BLK</th>
+                  <th>TO</th>
+                  <th>PTS</th>
+                </tr>
+              </thead>
+
+              <tbody id="box-score-left-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="box-score-table-card">
+          <h3 id="box-score-right-title">Team B</h3>
+
+          <div class="table-scroll">
+            <table class="box-score-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>MIN</th>
+                  <th>FG</th>
+                  <th>3PT</th>
+                  <th>FT</th>
+                  <th>REB</th>
+                  <th>AST</th>
+                  <th>STL</th>
+                  <th>BLK</th>
+                  <th>TO</th>
+                  <th>PTS</th>
+                </tr>
+              </thead>
+
+              <tbody id="box-score-right-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BASIC NOTIFICATION MODAL -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2 id="modal-title">Notification</h2>
+      <p id="modal-message">Message</p>
+
+      <div class="modal-button-row">
+        <button type="button" onclick="closeModal()">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROSPECT PROFILE MODAL -->
+  <div id="prospect-profile-modal" class="modal hidden">
+    <div class="modal-content prospect-profile-modal-content">
+      <button type="button" class="modal-close" onclick="closeProspectProfile()">×</button>
+      <div id="prospect-profile-content"></div>
+    </div>
+  </div>
+
+  <!-- OLD LOTTERY MODAL SAFETY SHELL -->
+  <div id="lottery-reveal-modal" class="modal hidden">
+    <div class="modal-content lottery-reveal-modal-content">
+      <button type="button" class="modal-close" onclick="closeLotteryReveal()">×</button>
+
+      <div class="lottery-reveal-header">
+        <div>
+          <h1>Draft Lottery Reveal</h1>
+          <p>The league office reveals the lottery order from pick 14 down to pick 1.</p>
+        </div>
+
+        <div class="lottery-reveal-status">
+          <span>Next Reveal</span>
+          <strong id="lottery-next-reveal-pick">#14</strong>
+        </div>
+      </div>
+
+      <div class="lottery-reveal-layout">
+        <div class="lottery-reveal-main">
+          <div class="lottery-reveal-card">
+            <span id="lottery-reveal-card-label">Waiting to reveal...</span>
+            <strong id="lottery-reveal-card-team">Click Reveal Next Pick</strong>
+            <small id="lottery-reveal-card-subtext">The suspense starts at pick #14.</small>
+          </div>
+
+          <div class="lottery-reveal-actions">
+            <button id="lottery-reveal-next-button" type="button" class="primary-action-button" onclick="revealNextLotteryPick()">
+              Reveal Next Pick
+            </button>
+
+            <button id="lottery-reveal-finish-button" type="button" class="secondary-action-button hidden" onclick="finishLotteryReveal()">
+              Finish Lottery
+            </button>
+          </div>
+        </div>
+
+        <div class="lottery-reveal-side">
+          <h2>Still Waiting</h2>
+          <div id="lottery-still-waiting-list" class="lottery-still-waiting-list"></div>
+        </div>
+      </div>
+
+      <div class="lottery-revealed-section">
+        <h2>Revealed Picks</h2>
+        <div id="lottery-revealed-picks-list" class="lottery-revealed-picks-list"></div>
+      </div>
+    </div>
+  </div>
+
+<!-- GM HUB CELL PHONE MODAL -->
+<div id="gm-hub-phone-modal" class="gm-hub-phone-modal" aria-hidden="true">
+  <div class="gm-hub-phone-backdrop" onclick="closeGMHubPhoneModal()"></div>
+
+  <div class="gm-hub-phone-shell" role="dialog" aria-modal="true" aria-label="Cell Phone">
+    <div class="gm-hub-phone-topbar">
+      <div class="gm-hub-phone-topbar-left">
+        <div id="gm-hub-phone-topbar-unread" class="gm-hub-phone-topbar-unread">0</div>
+        <h2>Cell Phone</h2>
+      </div>
+
+      <div class="gm-hub-phone-topbar-right">
+        <button
+          type="button"
+          class="gm-hub-phone-new-message-button"
+          onclick="openGMHubNewMessagePlaceholder()"
+        >
+          + New Message
+        </button>
+
+        <button
+          type="button"
+          class="gm-hub-phone-close-button"
+          onclick="closeGMHubPhoneModal()"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div class="gm-hub-phone-layout">
+      <aside class="gm-hub-phone-sidebar">
+        <div class="gm-hub-phone-sidebar-top">
+          <div class="gm-hub-phone-search-wrap">
+            <input
+              id="gm-hub-phone-search"
+              type="text"
+              placeholder="Search messages"
+              oninput="setGMHubPhoneSearch(this.value)"
+            >
+          </div>
+        </div>
+
+        <div id="gm-hub-phone-thread-list" class="gm-hub-phone-thread-list"></div>
+      </aside>
+
+      <section class="gm-hub-phone-conversation">
+        <div id="gm-hub-phone-thread-header" class="gm-hub-phone-thread-header"></div>
+
+        <div id="gm-hub-phone-message-list" class="gm-hub-phone-message-list"></div>
+
+      <div id="gm-hub-phone-compose" class="gm-hub-phone-compose"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+
+      <script src="js/00-constants-state.js"></script>
+      <script src="js/01-teams-colors.js"></script>
+      <script src="js/02-player-database.js"></script>
+      <script src="js/03-player-generation-rosters.js"></script>
+      <script src="js/22-staff-database.js"></script>
+      <script src="js/04-staff.js"></script>
+      <script src="js/05-utils-messages-dates.js"></script>
+      <script src="js/06-schedule-season-flow.js"></script>
+      <script src="js/07-competitions-cup-playoffs.js"></script>
+      <script src="js/08-stats-boxscores-sim.js"></script>
+      <script src="js/09-roster-contracts-finances.js"></script>
+      <script src="js/10-free-agency-transactions.js"></script>
+      <script src="js/11-league-team-screens.js"></script>
+      <script src="js/12-trade-center.js"></script>
+      <script src="js/19-team-picks-database.js"></script>
+      <script src="js/13-draft.js"></script>
+      <script src="js/14-dashboard-gmhub.js"></script>
+      <script src="js/15-navigation.js"></script>
+      <script src="js/15-phone-conversations.js"></script>
+      <script src="js/16-gameplan-practices-injuries.js"></script>
+      <script src="js/17-player-profile.js"></script>
+      <script src="js/18-roster-import-assets.js"></script>
+      <script src="js/20-extra-trade-screens.js"></script>
+      <script src="js/21-news.js"></script>
+      <script src="js/23-awards-ceremony.js"></script>
+      <script src="js/99-main-save-refresh.js"></script>
+</body>
+</html>
