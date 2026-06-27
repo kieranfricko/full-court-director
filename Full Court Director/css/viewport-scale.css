@@ -1,0 +1,203 @@
+/* ======================================================
+   FULL COURT DIRECTOR — FIXED GAME VIEWPORT SCALE
+   Locks the game to 1600x900 and scales it to fit screen.
+====================================================== */
+
+:root {
+  --fcd-design-width: 1600px;
+  --fcd-design-height: 900px;
+  --fcd-sidebar-width: 250px;
+
+  --fcd-scale: 1;
+  --fcd-left: 0px;
+  --fcd-top: 0px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #020817 !important;
+}
+
+/* Keep hidden screens actually hidden */
+#start-screen.hidden,
+#game-screen.hidden {
+  display: none !important;
+}
+
+/* The start screen and game screen become fixed-size game canvases */
+#start-screen,
+#game-screen {
+  position: fixed !important;
+  left: var(--fcd-left) !important;
+  top: var(--fcd-top) !important;
+
+  width: var(--fcd-design-width) !important;
+  height: var(--fcd-design-height) !important;
+  min-width: var(--fcd-design-width) !important;
+  min-height: var(--fcd-design-height) !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+
+  transform: scale(var(--fcd-scale)) !important;
+  transform-origin: top left !important;
+}
+
+/* START SCREEN FIX */
+#start-screen {
+  display: block !important;
+}
+
+#start-screen .new-start-shell {
+  width: var(--fcd-design-width) !important;
+  height: var(--fcd-design-height) !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+}
+
+/* Keeps the team grid based on the fake 1600x900 screen, not the real browser */
+#team-select-panel .team-select-setup-card {
+  width: min(1210px, calc(var(--fcd-design-width) - 70px)) !important;
+  max-height: calc(var(--fcd-design-height) - 54px) !important;
+}
+
+/* GAME SCREEN FIX */
+#game-screen {
+  display: block !important;
+  background: #071735 !important;
+}
+
+/* Sidebar is now part of the game screen, not fixed to the browser */
+#game-screen .sidebar {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: auto !important;
+
+  width: var(--fcd-sidebar-width) !important;
+  min-width: var(--fcd-sidebar-width) !important;
+  max-width: var(--fcd-sidebar-width) !important;
+
+  height: var(--fcd-design-height) !important;
+  min-height: var(--fcd-design-height) !important;
+  max-height: var(--fcd-design-height) !important;
+
+  margin: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 1000 !important;
+}
+
+/* Main content is locked to the remaining game area */
+#game-screen .main-content {
+  position: absolute !important;
+  left: var(--fcd-sidebar-width) !important;
+  top: 0 !important;
+
+  width: calc(var(--fcd-design-width) - var(--fcd-sidebar-width)) !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  height: var(--fcd-design-height) !important;
+  min-height: var(--fcd-design-height) !important;
+  max-height: var(--fcd-design-height) !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  overflow: hidden !important;
+}
+
+/* Header and secondary tabs stay at the top of the game area */
+#game-screen .top-header,
+#game-screen .secondary-nav {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Only the active page scrolls, not the whole browser */
+#game-screen .screen {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#game-screen .main-content > .screen.active-screen {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Modals should cover the game screen, not the real browser page */
+#game-screen .modal-overlay,
+#game-screen .modal,
+#game-screen .gm-hub-phone-modal,
+#game-screen .revise-destination-popup {
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+/* Prevent old mobile/tablet media rules from turning the sidebar horizontal */
+@media (max-width: 1100px) {
+  #game-screen {
+    display: block !important;
+  }
+
+  #game-screen .sidebar {
+    position: absolute !important;
+    display: block !important;
+    width: var(--fcd-sidebar-width) !important;
+    min-width: var(--fcd-sidebar-width) !important;
+    max-width: var(--fcd-sidebar-width) !important;
+    height: var(--fcd-design-height) !important;
+  }
+
+  #game-screen .sidebar button {
+    min-width: 0 !important;
+  }
+
+  #game-screen .main-content {
+    left: var(--fcd-sidebar-width) !important;
+    width: calc(var(--fcd-design-width) - var(--fcd-sidebar-width)) !important;
+    height: var(--fcd-design-height) !important;
+    margin-left: 0 !important;
+  }
+
+  #game-screen .top-header {
+    display: flex !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 800px) {
+  #game-screen {
+    display: block !important;
+  }
+
+  #game-screen .sidebar {
+    display: block !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
