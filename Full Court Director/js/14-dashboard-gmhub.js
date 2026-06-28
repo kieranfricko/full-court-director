@@ -5864,6 +5864,8 @@ function startGameWithCreatedGM() {
     refreshAll();
   }
 
+  fcdAskForSaveNameIfNeeded();
+
   if (typeof saveGame === "function") {
     saveGame();
   }

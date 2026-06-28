@@ -196,206 +196,17 @@ function saveGame() {
     syncTradeRoomToGameState();
   }
 
-  localStorage.setItem("fullCourtDirectorSave", JSON.stringify(gameState));
+  if (typeof fcdSaveCurrentGame === "function") {
+    return fcdSaveCurrentGame(true);
+  }
 
-  addInboxMessage("Save Complete", "Your career has been saved.", "staff");
-  refreshAll();
+  return false;
 }
 
 function loadGame() {
-  const savedGame = localStorage.getItem("fullCourtDirectorSave");
-
-  if (!savedGame) {
-    alert("No saved career found.");
-    return;
+  if (typeof fcdOpenPlayScreen === "function") {
+    fcdOpenPlayScreen();
   }
-
-  const loaded = JSON.parse(savedGame);
-
-  if (!loaded.rosters || !loaded.rosters[loaded.selectedTeamId]) {
-    alert("This save is from an older version and is not compatible with the new player attribute update. Please start a new career.");
-    return;
-  }
-
-  const firstRoster = loaded.rosters[loaded.selectedTeamId];
-  const firstPlayer = firstRoster && firstRoster[0];
-
-  if (!firstPlayer || !firstPlayer.attributes || !firstPlayer.currentAbility) {
-    alert("This save is from an older version and is not compatible with the new player attribute update. Please start a new career.");
-    return;
-  }
-
-  gameState = loaded;
-  gameState.currentDate = new Date(gameState.currentDate);
-
-  if (typeof restoreTradeRoomFromGameState === "function") {
-    restoreTradeRoomFromGameState();
-  }
-
-  if (!gameState.gameplan) gameState.gameplan = getDefaultGameplan();
-  if (!gameState.tradeHistory) gameState.tradeHistory = [];
-  if (!gameState.transactions) gameState.transactions = [];
-  if (!gameState.leagueTransactions) gameState.leagueTransactions = [];
-  if (!Array.isArray(gameState.formalTradeOffers)) gameState.formalTradeOffers = [];
-
-  if (!gameState.history) {
-    gameState.history = {
-      seasons: [],
-      champions: [],
-      cupWinners: []
-    };
-  }
-
-  if (!gameState.playoffs) gameState.playoffs = createEmptyPlayoffState();
-  if (!gameState.cup) gameState.cup = createCupState();
-
-  if (gameState.finalsCompletedDate) {
-    gameState.finalsCompletedDate = new Date(gameState.finalsCompletedDate);
-  }
-
-  if (gameState.userSchedule) {
-    for (let game of gameState.userSchedule) {
-      game.date = new Date(game.date);
-      if (!game.topPerformers) game.topPerformers = [];
-    }
-  }
-
-  if (Array.isArray(gameState.leagueSchedule)) {
-  for (let game of gameState.leagueSchedule) {
-    game.date = new Date(game.date);
-    if (!game.topPerformers) game.topPerformers = [];
-    if (game.boxScore && game.boxScore.date) {
-      game.boxScore.date = new Date(game.boxScore.date);
-    }
-  }
-}
-
-  if (gameState.cup.games) {
-    for (let game of gameState.cup.games) {
-      game.date = new Date(game.date);
-    }
-  }
-
-  if (gameState.playoffs.playInGames) {
-    for (let game of gameState.playoffs.playInGames) {
-      game.date = new Date(game.date);
-    }
-  }
-
-  if (gameState.playoffs.series) {
-    for (let series of gameState.playoffs.series) {
-      for (let game of series.games) {
-        game.date = new Date(game.date);
-      }
-    }
-  }
-
-  if (!gameState.inbox || gameState.inbox.length === 0 || typeof gameState.inbox[0] === "string") {
-    gameState.inbox = [];
-    addInboxMessage("Save Updated", "Your save was updated to the new inbox format.", "staff");
-  }
-
-  let highestPlayerNumber = 0;
-
-  for (let teamId in gameState.rosters) {
-    for (let player of gameState.rosters[teamId]) {
-      if (!player.seasonStats) player.seasonStats = createEmptySeasonStats();
-      if (!player.seasonStatsHistory || typeof player.seasonStatsHistory !== "object" || Array.isArray(player.seasonStatsHistory)) {
-        player.seasonStatsHistory = {};
-      }
-
-      const number = Number(String(player.id).replace("p", ""));
-      if (!Number.isNaN(number)) {
-        highestPlayerNumber = Math.max(highestPlayerNumber, number);
-      }
-    }
-  }
-
-  nextPlayerId = highestPlayerNumber + 1;
-if (!gameState.rotation) {
-  gameState.rotation = createDefaultRotation();
-}
-
-if (!gameState.teamStats) {
-  gameState.teamStats = {};
-}
-
-ensureRotation();
-ensureTeamStats();
-
-for (let game of gameState.userSchedule) {
-  if (game.boxScore && game.boxScore.date) {
-    game.boxScore.date = new Date(game.boxScore.date);
-  }
-}
-if (!gameState.freeAgents) {
-  gameState.freeAgents = [];
-}
-
-for (let player of gameState.freeAgents) {
-  if (!player.seasonStats) player.seasonStats = createEmptySeasonStats();
-  if (!player.seasonStatsHistory || typeof player.seasonStatsHistory !== "object" || Array.isArray(player.seasonStatsHistory)) {
-    player.seasonStatsHistory = {};
-  }
-}
-
-if (!gameState.salaryCap) {
-  gameState.salaryCap = SALARY_CAP;
-}
-
-ensureLeagueRosters();
-ensureFreeAgents();
-normalizeAllContracts();
-ensureRotation();
-ensureTeamStats();
-
-if (typeof ensureAwardWatchState === "function") {
-  ensureAwardWatchState();
-}
-
-for (let game of gameState.userSchedule) {
-  if (game.boxScore && game.boxScore.date) {
-    game.boxScore.date = new Date(game.boxScore.date);
-  }
-}
-  document.getElementById("start-screen").classList.add("hidden");
-  document.getElementById("game-screen").classList.remove("hidden");
-
-  calendarViewDate = new Date(gameState.currentDate);
-
-if (
-  typeof isCommunityRosterActive === "function" &&
-  isCommunityRosterActive() &&
-  typeof applySavedRosterImportPack === "function"
-) {
-  applySavedRosterImportPack();
-}
-
-if (!Array.isArray(gameState.leagueSchedule)) {
-  gameState.leagueSchedule = [];
-}
-
-if (!gameState.leagueScheduleMeta) {
-  gameState.leagueScheduleMeta = null;
-}
-
-if (typeof ensureLeagueScheduleForCurrentSeason === "function") {
-  ensureLeagueScheduleForCurrentSeason();
-}
-
-  addInboxMessage("Career Loaded", "Your saved career has been loaded.", "staff");
-
-if (typeof resetTradeRoomForNewCareer === "function") {
-  resetTradeRoomForNewCareer();
-}
-
-currentMainSection = "dashboard";
-currentSecondaryScreen = "dashboard-screen";
-initializeNavigation();
-
-
-
-  refreshAll();
 }
 
 function normalizeGameStateAfterLoad() {
@@ -446,7 +257,9 @@ function normalizeGameStateAfterLoad() {
 }
 
 function resetCareer() {
-  localStorage.removeItem("fullCourtDirectorSave");
+  if (typeof fcdSetActiveSaveId === "function") {
+    fcdSetActiveSaveId("");
+  }
   location.reload();
 }
 

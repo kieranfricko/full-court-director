@@ -1,4 +1,15 @@
-const ROSTER_IMPORT_STORAGE_KEY = "fcdRosterImportPack";
+const ROSTER_IMPORT_STORAGE_KEY = "fullCourtDirectorRosterPack";
+const LEGACY_ROSTER_IMPORT_STORAGE_KEY = "fcdRosterImportPack";
+
+function migrateStoredRosterImportPack() {
+  if (localStorage.getItem(ROSTER_IMPORT_STORAGE_KEY)) return;
+
+  const legacyPack = localStorage.getItem(LEGACY_ROSTER_IMPORT_STORAGE_KEY);
+  if (!legacyPack) return;
+
+  localStorage.setItem(ROSTER_IMPORT_STORAGE_KEY, legacyPack);
+  localStorage.removeItem(LEGACY_ROSTER_IMPORT_STORAGE_KEY);
+}
 
 function getDefaultRosterImportTemplate() {
   return {
@@ -42,11 +53,20 @@ function getStoredRosterImportPack() {
 }
 
 function saveRosterImportPack(pack) {
+  if (typeof fcdRemoveObsoleteSaveStorage === "function") {
+    fcdRemoveObsoleteSaveStorage();
+  }
+
   localStorage.setItem(ROSTER_IMPORT_STORAGE_KEY, JSON.stringify(pack));
+
+  if (!localStorage.getItem(ROSTER_IMPORT_STORAGE_KEY)) {
+    throw new Error("Roster pack could not be verified after saving.");
+  }
 }
 
 function clearRosterImportPack() {
   localStorage.removeItem(ROSTER_IMPORT_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_ROSTER_IMPORT_STORAGE_KEY);
 }
 
 function openRosterImportScreen() {
@@ -125,6 +145,7 @@ if (!pack.teams) pack.teams = {};
 if (!pack.teamsByFictionalName) pack.teamsByFictionalName = {};
 
     saveRosterImportPack(pack);
+    updateActiveRosterLabel();
 
     alert("Roster import pack saved. It will apply to future new saves.");
   } catch (error) {
@@ -137,6 +158,7 @@ function clearRosterImportAndRefresh() {
   if (!confirm("Clear the saved roster import pack?")) return;
 
   clearRosterImportPack();
+  updateActiveRosterLabel();
 
   alert("Roster import pack cleared.");
 
@@ -510,12 +532,15 @@ function importCommunityRosterFile(event) {
         return;
       }
 
-      localStorage.setItem("fullCourtDirectorRosterPack", JSON.stringify(rosterPack));
+      saveRosterImportPack(rosterPack);
 
       if (gameState && gameState.started) {
-  applyCommunityRosterPack(rosterPack);
-  refreshAll();
-}
+        applyCommunityRosterPack(rosterPack);
+        refreshAll();
+      }
+
+      updateActiveRosterLabel();
+      closeRosterPickerPopup();
 
       alert(`Roster loaded: ${rosterPack.packName || "Community Roster"}`);
     } catch (error) {
@@ -525,43 +550,8 @@ function importCommunityRosterFile(event) {
   };
 
   reader.readAsText(file);
-
-  updateActiveRosterLabel();
+  event.target.value = "";
 }
-
-(function installStartRosterPreviewUploadHook() {
-  const originalImportCommunityRosterFile = window.importCommunityRosterFile;
-
-  window.importCommunityRosterFile = function(event) {
-    const file = event && event.target && event.target.files
-      ? event.target.files[0]
-      : null;
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = function(loadEvent) {
-        try {
-          const pack = JSON.parse(loadEvent.target.result);
-
-          if (isUsableStartRosterPack(pack)) {
-            setStartActiveRosterPack(pack);
-          }
-        } catch (error) {
-          console.warn("Could not read roster pack for start screen preview:", error);
-        }
-      };
-
-      reader.readAsText(file);
-    }
-
-    if (typeof originalImportCommunityRosterFile === "function") {
-      return originalImportCommunityRosterFile.apply(this, arguments);
-    }
-
-    return null;
-  };
-})();
 
 function validateCommunityRosterPack(pack) {
   if (!pack || typeof pack !== "object") return false;
@@ -586,7 +576,9 @@ function updateActiveRosterLabel() {
   const label = document.getElementById("active-roster-label");
   if (!label) return;
 
-  const savedPack = localStorage.getItem("fullCourtDirectorRosterPack");
+  migrateStoredRosterImportPack();
+
+  const savedPack = localStorage.getItem(ROSTER_IMPORT_STORAGE_KEY);
 
   if (!savedPack) {
     label.textContent = "Active Roster: Default Fictional Roster";
@@ -649,7 +641,8 @@ function openCommunityRosterUpload() {
 }
 
 function useDefaultFictionalRoster() {
-  localStorage.removeItem("fullCourtDirectorRosterPack");
+  localStorage.removeItem(ROSTER_IMPORT_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_ROSTER_IMPORT_STORAGE_KEY);
   localStorage.removeItem("savedRosterImportPack");
   localStorage.removeItem("rosterImportPack");
   localStorage.removeItem("activeRosterPack");
@@ -850,7 +843,9 @@ function getAllPlayersForRosterImport() {
 }
 
 function applySavedRosterImportPack() {
-  const savedPack = localStorage.getItem("fullCourtDirectorRosterPack");
+  migrateStoredRosterImportPack();
+
+  const savedPack = localStorage.getItem(ROSTER_IMPORT_STORAGE_KEY);
 
   if (!savedPack) return;
 
@@ -898,4 +893,7 @@ function applyCommunityTeamUpdatesByFictionalName(teamUpdates) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", updateActiveRosterLabel);
+document.addEventListener("DOMContentLoaded", () => {
+  migrateStoredRosterImportPack();
+  updateActiveRosterLabel();
+});

@@ -1,43 +1,15 @@
 // ============================================================
-// FULL COURT DIRECTOR - SAVE MANAGER
-// Auto Save, Manual Save, Save Slots, Export, Import, Clear
+// FULL COURT DIRECTOR - NAMED LOCAL SAVE MANAGER v1.01
 // ============================================================
 
 const FCD_SAVE_MANAGER = {
-  version: 1,
-  prefix: "fcd_save_manager_",
-  autoKey: "fcd_save_manager_auto_v1",
-  manualKey: "fcd_save_manager_manual_v1",
-  indexKey: "fcd_save_manager_index_v1",
-  pendingLoadKey: "fcd_save_manager_pending_load_v1",
-  slotPrefix: "fcd_save_manager_slot_",
-  autosaveEveryMs: 30000,
-  maxSlots: 3
+  indexKey: "fcd_saves_index_v101",
+  activeSaveIdKey: "fcd_active_save_id_v101",
+  pendingLoadKey: "fcd_pending_load_v101",
+  savePrefix: "fcd_save_v101_"
 };
 
-let fcdAutosaveTimer = null;
-
-// ------------------------------------------------------------
-// BASIC HELPERS
-// ------------------------------------------------------------
-
-function fcdSaveNowIso() {
-  return new Date().toISOString();
-}
-
-function fcdFormatSaveTime(iso) {
-  if (!iso) return "Never";
-
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "Unknown";
-
-  return date.toLocaleString([], {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
-  });
-}
+let fcdSaveClickTimer = null;
 
 function fcdSafeText(value) {
   return String(value ?? "")
@@ -50,125 +22,27 @@ function fcdSafeText(value) {
 
 function fcdGetGameState() {
   try {
-    if (typeof gameState !== "undefined") {
-      return gameState;
-    }
+    if (typeof gameState !== "undefined") return gameState;
   } catch (error) {}
 
-  if (window.gameState) {
-    return window.gameState;
-  }
-
-  return null;
+  return window.gameState || null;
 }
 
-function fcdSetGameState(loadedGameState) {
+function fcdSetGameState(state) {
   try {
-    if (typeof gameState !== "undefined") {
-      gameState = loadedGameState;
-      window.gameState = loadedGameState;
-      return true;
-    }
+    gameState = state;
   } catch (error) {}
 
-  window.gameState = loadedGameState;
-  return true;
-}
-
-function fcdHasRealSaveableGame() {
-  const state = fcdGetGameState();
-
-  if (!state) return false;
-
-  // Main check
-  if (state.started === true) return true;
-
-  // Backup checks for your game if "started" is not always set yet.
-  if (state.userTeamId) return true;
-  if (state.selectedTeamId) return true;
-  if (state.userTeam) return true;
-  if (state.currentDate) return true;
-  if (state.seasonLabel) return true;
-
-  // Roster/franchise checks
-  if (state.rosters && Object.keys(state.rosters).length > 0) return true;
-  if (Array.isArray(state.teams) && state.teams.length > 0 && state.userTeamId) return true;
-
-  return false;
-}
-
-function fcdGetTeamNameFromState(state) {
-  if (!state) return "Unknown Team";
-
-  if (state.userTeamName) return state.userTeamName;
-  if (state.selectedTeamName) return state.selectedTeamName;
-
-  const userTeamId = state.userTeamId || state.selectedTeamId;
-
-  if (userTeamId && Array.isArray(state.teams)) {
-    const team = state.teams.find(item => String(item.id) === String(userTeamId));
-    if (team && team.name) return team.name;
-  }
-
-  return "Unknown Team";
-}
-
-function fcdGetSaveMeta(label, saveType) {
-  const state = fcdGetGameState();
-
-  return {
-    label,
-    saveType,
-    savedAt: fcdSaveNowIso(),
-    version: FCD_SAVE_MANAGER.version,
-    gameTitle: "Full Court Director",
-    teamName: fcdGetTeamNameFromState(state),
-    seasonLabel: state?.seasonLabel || state?.season || "",
-    currentDate: state?.currentDate || state?.date || "",
-    userTeamId: state?.userTeamId || state?.selectedTeamId || ""
-  };
-}
-
-function fcdCreateSavePayload(label, saveType) {
-  const state = fcdGetGameState();
-
-  if (!state) {
-    throw new Error("No gameState found. Start or load a game first.");
-  }
-
-  // This also proves the save can be stringified before we store it.
-  const cleanGameState = JSON.parse(JSON.stringify(state));
-
-  return {
-    meta: fcdGetSaveMeta(label, saveType),
-    gameState: cleanGameState
-  };
+  window.gameState = state;
 }
 
 function fcdGetSaveIndex() {
   try {
-    const raw = localStorage.getItem(FCD_SAVE_MANAGER.indexKey);
-    if (!raw) {
-      return {
-        auto: null,
-        manual: null,
-        slots: {}
-      };
-    }
-
-    const parsed = JSON.parse(raw);
-
-    return {
-      auto: parsed.auto || null,
-      manual: parsed.manual || null,
-      slots: parsed.slots || {}
-    };
+    const parsed = JSON.parse(localStorage.getItem(FCD_SAVE_MANAGER.indexKey));
+    return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
-    return {
-      auto: null,
-      manual: null,
-      slots: {}
-    };
+    console.warn("Could not read saved-games index:", error);
+    return [];
   }
 }
 
@@ -176,507 +50,370 @@ function fcdSetSaveIndex(index) {
   localStorage.setItem(FCD_SAVE_MANAGER.indexKey, JSON.stringify(index));
 }
 
-function fcdUpdateIndexEntry(saveType, key, meta, slotNumber) {
-  const index = fcdGetSaveIndex();
+function fcdRemoveObsoleteSaveStorage() {
+  const keys = [];
 
-  const entry = {
-    key,
-    label: meta.label,
-    saveType: meta.saveType,
-    savedAt: meta.savedAt,
-    teamName: meta.teamName,
-    seasonLabel: meta.seasonLabel,
-    currentDate: meta.currentDate
-  };
-
-  if (saveType === "auto") {
-    index.auto = entry;
-  } else if (saveType === "manual") {
-    index.manual = entry;
-  } else if (saveType === "slot") {
-    index.slots[String(slotNumber)] = entry;
+  for (let index = 0; index < localStorage.length; index++) {
+    const key = localStorage.key(index);
+    if (key) keys.push(key);
   }
 
-  fcdSetSaveIndex(index);
-}
-
-// ------------------------------------------------------------
-// SAVE / LOAD CORE
-// ------------------------------------------------------------
-
-function fcdWriteSave(key, label, saveType, options = {}) {
-  const { slotNumber = null, silent = false } = options;
-
-  if (!fcdHasRealSaveableGame()) {
-    if (!silent) {
-      fcdShowSaveToast("Start a game first before saving.", "bad");
-    }
-    return false;
-  }
-
-  try {
-    const payload = fcdCreateSavePayload(label, saveType);
-    localStorage.setItem(key, JSON.stringify(payload));
-    fcdUpdateIndexEntry(saveType, key, payload.meta, slotNumber);
-
-    if (!silent) {
-      fcdShowSaveToast(`${label} saved.`, "good");
-    }
-
-    fcdRenderSaveManagerPanel();
-    return true;
-  } catch (error) {
-    console.error("Save failed:", error);
-
-    if (!silent) {
-      fcdShowSaveToast("Save failed. Try exporting your save file.", "bad");
-      alert(
-        "Save failed.\n\nThis usually means the browser storage is full or gameState has something that cannot be saved.\n\nTry using Export Save as a backup."
-      );
-    }
-
-    return false;
-  }
-}
-
-function fcdAutoSave(options = {}) {
-  return fcdWriteSave(
-    FCD_SAVE_MANAGER.autoKey,
-    "Auto Save",
-    "auto",
-    {
-      silent: options.silent === true
-    }
-  );
-}
-
-function fcdManualSave() {
-  return fcdWriteSave(
-    FCD_SAVE_MANAGER.manualKey,
-    "Manual Save",
-    "manual"
-  );
-}
-
-function fcdSaveSlot(slotNumber) {
-  return fcdWriteSave(
-    `${FCD_SAVE_MANAGER.slotPrefix}${slotNumber}_v1`,
-    `Slot ${slotNumber}`,
-    "slot",
-    {
-      slotNumber
-    }
-  );
-}
-
-function fcdReadSave(key) {
-  const raw = localStorage.getItem(key);
-  if (!raw) return null;
-
-  const parsed = JSON.parse(raw);
-
-  if (!parsed || !parsed.gameState) {
-    throw new Error("Invalid save file.");
-  }
-
-  return parsed;
-}
-
-function fcdLoadSaveByKey(key) {
-  try {
-    const payload = fcdReadSave(key);
-
-    if (!payload) {
-      fcdShowSaveToast("No save found in that slot.", "bad");
-      return false;
-    }
-
-    const confirmed = confirm(
-      `Load this save?\n\n${payload.meta?.label || "Save"}\n${payload.meta?.teamName || ""}\n${fcdFormatSaveTime(payload.meta?.savedAt)}\n\nYour current unsaved progress will be replaced.`
-    );
-
-    if (!confirmed) return false;
-
-    // Store the save as pending, then reload the page.
-    // This makes the game boot cleanly into the loaded franchise.
-    localStorage.setItem(FCD_SAVE_MANAGER.pendingLoadKey, JSON.stringify(payload));
-
-    fcdShowSaveToast("Loading save...", "good");
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 250);
-
-    return true;
-  } catch (error) {
-    console.error("Load failed:", error);
-    alert("Load failed. Open the console and send me the red error if this keeps happening.");
-    fcdShowSaveToast("Load failed. Save file may be broken.", "bad");
-    return false;
-  }
-}
-
-function fcdLoadAutoSave() {
-  return fcdLoadSaveByKey(FCD_SAVE_MANAGER.autoKey);
-}
-
-function fcdLoadManualSave() {
-  return fcdLoadSaveByKey(FCD_SAVE_MANAGER.manualKey);
-}
-
-function fcdLoadSlot(slotNumber) {
-  return fcdLoadSaveByKey(`${FCD_SAVE_MANAGER.slotPrefix}${slotNumber}_v1`);
-}
-
-function fcdDeleteSaveByKey(key, saveType, slotNumber = null) {
-  const confirmed = confirm("Delete this save? This cannot be undone.");
-  if (!confirmed) return false;
-
-  localStorage.removeItem(key);
-
-  const index = fcdGetSaveIndex();
-
-  if (saveType === "auto") {
-    index.auto = null;
-  } else if (saveType === "manual") {
-    index.manual = null;
-  } else if (saveType === "slot") {
-    delete index.slots[String(slotNumber)];
-  }
-
-  fcdSetSaveIndex(index);
-  fcdRenderSaveManagerPanel();
-  fcdShowSaveToast("Save deleted.", "good");
-
-  return true;
-}
-
-function fcdDeleteSlot(slotNumber) {
-  return fcdDeleteSaveByKey(
-    `${FCD_SAVE_MANAGER.slotPrefix}${slotNumber}_v1`,
-    "slot",
-    slotNumber
-  );
-}
-
-function fcdClearAllBrowserSaves() {
-  const confirmed = confirm(
-    "Clear all Full Court Director browser saves on this browser?\n\nThis deletes Auto Save, Manual Save, and all save slots.\n\nExport first if you want a backup."
-  );
-
-  if (!confirmed) return false;
-
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith(FCD_SAVE_MANAGER.prefix)) {
+  keys.forEach(key => {
+    if (
+      key === "fullCourtDirectorSave" ||
+      key.startsWith("fcd_save_manager_")
+    ) {
       localStorage.removeItem(key);
     }
   });
-
-  fcdRenderSaveManagerPanel();
-  fcdShowSaveToast("All browser saves cleared.", "good");
-
-  return true;
 }
 
-// ------------------------------------------------------------
-// EXPORT / IMPORT
-// ------------------------------------------------------------
+function fcdRemoveOrphanedNamedSavePayloads() {
+  const indexedIds = new Set(
+    fcdGetSaveIndex()
+      .map(item => item?.saveId)
+      .filter(Boolean)
+  );
+  const payloadKeys = [];
 
-function fcdMakeExportFileName(meta) {
-  const datePart = new Date().toISOString().slice(0, 10);
-  const teamPart = String(meta?.teamName || "team")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return `full-court-director-${teamPart || "save"}-${datePart}.json`;
-}
-
-function fcdExportCurrentSave() {
-  if (!fcdHasRealSaveableGame()) {
-    fcdShowSaveToast("Start a game first before exporting.", "bad");
-    return false;
-  }
-
-  try {
-    const payload = fcdCreateSavePayload("Exported Save", "export");
-    const json = JSON.stringify(payload, null, 2);
-
-    const blob = new Blob([json], {
-      type: "application/json"
-    });
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = fcdMakeExportFileName(payload.meta);
-    document.body.appendChild(link);
-    link.click();
-
-    link.remove();
-    URL.revokeObjectURL(url);
-
-    fcdShowSaveToast("Save exported.", "good");
-    return true;
-  } catch (error) {
-    console.error("Export failed:", error);
-    fcdShowSaveToast("Export failed.", "bad");
-    return false;
-  }
-}
-
-function fcdImportSaveFile(file) {
-  if (!file) return false;
-
-  const reader = new FileReader();
-
-  reader.onload = function(event) {
-    try {
-      const payload = JSON.parse(event.target.result);
-
-      if (!payload || !payload.gameState) {
-        throw new Error("This is not a valid Full Court Director save file.");
-      }
-
-      const confirmed = confirm(
-        `Import and load this save?\n\n${payload.meta?.teamName || "Unknown Team"}\n${fcdFormatSaveTime(payload.meta?.savedAt)}\n\nYour current unsaved progress will be replaced.`
-      );
-
-      if (!confirmed) return;
-
-      // Store imported save as manual save too, so it stays in browser.
-      payload.meta = {
-        ...(payload.meta || {}),
-        label: "Imported Save",
-        saveType: "manual",
-        importedAt: fcdSaveNowIso()
-      };
-
-      localStorage.setItem(FCD_SAVE_MANAGER.manualKey, JSON.stringify(payload));
-      fcdUpdateIndexEntry("manual", FCD_SAVE_MANAGER.manualKey, payload.meta);
-
-      fcdSetGameState(payload.gameState);
-      fcdRefreshGameAfterLoad();
-
-      fcdShowSaveToast("Save imported and loaded.", "good");
-      fcdRenderSaveManagerPanel();
-    } catch (error) {
-      console.error("Import failed:", error);
-      alert("Import failed. Make sure this is a Full Court Director .json save file.");
-      fcdShowSaveToast("Import failed.", "bad");
+  for (let index = 0; index < localStorage.length; index++) {
+    const key = localStorage.key(index);
+    if (key && key.startsWith(FCD_SAVE_MANAGER.savePrefix)) {
+      payloadKeys.push(key);
     }
-  };
-
-  reader.readAsText(file);
-  return true;
-}
-
-// ------------------------------------------------------------
-// REFRESH AFTER LOAD
-// ------------------------------------------------------------
-
-function fcdRefreshGameAfterLoad() {
-  const state = fcdGetGameState();
-
-  if (state) {
-    state.started = true;
-    window.gameState = state;
   }
 
-  try {
-    fcdTogglePlayScreen(false);
-  } catch (error) {}
-
-  try {
-    document.getElementById("fcd-continue-save-banner")?.remove();
-  } catch (error) {}
-
-  try {
-    if (typeof normalizeGameStateAfterLoad === "function") {
-      normalizeGameStateAfterLoad();
-    }
-  } catch (error) {
-    console.warn("normalizeGameStateAfterLoad failed:", error);
-  }
-
-  // Save into your original game save system if it exists.
-  try {
-    if (typeof saveGame === "function") {
-      saveGame();
-    }
-  } catch (error) {
-    console.warn("saveGame failed after load:", error);
-  }
-
-  // Try common screen names.
-  try {
-    if (typeof showScreen === "function") {
-      showScreen("dashboard-screen");
-      return;
-    }
-  } catch (error) {
-    console.warn("showScreen dashboard-screen failed:", error);
-  }
-
-  try {
-    if (typeof showScreen === "function") {
-      showScreen("dashboard");
-      return;
-    }
-  } catch (error) {
-    console.warn("showScreen dashboard failed:", error);
-  }
-
-  try {
-    if (typeof showSecondaryScreen === "function") {
-      showSecondaryScreen("dashboard-screen");
-      return;
-    }
-  } catch (error) {
-    console.warn("showSecondaryScreen failed:", error);
-  }
-
-  const refreshFunctions = [
-    "renderCurrentScreen",
-    "refreshCurrentScreen",
-    "renderDashboard",
-    "displayDashboard",
-    "updateDashboard",
-    "renderSidebar",
-    "updateSidebar",
-    "renderTopBar",
-    "renderCalendar",
-    "renderInbox",
-    "renderTeamRoster",
-    "renderLeagueStandings"
-  ];
-
-  refreshFunctions.forEach(functionName => {
-    try {
-      if (typeof window[functionName] === "function") {
-        window[functionName]();
-      }
-    } catch (error) {
-      console.warn(`${functionName} failed after load:`, error);
+  payloadKeys.forEach(key => {
+    const saveId = key.slice(FCD_SAVE_MANAGER.savePrefix.length);
+    if (!indexedIds.has(saveId)) {
+      localStorage.removeItem(key);
     }
   });
 }
 
-// ------------------------------------------------------------
-// UI
-// ------------------------------------------------------------
+function fcdRepairSaveIndex() {
+  const index = fcdGetSaveIndex();
+  const repaired = index.filter(item => {
+    if (!item?.saveId) return false;
 
-function fcdGetSaveSummary(entry) {
-  if (!entry) {
-    return `<span class="fcd-save-empty">Empty</span>`;
+    const raw = localStorage.getItem(`${FCD_SAVE_MANAGER.savePrefix}${item.saveId}`);
+    if (!raw) return false;
+
+    try {
+      return Boolean(JSON.parse(raw)?.gameState);
+    } catch (error) {
+      return false;
+    }
+  });
+
+  if (repaired.length !== index.length) {
+    fcdSetSaveIndex(repaired);
   }
 
-  const team = fcdSafeText(entry.teamName || "Unknown Team");
-  const season = fcdSafeText(entry.seasonLabel || "");
-  const date = fcdSafeText(entry.currentDate || "");
-  const time = fcdSafeText(fcdFormatSaveTime(entry.savedAt));
+  const activeSaveId = fcdGetActiveSaveId();
+  if (activeSaveId && !repaired.some(item => item.saveId === activeSaveId)) {
+    fcdSetActiveSaveId("");
+  }
 
-  return `
-    <div class="fcd-save-summary-main">${team}</div>
-    <div class="fcd-save-summary-sub">${season}${season && date ? " · " : ""}${date}</div>
-    <div class="fcd-save-summary-time">${time}</div>
-  `;
+  return repaired;
 }
 
-function fcdRenderSaveManagerPanel() {
+function fcdGetActiveSaveId() {
+  return localStorage.getItem(FCD_SAVE_MANAGER.activeSaveIdKey) || "";
+}
+
+function fcdSetActiveSaveId(saveId) {
+  if (saveId) {
+    localStorage.setItem(FCD_SAVE_MANAGER.activeSaveIdKey, saveId);
+  } else {
+    localStorage.removeItem(FCD_SAVE_MANAGER.activeSaveIdKey);
+  }
+}
+
+function fcdCreateSaveId() {
+  return `save_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+}
+
+function fcdGetTeamNameFromState(state) {
+  if (!state) return "Unknown Team";
+
+  const teamId = state.selectedTeamId || state.userTeamId;
+  const team = Array.isArray(state.teams)
+    ? state.teams.find(item => String(item.id) === String(teamId))
+    : null;
+
+  return team?.name || state.selectedTeamName || state.userTeamName || "Unknown Team";
+}
+
+function fcdBuildSaveMeta(saveId, saveName, state) {
+  return {
+    saveId,
+    saveName,
+    teamName: fcdGetTeamNameFromState(state),
+    seasonLabel: state?.seasonLabel || "",
+    savedAt: new Date().toISOString()
+  };
+}
+
+function fcdBuildSavePayload(saveId, saveName, state) {
+  return {
+    meta: fcdBuildSaveMeta(saveId, saveName, state),
+    gameState: JSON.parse(JSON.stringify(state))
+  };
+}
+
+function fcdWriteNamedSave(saveId, saveName, options = {}) {
+  const state = fcdGetGameState();
+  if (!state || state.started !== true || !saveId) return false;
+
+  fcdRemoveObsoleteSaveStorage();
+  fcdRemoveOrphanedNamedSavePayloads();
+
+  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
+  const payload = fcdBuildSavePayload(saveId, saveName, state);
+  const previousPayload = localStorage.getItem(payloadKey);
+  const previousIndexRaw = localStorage.getItem(FCD_SAVE_MANAGER.indexKey);
+
+  try {
+    // Payload is always written and verified before its index row exists.
+    localStorage.setItem(payloadKey, JSON.stringify(payload));
+
+    if (!localStorage.getItem(payloadKey)) {
+      throw new Error(`Save payload verification failed for ${payloadKey}`);
+    }
+
+    const index = fcdGetSaveIndex();
+    const existingIndex = index.findIndex(item => item.saveId === saveId);
+
+    if (existingIndex >= 0) {
+      index[existingIndex] = payload.meta;
+    } else {
+      index.unshift(payload.meta);
+    }
+
+    fcdSetSaveIndex(index);
+    fcdSetActiveSaveId(saveId);
+
+    if (options.toast !== false) {
+      fcdShowSaveToast("Game saved.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Named save failed:", error);
+
+    if (previousPayload === null) {
+      localStorage.removeItem(payloadKey);
+    } else {
+      localStorage.setItem(payloadKey, previousPayload);
+    }
+
+    if (previousIndexRaw === null) {
+      localStorage.removeItem(FCD_SAVE_MANAGER.indexKey);
+    } else {
+      localStorage.setItem(FCD_SAVE_MANAGER.indexKey, previousIndexRaw);
+    }
+
+    if (options.toast !== false) {
+      const storageFull =
+        error?.name === "QuotaExceededError" ||
+        String(error?.message || "").toLowerCase().includes("quota");
+
+      fcdShowSaveToast(
+        storageFull
+          ? "Storage full. Delete an old save and try again."
+          : "Save failed."
+      );
+
+      if (storageFull) {
+        document.getElementById("fcd-save-name-dialog")?.classList.remove("open");
+        fcdOpenPlayScreen();
+      }
+    }
+
+    return false;
+  }
+}
+
+function fcdCreateFirstSave(saveName) {
+  const state = fcdGetGameState();
+  if (!state || state.started !== true) return false;
+
+  const saveId = fcdCreateSaveId();
+  const created = fcdWriteNamedSave(saveId, saveName, { toast: true });
+
+  if (created) fcdRenderPlayScreen();
+  return created;
+}
+
+function fcdSaveCurrentGame(silent = true) {
+  const state = fcdGetGameState();
+  const activeSaveId = fcdGetActiveSaveId();
+
+  if (!state || state.started !== true || !activeSaveId) return false;
+
+  const index = fcdGetSaveIndex();
+  const activeMeta = index.find(item => item.saveId === activeSaveId);
+
+  if (!activeMeta) {
+    console.warn("Active save is missing from the save index:", activeSaveId);
+    return false;
+  }
+
+  return fcdWriteNamedSave(activeSaveId, activeMeta.saveName, {
+    toast: !silent
+  });
+}
+
+function fcdLoadSave(saveId) {
+  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
+  const raw = localStorage.getItem(payloadKey);
+
+  if (!raw) {
+    console.warn("Missing save payload:", payloadKey);
+    console.warn(
+      "Available FCD localStorage keys:",
+      Object.keys(localStorage).filter(key => key.startsWith("fcd"))
+    );
+    alert("Save not found.");
+    return false;
+  }
+
+  try {
+    const payload = JSON.parse(raw);
+    if (!payload?.gameState) throw new Error("Save payload has no gameState.");
+
+    localStorage.setItem(
+      FCD_SAVE_MANAGER.pendingLoadKey,
+      JSON.stringify({ saveId })
+    );
+    fcdSetActiveSaveId(saveId);
+    window.location.reload();
+    return true;
+  } catch (error) {
+    console.error("Could not load save:", error);
+    alert("This save could not be loaded.");
+    return false;
+  }
+}
+
+function fcdDeleteSave(saveId) {
+  if (!confirm("Delete this save? This cannot be undone.")) return false;
+
+  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
+  const index = fcdGetSaveIndex().filter(item => item.saveId !== saveId);
+
+  localStorage.removeItem(payloadKey);
+  fcdSetSaveIndex(index);
+
+  if (fcdGetActiveSaveId() === saveId) {
+    fcdSetActiveSaveId("");
+  }
+
   fcdRenderPlayScreen();
+  fcdShowSaveToast("Save deleted.");
+
+  const state = fcdGetGameState();
+  if (state?.started === true && !fcdGetActiveSaveId()) {
+    setTimeout(() => {
+      fcdClosePlayScreen();
+      fcdAskForSaveNameIfNeeded();
+    }, 150);
+  }
+
+  return true;
+}
+
+function fcdApplyPendingLoad() {
+  const raw = localStorage.getItem(FCD_SAVE_MANAGER.pendingLoadKey);
+  if (!raw) return false;
+
+  localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
+
+  try {
+    const pending = JSON.parse(raw);
+    const payload = pending?.gameState
+      ? pending
+      : JSON.parse(
+          localStorage.getItem(
+            `${FCD_SAVE_MANAGER.savePrefix}${pending?.saveId || ""}`
+          )
+        );
+
+    if (!payload?.gameState) throw new Error("Pending save has no gameState.");
+
+    fcdSetGameState(payload.gameState);
+    gameState.started = true;
+
+    if (typeof normalizeGameStateAfterLoad === "function") {
+      normalizeGameStateAfterLoad();
+    }
+
+    document.getElementById("start-screen")?.classList.add("hidden");
+    document.getElementById("game-screen")?.classList.remove("hidden");
+    fcdClosePlayScreen();
+
+    currentMainSection = "dashboard";
+    currentSecondaryScreen = "dashboard-screen";
+
+    if (typeof initializeNavigation === "function") initializeNavigation();
+    if (typeof showMainSection === "function") showMainSection("dashboard");
+    if (typeof showSecondaryScreen === "function") showSecondaryScreen("dashboard-screen");
+    if (typeof refreshAll === "function") refreshAll();
+
+    fcdShowSaveToast("Save loaded.");
+    return true;
+  } catch (error) {
+    console.error("Pending save load failed:", error);
+    alert("This save could not be loaded.");
+    return false;
+  }
 }
 
 function fcdRenderPlayScreen() {
   const panel = document.getElementById("fcd-play-screen-panel");
   if (!panel) return;
 
-  const index = fcdGetSaveIndex();
-
-  let slotsHtml = "";
-
-  for (let i = 1; i <= FCD_SAVE_MANAGER.maxSlots; i++) {
-    const entry = index.slots[String(i)] || null;
-
-    slotsHtml += `
-      <div class="fcd-play-save-card">
-        <div class="fcd-play-save-info">
-          <div class="fcd-play-save-title">Slot ${i}</div>
-          ${fcdGetSaveSummary(entry)}
-        </div>
-        <div class="fcd-play-save-actions">
-          <button type="button" onclick="fcdSaveSlot(${i})">Save Here</button>
-          <button type="button" onclick="fcdLoadSlot(${i})" ${entry ? "" : "disabled"}>Load</button>
-          <button type="button" onclick="fcdDeleteSlot(${i})" ${entry ? "" : "disabled"}>Delete</button>
-        </div>
-      </div>
-    `;
-  }
+  const saves = fcdGetSaveIndex();
 
   panel.innerHTML = `
-    <div class="fcd-play-screen-header">
-      <div>
-        <div class="fcd-play-kicker">Full Court Director</div>
-        <div class="fcd-play-title">Play</div>
-        <div class="fcd-play-subtitle">Start a new franchise or continue a saved game on this browser.</div>
+    <div class="fcd-save-page">
+      <div class="fcd-save-header">
+        <h2>Saved Games</h2>
+        <button type="button" onclick="fcdStartNewSave()">Start New Save</button>
       </div>
 
-      <button type="button" class="fcd-play-close" onclick="fcdTogglePlayScreen(false)">×</button>
-    </div>
-
-    <div class="fcd-play-main-action-row">
-      <button type="button" class="fcd-start-new-save-button" onclick="fcdRunOriginalStartNewSave()">
-        Start New Save
-      </button>
-
-      <label class="fcd-play-import-button">
-        Import Save
-        <input
-          type="file"
-          accept=".json,application/json"
-          onchange="fcdImportSaveFile(this.files[0]); this.value = '';"
-        >
-      </label>
-    </div>
-
-    <div class="fcd-play-section-title">Saved Games</div>
-
-    <div class="fcd-play-save-list">
-      <div class="fcd-play-save-card featured">
-        <div class="fcd-play-save-info">
-          <div class="fcd-play-save-title">Auto Save</div>
-          ${fcdGetSaveSummary(index.auto)}
+      <div class="fcd-save-table">
+        <div class="fcd-save-row fcd-save-head">
+          <div>Save Name</div>
+          <div>Team</div>
+          <div>Season</div>
+          <div>Play</div>
+          <div>Delete</div>
         </div>
-        <div class="fcd-play-save-actions">
-          <button type="button" onclick="fcdAutoSave()">Save Now</button>
-          <button type="button" onclick="fcdLoadAutoSave()" ${index.auto ? "" : "disabled"}>Load</button>
-          <button type="button" onclick="fcdDeleteSaveByKey(FCD_SAVE_MANAGER.autoKey, 'auto')" ${index.auto ? "" : "disabled"}>Delete</button>
-        </div>
+
+        ${saves.length
+          ? saves.map(save => `
+            <div class="fcd-save-row">
+              <div>${fcdSafeText(save.saveName)}</div>
+              <div>${fcdSafeText(save.teamName)}</div>
+              <div>${fcdSafeText(save.seasonLabel)}</div>
+              <div>
+                <button type="button" onclick="fcdLoadSave('${fcdSafeText(save.saveId)}')">Play</button>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="fcd-delete-save-button"
+                  onclick="fcdDeleteSave('${fcdSafeText(save.saveId)}')"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          `).join("")
+          : '<div class="fcd-save-empty-row">No saves yet. Start a new save.</div>'}
       </div>
-
-      <div class="fcd-play-save-card">
-        <div class="fcd-play-save-info">
-          <div class="fcd-play-save-title">Manual Save</div>
-          ${fcdGetSaveSummary(index.manual)}
-        </div>
-        <div class="fcd-play-save-actions">
-          <button type="button" onclick="fcdManualSave()">Save</button>
-          <button type="button" onclick="fcdLoadManualSave()" ${index.manual ? "" : "disabled"}>Load</button>
-          <button type="button" onclick="fcdDeleteSaveByKey(FCD_SAVE_MANAGER.manualKey, 'manual')" ${index.manual ? "" : "disabled"}>Delete</button>
-        </div>
-      </div>
-
-      ${slotsHtml}
-    </div>
-
-    <div class="fcd-play-bottom-actions">
-      <button type="button" onclick="fcdExportCurrentSave()">Export Current Save</button>
-      <button type="button" class="danger" onclick="fcdClearAllBrowserSaves()">Clear All Browser Saves</button>
-    </div>
-
-    <div class="fcd-save-warning">
-      Saves stay on this browser. Use Export Save before clearing browser data or switching computers.
     </div>
   `;
 }
@@ -686,356 +423,172 @@ function fcdInstallSaveManagerStyles() {
 
   const style = document.createElement("style");
   style.id = "fcd-save-manager-styles";
-
-   style.textContent = `
-    #fcd-save-manager-button {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 99998;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: #17408B;
-      color: white;
-      border-radius: 999px;
-      padding: 12px 18px;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      text-transform: uppercase;
-    }
-
+  style.textContent = `
     #fcd-play-screen-overlay {
       position: fixed;
       inset: 0;
       z-index: 99999;
-      background: rgba(2, 6, 23, 0.86);
-      backdrop-filter: blur(8px);
       display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding: 34px;
+      overflow: auto;
+      background: #071634;
     }
 
-    #fcd-play-screen-overlay.open {
-      display: flex;
-    }
+    #fcd-play-screen-overlay.open { display: block; }
 
     #fcd-play-screen-panel {
-      width: min(980px, calc(100vw - 36px));
-      max-height: min(820px, calc(100vh - 48px));
-      overflow-y: auto;
-      background: #071733;
-      color: #e5e7eb;
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 18px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.62);
-      padding: 22px;
-    }
-
-    .fcd-play-screen-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .fcd-play-kicker {
-      color: #94a3b8;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .fcd-play-title {
-      color: #ffffff;
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 950;
-      text-transform: uppercase;
-    }
-
-    .fcd-play-subtitle {
-      color: #cbd5e1;
-      font-size: 14px;
-      margin-top: 8px;
-    }
-
-    .fcd-play-close {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.08);
-      color: white;
-      font-size: 24px;
-      line-height: 1;
-      cursor: pointer;
-    }
-
-    .fcd-play-main-action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .fcd-start-new-save-button {
-      border: 1px solid rgba(255,255,255,0.16);
-      background: #17408B;
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 13px 18px;
-      font-size: 14px;
-      font-weight: 950;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .fcd-play-import-button {
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.09);
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 13px 18px;
-      font-size: 14px;
-      font-weight: 900;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .fcd-play-import-button input {
-      display: none;
-    }
-
-    .fcd-play-section-title {
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 950;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin: 12px 0;
-    }
-
-    .fcd-play-save-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .fcd-play-save-card {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 14px;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.78);
-      border: 1px solid rgba(148, 163, 184, 0.20);
-      border-radius: 14px;
-      padding: 14px;
-      min-height: 96px;
-    }
-
-    .fcd-play-save-card.featured {
-      border-color: rgba(23, 64, 139, 0.8);
-      background: rgba(23, 64, 139, 0.24);
-    }
-
-    .fcd-play-save-title {
-      font-size: 13px;
-      font-weight: 950;
-      color: #ffffff;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .fcd-save-summary-main {
-      font-size: 14px;
-      font-weight: 850;
-      color: #e5e7eb;
-    }
-
-    .fcd-save-summary-sub,
-    .fcd-save-summary-time,
-    .fcd-save-empty {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-top: 3px;
-    }
-
-    .fcd-play-save-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 6px;
-    }
-
-    .fcd-play-save-actions button,
-    .fcd-play-bottom-actions button {
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.09);
+      width: min(1200px, 100%);
+      margin: 0 auto;
       color: #f8fafc;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 12px;
-      font-weight: 850;
+    }
+
+    .fcd-save-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .fcd-save-header h2 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 34px;
+      text-transform: uppercase;
+    }
+
+    .fcd-save-header button,
+    .fcd-save-row button {
+      min-height: 38px;
+      padding: 9px 18px;
+      border: 1px solid #1d4f91;
+      border-radius: 4px;
+      background: #143676;
+      color: #f8fafc;
+      font-weight: 900;
       cursor: pointer;
     }
 
-    .fcd-play-save-actions button:hover,
-    .fcd-play-bottom-actions button:hover,
-    .fcd-play-import-button:hover {
-      background: rgba(255,255,255,0.15);
+    .fcd-save-header button {
+      border-color: #22d3ee;
+      background: #0f766e;
     }
 
-    .fcd-play-save-actions button:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
+    .fcd-save-row .fcd-delete-save-button {
+      border-color: #bd1131;
+      background: #64152a;
     }
 
-    .fcd-play-bottom-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 16px;
+    .fcd-save-table {
+      border: 1px solid #1d4f91;
+      background: #0b1f46;
     }
 
-    .fcd-play-bottom-actions .danger {
-      background: rgba(220, 38, 38, 0.22);
-      border-color: rgba(248, 113, 113, 0.35);
+    .fcd-save-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1.4fr) minmax(180px, 1.5fr) 120px 100px 100px;
+      align-items: center;
+      min-height: 68px;
+      padding: 0 18px;
+      border-bottom: 1px solid #18345f;
+      font-size: 15px;
+      font-weight: 800;
     }
 
-    .fcd-save-warning {
+    .fcd-save-row:last-child { border-bottom: 0; }
+
+    .fcd-save-head {
+      min-height: 48px;
+      color: #94a3b8;
+      background: #081a3d;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .fcd-save-empty-row {
+      padding: 30px 18px;
       color: #cbd5e1;
-      font-size: 12px;
-      line-height: 1.4;
-      margin-top: 14px;
-      background: rgba(234, 179, 8, 0.10);
-      border: 1px solid rgba(234, 179, 8, 0.24);
-      border-radius: 10px;
-      padding: 10px;
+      font-weight: 800;
     }
 
     #fcd-save-toast {
       position: fixed;
       left: 50%;
       bottom: 22px;
-      transform: translateX(-50%);
       z-index: 100000;
-      background: #0f172a;
-      color: white;
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 999px;
-      padding: 10px 16px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
-      font-size: 13px;
-      font-weight: 800;
       display: none;
+      padding: 10px 16px;
+      transform: translateX(-50%);
+      border: 1px solid #1d4f91;
+      background: #0b1f46;
+      color: #f8fafc;
+      font-weight: 900;
     }
 
-    #fcd-save-toast.good {
-      border-color: rgba(34, 197, 94, 0.55);
+    #fcd-save-name-dialog {
+      position: fixed;
+      inset: 0;
+      z-index: 100001;
+      display: none;
+      place-items: center;
+      background: rgba(2, 8, 23, 0.78);
     }
 
-    #fcd-save-toast.bad {
-      border-color: rgba(248, 113, 113, 0.65);
+    #fcd-save-name-dialog.open { display: grid; }
+
+    .fcd-save-name-panel {
+      width: min(440px, calc(100vw - 32px));
+      padding: 24px;
+      border: 1px solid #1d4f91;
+      background: #0b1f46;
+      color: #f8fafc;
     }
 
-    @media (max-width: 820px) {
-      .fcd-play-save-list {
-        grid-template-columns: 1fr;
-      }
+    .fcd-save-name-panel h2 {
+      margin: 0 0 16px;
+      color: #22d3ee;
+      font-size: 22px;
+      text-transform: uppercase;
+    }
 
-      .fcd-play-save-card {
-        grid-template-columns: 1fr;
-      }
+    .fcd-save-name-panel label {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-weight: 800;
+    }
 
-      .fcd-play-save-actions {
-        justify-content: flex-start;
-      }
+    .fcd-save-name-panel input {
+      width: 100%;
+      min-height: 44px;
+      margin-bottom: 16px;
+      padding: 8px 10px;
+      border: 1px solid #1d4f91;
+      background: #071634;
+      color: #f8fafc;
+      font: inherit;
+    }
+
+    .fcd-save-name-panel button {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #22d3ee;
+      background: #0f766e;
+      color: #f8fafc;
+      font-weight: 900;
+      cursor: pointer;
     }
   `;
 
   document.head.appendChild(style);
 }
 
-function fcdRunOriginalStartNewSave() {
-  fcdTogglePlayScreen(false);
-
-  // This runs the old Start New Save onclick that we save before changing the button to Play.
-  if (typeof window.fcdOriginalStartNewSaveOnClick === "function") {
-    window.fcdOriginalStartNewSaveOnClick();
-    return true;
-  }
-
-  // Backup guesses if your game uses one of these function names.
-  const possibleStartFunctions = [
-    "startNewSave",
-    "startNewGame",
-    "beginNewSave",
-    "beginNewGame",
-    "showTeamSelectScreen",
-    "showIntroTeamSelect",
-    "openTeamSelectScreen",
-    "renderTeamSelectScreen"
-  ];
-
-  for (const functionName of possibleStartFunctions) {
-    if (typeof window[functionName] === "function") {
-      window[functionName]();
-      return true;
-    }
-  }
-
-  alert("Start New Save is not connected yet. Tell me the old Start New Save button onclick and I’ll wire it exactly.");
-  return false;
-}
-
-function fcdConvertStartNewSaveButtonToPlay() {
-  const buttons = Array.from(document.querySelectorAll("button"));
-
-  const startButton = buttons.find(button => {
-    const text = button.textContent.trim().toLowerCase();
-    return text === "start new save" || text === "new save" || text.includes("start new save");
-  });
-
-  if (!startButton) return;
-
-  if (!window.fcdOriginalStartNewSaveOnClick) {
-    const oldOnClick = startButton.onclick;
-
-    if (typeof oldOnClick === "function") {
-      window.fcdOriginalStartNewSaveOnClick = function() {
-        oldOnClick.call(startButton);
-      };
-    }
-  }
-
-  startButton.textContent = "Play";
-  startButton.onclick = function(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    fcdTogglePlayScreen(true);
-  };
-}
-
 function fcdInstallSaveManagerUI() {
   fcdInstallSaveManagerStyles();
 
-  // Create the full Play / Saves screen, but do NOT create a floating Play button.
   if (!document.getElementById("fcd-play-screen-overlay")) {
     const overlay = document.createElement("div");
     overlay.id = "fcd-play-screen-overlay";
-
-    const panel = document.createElement("div");
-    panel.id = "fcd-play-screen-panel";
-
-    overlay.appendChild(panel);
+    overlay.innerHTML = '<div id="fcd-play-screen-panel"></div>';
     document.body.appendChild(overlay);
   }
 
@@ -1045,177 +598,106 @@ function fcdInstallSaveManagerUI() {
     document.body.appendChild(toast);
   }
 
-  fcdConvertStartNewSaveButtonToPlay();
+  if (!document.getElementById("fcd-save-name-dialog")) {
+    const dialog = document.createElement("div");
+    dialog.id = "fcd-save-name-dialog";
+    dialog.innerHTML = `
+      <div class="fcd-save-name-panel">
+        <h2>Name Your Save</h2>
+        <label for="fcd-save-name-input">Save Name</label>
+        <input id="fcd-save-name-input" type="text" maxlength="60">
+        <button type="button" onclick="fcdConfirmFirstSaveName()">Save Game</button>
+      </div>
+    `;
+    document.body.appendChild(dialog);
+  }
+
   fcdRenderPlayScreen();
 }
 
-function fcdToggleSaveManager(forceOpen) {
-  fcdTogglePlayScreen(forceOpen);
+function fcdOpenPlayScreen() {
+  fcdRenderPlayScreen();
+  document.getElementById("fcd-play-screen-overlay")?.classList.add("open");
 }
 
-function fcdTogglePlayScreen(forceOpen) {
-  const overlay = document.getElementById("fcd-play-screen-overlay");
-  if (!overlay) return;
-
-  const shouldOpen = typeof forceOpen === "boolean"
-    ? forceOpen
-    : !overlay.classList.contains("open");
-
-  overlay.classList.toggle("open", shouldOpen);
-
-  if (shouldOpen) {
-    fcdRenderPlayScreen();
-  }
+function fcdClosePlayScreen() {
+  document.getElementById("fcd-play-screen-overlay")?.classList.remove("open");
 }
 
-let fcdSaveToastTimer = null;
-
-function fcdShowSaveToast(message, type = "good") {
+function fcdShowSaveToast(message) {
   const toast = document.getElementById("fcd-save-toast");
   if (!toast) return;
 
   toast.textContent = message;
-  toast.className = type;
   toast.style.display = "block";
 
-  clearTimeout(fcdSaveToastTimer);
-  fcdSaveToastTimer = setTimeout(() => {
+  clearTimeout(fcdShowSaveToast.timer);
+  fcdShowSaveToast.timer = setTimeout(() => {
     toast.style.display = "none";
-  }, 2600);
+  }, 1800);
 }
 
-function fcdShowContinueSaveBanner() {
-  const index = fcdGetSaveIndex();
-  const bestSave = index.auto || index.manual;
+function fcdStartNewSave() {
+  fcdSetActiveSaveId("");
+  fcdClosePlayScreen();
 
-  if (!bestSave) return;
+  if (typeof showStartPanel === "function") {
+    showStartPanel("gm-creation-panel");
+  }
+}
 
+function fcdAskForSaveNameIfNeeded() {
   const state = fcdGetGameState();
+  if (!state || state.started !== true || fcdGetActiveSaveId()) return false;
 
-  // Do not show if the current page already has a started game loaded.
-  if (state?.started === true) return;
+  const teamName = fcdGetTeamNameFromState(state);
+  const dialog = document.getElementById("fcd-save-name-dialog");
+  const input = document.getElementById("fcd-save-name-input");
 
-  if (document.getElementById("fcd-continue-save-banner")) return;
+  if (!dialog || !input) return false;
 
-  const banner = document.createElement("div");
-  banner.id = "fcd-continue-save-banner";
-
-  banner.innerHTML = `
-    <div class="fcd-continue-title">Continue your Full Court Director save?</div>
-    <div class="fcd-continue-sub">
-      ${fcdSafeText(bestSave.teamName || "Saved game")} · ${fcdSafeText(fcdFormatSaveTime(bestSave.savedAt))}
-    </div>
-    <div class="fcd-continue-actions">
-      <button type="button" onclick="document.getElementById('fcd-continue-save-banner')?.remove()">Not now</button>
-      <button type="button" class="primary" onclick="fcdLoadSaveByKey('${bestSave.key}'); document.getElementById('fcd-continue-save-banner')?.remove()">Continue Save</button>
-    </div>
-  `;
-
-  document.body.appendChild(banner);
+  input.value = `${teamName} Save`;
+  dialog.classList.add("open");
+  input.focus();
+  input.select();
+  return true;
 }
 
-// ------------------------------------------------------------
-// AUTOSAVE BOOT
-// ------------------------------------------------------------
+function fcdConfirmFirstSaveName() {
+  const state = fcdGetGameState();
+  if (!state || state.started !== true || fcdGetActiveSaveId()) return false;
 
-function fcdStartAutosaveLoop() {
-  if (fcdAutosaveTimer) {
-    clearInterval(fcdAutosaveTimer);
+  const input = document.getElementById("fcd-save-name-input");
+  const teamName = fcdGetTeamNameFromState(state);
+  const saveName = input && input.value.trim()
+    ? input.value.trim()
+    : `${teamName} Save`;
+  const created = fcdCreateFirstSave(saveName);
+
+  if (created) {
+    document.getElementById("fcd-save-name-dialog")?.classList.remove("open");
   }
 
-  fcdAutosaveTimer = setInterval(() => {
-    fcdAutoSave({ silent: true });
-  }, FCD_SAVE_MANAGER.autosaveEveryMs);
+  return created;
 }
 
-function fcdInstallSaveHooks() {
-  window.addEventListener("beforeunload", function() {
-    fcdAutoSave({ silent: true });
+function fcdInstallAutoSaveOnClick() {
+  document.addEventListener("click", () => {
+    clearTimeout(fcdSaveClickTimer);
+
+    fcdSaveClickTimer = setTimeout(() => {
+      fcdSaveCurrentGame(true);
+    }, 350);
   });
-
-  document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === "hidden") {
-      fcdAutoSave({ silent: true });
-    }
-  });
-}
-
-function fcdApplyPendingLoadIfAny() {
-  const raw = localStorage.getItem(FCD_SAVE_MANAGER.pendingLoadKey);
-  if (!raw) return false;
-
-  try {
-    const payload = JSON.parse(raw);
-
-    if (!payload || !payload.gameState) {
-      localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
-      return false;
-    }
-
-    localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
-
-    fcdSetGameState(payload.gameState);
-
-    // Force important loaded-save flags.
-    const state = fcdGetGameState();
-    if (state) {
-      state.started = true;
-      window.gameState = state;
-    }
-
-    // Let your original game save system capture the loaded save too.
-    try {
-      if (typeof saveGame === "function") {
-        saveGame();
-      }
-    } catch (error) {
-      console.warn("Original saveGame failed after pending load:", error);
-    }
-
-    setTimeout(() => {
-      fcdRefreshGameAfterLoad();
-      fcdTogglePlayScreen(false);
-      fcdShowSaveToast("Save loaded.", "good");
-    }, 300);
-
-    setTimeout(() => {
-      fcdRefreshGameAfterLoad();
-    }, 1000);
-
-    return true;
-  } catch (error) {
-    console.error("Pending load failed:", error);
-    localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
-    return false;
-  }
 }
 
 function fcdBootSaveManager() {
-  document.getElementById("fcd-save-manager-button")?.remove();
-
+  fcdRemoveObsoleteSaveStorage();
+  fcdRepairSaveIndex();
+  fcdRemoveOrphanedNamedSavePayloads();
   fcdInstallSaveManagerUI();
-  fcdInstallSaveHooks();
-  fcdStartAutosaveLoop();
-
-  const loadedPendingSave = fcdApplyPendingLoadIfAny();
-
-  setTimeout(() => {
-    fcdConvertStartNewSaveButtonToPlay();
-    fcdRenderPlayScreen();
-
-    if (loadedPendingSave) {
-      fcdRefreshGameAfterLoad();
-    }
-  }, 700);
-
-  setTimeout(() => {
-    fcdConvertStartNewSaveButtonToPlay();
-    fcdRenderPlayScreen();
-
-    if (loadedPendingSave) {
-      fcdRefreshGameAfterLoad();
-    }
-  }, 2000);
+  fcdInstallAutoSaveOnClick();
+  fcdApplyPendingLoad();
 }
 
 document.addEventListener("DOMContentLoaded", fcdBootSaveManager);

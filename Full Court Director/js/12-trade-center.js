@@ -4288,10 +4288,8 @@ function persistFormalTradeOffersState() {
     syncTradeRoomToGameState();
   }
 
-  try {
-    localStorage.setItem("fullCourtDirectorSave", JSON.stringify(gameState));
-  } catch (error) {
-    console.warn("Formal offers could not be auto-saved.", error);
+  if (typeof saveGame === "function") {
+    saveGame();
   }
 }
 
