@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "full-court-director",
+  "compatibility_date": "2026-06-28",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "Full Court Director"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
