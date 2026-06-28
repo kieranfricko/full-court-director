@@ -6,8 +6,7 @@
 :root {
   --fcd-design-width: 1600px;
   --fcd-design-height: 900px;
-  --fcd-sidebar-width: 250px;
-
+  --fcd-top-nav-height: 74px;
   --fcd-scale: 1;
   --fcd-left: 0px;
   --fcd-top: 0px;
@@ -81,40 +80,35 @@ body {
   background: #071735 !important;
 }
 
-/* Sidebar is now part of the game screen, not fixed to the browser */
-#game-screen .sidebar {
+/* Keep navigation inside the same scaled canvas as the game screens. */
+#game-screen .fcd-top-nav {
   position: absolute !important;
   left: 0 !important;
   top: 0 !important;
-  bottom: auto !important;
-
-  width: var(--fcd-sidebar-width) !important;
-  min-width: var(--fcd-sidebar-width) !important;
-  max-width: var(--fcd-sidebar-width) !important;
-
-  height: var(--fcd-design-height) !important;
-  min-height: var(--fcd-design-height) !important;
-  max-height: var(--fcd-design-height) !important;
-
-  margin: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  z-index: 1000 !important;
+  width: var(--fcd-design-width) !important;
+  height: var(--fcd-top-nav-height) !important;
+  transform: none !important;
+  transform-origin: top left !important;
 }
 
-/* Main content is locked to the remaining game area */
+/* The retired sidebar must not reserve space inside the scaled game canvas. */
+#game-screen .sidebar {
+  display: none !important;
+}
+
+/* Main content now owns the entire scaled game canvas. */
 #game-screen .main-content {
   position: absolute !important;
-  left: var(--fcd-sidebar-width) !important;
-  top: 0 !important;
+  left: 0 !important;
+  top: var(--fcd-top-nav-height) !important;
 
-  width: calc(var(--fcd-design-width) - var(--fcd-sidebar-width)) !important;
+  width: var(--fcd-design-width) !important;
   min-width: 0 !important;
   max-width: none !important;
 
-  height: var(--fcd-design-height) !important;
-  min-height: var(--fcd-design-height) !important;
-  max-height: var(--fcd-design-height) !important;
+  height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
+  min-height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
+  max-height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
 
   margin: 0 !important;
   padding: 0 !important;
@@ -125,8 +119,7 @@ body {
   overflow: hidden !important;
 }
 
-/* Header and secondary tabs stay at the top of the game area */
-#game-screen .top-header,
+/* Secondary tabs stay at the top of the content area. */
 #game-screen .secondary-nav {
   flex: 0 0 auto !important;
   width: 100% !important;
@@ -158,19 +151,14 @@ body {
   inset: 0 !important;
 }
 
-/* Prevent old mobile/tablet media rules from turning the sidebar horizontal */
+/* Prevent old mobile/tablet rules from restoring the retired sidebar. */
 @media (max-width: 1100px) {
   #game-screen {
     display: block !important;
   }
 
   #game-screen .sidebar {
-    position: absolute !important;
-    display: block !important;
-    width: var(--fcd-sidebar-width) !important;
-    min-width: var(--fcd-sidebar-width) !important;
-    max-width: var(--fcd-sidebar-width) !important;
-    height: var(--fcd-design-height) !important;
+    display: none !important;
   }
 
   #game-screen .sidebar button {
@@ -178,15 +166,13 @@ body {
   }
 
   #game-screen .main-content {
-    left: var(--fcd-sidebar-width) !important;
-    width: calc(var(--fcd-design-width) - var(--fcd-sidebar-width)) !important;
-    height: var(--fcd-design-height) !important;
+    left: 0 !important;
+    top: var(--fcd-top-nav-height) !important;
+    width: var(--fcd-design-width) !important;
+    height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
+    min-height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
+    max-height: calc(var(--fcd-design-height) - var(--fcd-top-nav-height)) !important;
     margin-left: 0 !important;
-  }
-
-  #game-screen .top-header {
-    display: flex !important;
-    height: auto !important;
   }
 }
 
@@ -196,8 +182,6 @@ body {
   }
 
   #game-screen .sidebar {
-    display: block !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    display: none !important;
   }
 }

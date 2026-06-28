@@ -33,11 +33,6 @@
   letter-spacing: 0.4px;
 }
 
-.top-header p {
-  margin: 4px 0 0;
-  color: #cbd5e1;
-}
-
 .info-grid span {
   display: block;
   color: #cbd5e1;
@@ -666,11 +661,6 @@
   margin-bottom: 20px;
 }
 
-.top-header h1 {
-  margin: 0;
-  font-size: 30px;
-}
-
 .active-screen {
   display: block;
 }
@@ -730,7 +720,7 @@
 
   .main-content {
     margin-right: 0;
-    width: calc(100% - 240px);
+    width: 100%;
   }
 }
 
@@ -765,26 +755,12 @@
   background: linear-gradient(90deg, #22d3ee, #a855f7);
 }
 
-.top-header,
 .secondary-nav,
 .screen,
 .screen.active-screen {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-}
-
-.top-header {
-  min-height: 76px;
-  background: linear-gradient(90deg, #0f2f73, #071735);
-  border-bottom: 1px solid rgba(103, 232, 249, 0.18);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 26px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-  margin: 0 !important;
-  width: 100% !important;
 }
 
 .secondary-nav {
@@ -799,30 +775,15 @@
   width: 100% !important;
 }
 
-/* Sidebar stays visible at all times while page scrolls */
+/* Retained only for legacy markup; the top navigation replaces it. */
 .sidebar {
-  width: 250px !important;
-  background: linear-gradient(180deg, #1e40af, #0f2f73);
-  padding: 10px;
-  position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  bottom: 0;
-  overflow-y: auto !important;
-  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.45);
-  grid-column: 1 !important;
-  min-width: 250px !important;
-  max-width: 250px !important;
-  margin: 0 !important;
-  height: 100vh !important;
-  align-self: start;
-  z-index: 1000 !important;
+  display: none !important;
 }
 
 .game-screen {
   display: block !important;
   min-height: 100vh !important;
-  grid-template-columns: 250px minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   width: 100% !important;
   max-width: 100% !important;
   overflow-x: hidden !important;
@@ -833,10 +794,10 @@
 }
 
 .main-content {
-  margin-left: 250px !important;
-  width: calc(100% - 250px) !important;
+  margin-left: 0 !important;
+  width: 100% !important;
   min-width: 0 !important;
-  grid-column: 2 !important;
+  grid-column: 1 !important;
   max-width: 100% !important;
   overflow-x: hidden !important;
   padding: 0 !important;
@@ -2172,4 +2133,466 @@
   border: 1px solid rgba(148, 163, 184, 0.25);
   display: grid;
   place-items: center;
+}
+
+/* =========================================================
+   FCD TOP NAV REDESIGN
+   Put this at the BOTTOM of css/layout.css
+========================================================= */
+
+:root {
+  --fcd-bg: #071634;
+  --fcd-primary: #143676;
+  --fcd-secondary: #0B1F46;
+  --fcd-red: #BD1131;
+
+  --fcd-cyan: #22D3EE;
+  --fcd-orange: #F26C2F;
+
+  --fcd-text: #F8FAFC;
+  --fcd-text-soft: #CBD5E1;
+  --fcd-text-muted: #94A3B8;
+
+  --fcd-border: #1D4F91;
+  --fcd-border-soft: #18345F;
+
+  --fcd-success: #22C55E;
+  --fcd-warning: #F59E0B;
+  --fcd-danger: #EF4444;
+  --fcd-gold: #FACC15;
+}
+
+/* Main page background */
+
+html,
+body {
+  background: var(--fcd-bg) !important;
+  color: var(--fcd-text);
+}
+
+/* Hide the old left sidebar */
+
+.sidebar,
+.side-nav,
+.main-sidebar,
+.app-sidebar,
+.left-sidebar,
+#sidebar,
+#side-nav,
+#main-sidebar {
+  display: none !important;
+}
+
+/* Remove old sidebar spacing */
+
+.main-content,
+.app-main,
+.page-content,
+.content,
+#main-content,
+#app-main {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Top navigation shell */
+
+.fcd-top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 22px;
+  background:
+    linear-gradient(180deg, rgba(7, 22, 52, 0.98), rgba(5, 13, 31, 0.98)),
+    var(--fcd-bg);
+  border-bottom: 1px solid rgba(29, 79, 145, 0.9);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+}
+
+/* Logo area */
+
+.fcd-brand {
+  height: 100%;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  padding-right: 22px;
+  border-right: 1px solid rgba(29, 79, 145, 0.55);
+}
+
+.fcd-brand-logo {
+  max-height: 58px;
+  max-width: 245px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Main top tabs */
+
+.fcd-main-tabs {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.fcd-main-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.fcd-top-tab {
+  position: relative;
+  height: 74px;
+  padding: 0 13px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--fcd-text-soft);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.fcd-top-tab:hover {
+  color: var(--fcd-text);
+  background: rgba(20, 54, 118, 0.28);
+}
+
+.fcd-top-tab.active {
+  color: var(--fcd-cyan);
+  background: linear-gradient(
+    180deg,
+    rgba(20, 54, 118, 0.38),
+    rgba(20, 54, 118, 0.05)
+  );
+}
+
+.fcd-top-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--fcd-cyan);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.65);
+}
+
+.fcd-tab-icon {
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.fcd-tab-chevron {
+  margin-left: 2px;
+  padding: 5px;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0.78;
+  cursor: pointer;
+  transform: translateY(-2px);
+}
+
+.fcd-tab-chevron:hover,
+.fcd-tab-chevron:focus-visible {
+  color: var(--fcd-cyan);
+  opacity: 1;
+  outline: none;
+}
+
+.fcd-top-dropdown-menu {
+  position: absolute;
+  z-index: 10050;
+  min-width: 210px;
+  padding: 7px;
+  border: 1px solid var(--fcd-border);
+  background: linear-gradient(180deg, #0b1f46, #071634);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.42);
+}
+
+.fcd-top-dropdown-menu button {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 11px;
+  border: 0;
+  background: transparent;
+  color: var(--fcd-text-soft);
+  display: flex;
+  align-items: center;
+  text-align: left;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fcd-top-dropdown-menu button:hover {
+  background: var(--fcd-primary);
+  color: var(--fcd-text);
+}
+
+.fcd-top-dropdown-group + .fcd-top-dropdown-group {
+  border-top: 1px solid var(--fcd-border-soft);
+}
+
+.fcd-top-dropdown-group-header {
+  display: flex;
+  align-items: stretch;
+}
+
+.fcd-top-dropdown-group-header .fcd-top-dropdown-group-label {
+  flex: 1;
+}
+
+.fcd-top-dropdown-group-header .fcd-top-dropdown-group-arrow {
+  width: 36px;
+  flex: 0 0 36px;
+  justify-content: center;
+  padding: 0;
+  font-size: 15px;
+  transform: translateY(-1px);
+}
+
+.fcd-top-dropdown-submenu {
+  display: none;
+  padding: 3px 0 6px 10px;
+  border-left: 2px solid var(--fcd-border);
+}
+
+.fcd-top-dropdown-group.open .fcd-top-dropdown-submenu {
+  display: block;
+}
+
+.fcd-top-dropdown-submenu button {
+  min-height: 32px;
+  color: var(--fcd-text-muted);
+  font-size: 12px;
+}
+
+/* Right side buttons */
+
+.fcd-top-actions {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-left: 18px;
+  border-left: 1px solid rgba(29, 79, 145, 0.55);
+}
+
+.fcd-icon-button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(11, 31, 70, 0.78);
+  color: var(--fcd-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.fcd-icon-button:hover {
+  background: var(--fcd-primary);
+  border-color: var(--fcd-cyan);
+  color: white;
+}
+
+/* GM profile pill */
+
+.fcd-gm-pill {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-left: 5px;
+}
+
+.fcd-gm-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--fcd-cyan);
+  background: rgba(11, 31, 70, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fcd-gm-text {
+  color: var(--fcd-text);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.05;
+  min-width: 80px;
+}
+
+.fcd-gm-text small {
+  display: block;
+  margin-top: 3px;
+  color: var(--fcd-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Make old screen content fit after sidebar removal */
+
+.screen {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Smaller screens */
+
+@media (max-width: 1200px) {
+  .fcd-brand {
+    min-width: 190px;
+  }
+
+  .fcd-brand-logo {
+    max-width: 175px;
+  }
+
+  .fcd-top-tab {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .fcd-gm-text {
+    display: none;
+  }
+}
+
+.sidebar {
+  display: none !important;
+}
+
+.main-content,
+.app-main,
+.page-content,
+#main-content {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* =========================================================
+   FULL WIDTH TOP NAV LAYOUT FIX
+   Put this at the very bottom of css/layout.css
+========================================================= */
+
+/* Remove old sidebar column space */
+.game-screen,
+.app-shell,
+.app-layout,
+.game-shell,
+.game-layout,
+.layout-shell,
+.layout,
+.page-shell {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: block !important;
+  grid-template-columns: 1fr !important;
+}
+
+/* Main content should start at the far left now */
+.game-screen > .main-content,
+main,
+.main,
+.main-content,
+.app-main,
+.page-content,
+.content,
+.screen-container,
+#main-content,
+#app-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+.game-screen > .main-content {
+  grid-column: 1 !important;
+}
+
+/* Screens should stretch */
+.screen {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Dashboard/content wrappers should not be capped */
+.dashboard,
+.dashboard-screen,
+.dashboard-page,
+.dashboard-layout,
+.dashboard-container,
+.home-dashboard,
+.today-layout,
+.today-screen {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Keep a little clean spacing inside the page */
+.screen.active,
+.screen[style*="block"] {
+  padding-left: 22px !important;
+  padding-right: 22px !important;
+}
+
+/* Make top nav itself use the full width */
+.fcd-top-nav {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Logo area was too wide. Tighten it up. */
+.fcd-brand {
+  min-width: 210px !important;
+  width: 210px !important;
+  flex: 0 0 210px !important;
+}
+
+.fcd-brand-logo {
+  max-width: 175px !important;
+  max-height: 58px !important;
+}
+
+/* Right side only needs search, settings, GM */
+.fcd-top-actions {
+  flex: 0 0 auto !important;
 }

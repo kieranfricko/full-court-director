@@ -539,20 +539,11 @@ function applyPlayerJerseyCard(player, team, freeAgent) {
 
 function syncPlayerProfileScreenPosition() {
   const screen = document.getElementById("player-profile-screen");
-  const sidebar = document.querySelector(".sidebar");
 
   if (!screen) return;
 
-  let left = 0;
-  let top = 0;
-
-  if (sidebar) {
-    const sidebarBox = sidebar.getBoundingClientRect();
-    left = sidebarBox.right;
-  }
-
-  screen.style.setProperty("--player-screen-left", `${left}px`);
-  screen.style.setProperty("--player-screen-top", `${top}px`);
+  screen.style.setProperty("--player-screen-left", "0px");
+  screen.style.setProperty("--player-screen-top", "0px");
 }
 
 window.addEventListener("resize", function() {

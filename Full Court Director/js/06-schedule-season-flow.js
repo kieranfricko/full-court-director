@@ -1,3 +1,219 @@
+const FCD_KEY_DATES = [
+  ["Season Ticket Renewal & Financial Planning", "August 15"],
+  ["Schedule Release", "August 18"],
+  ["Hall of Fame Ceremony", "August 22"],
+  ["Media Day", "September 22"],
+  ["Training Camp Begins", "September 25"],
+  ["Preseason Begins", "October 5"],
+  ["Preseason Ends", "October 18"],
+  ["Opening Night", "October 22"],
+  ["Election Day No Games", "First Tuesday of November"],
+  ["The Cup Games Begin", "November 11"],
+  ["The Cup Game 2", "November 18"],
+  ["The Cup Game 3", "November 25"],
+  ["The Cup Game 4", "December 2"],
+  ["The Cup Quarterfinals", "December 9"],
+  ["The Cup Quarterfinals", "December 10"],
+  ["The Cup Semifinals", "December 13"],
+  ["The Cup Final", "December 15"],
+  ["Christmas Day Games", "December 25"],
+  ["Rivals Week Begins", "January 12"],
+  ["Rivals Week Friday", "January 16"],
+  ["Rivals Week Ends", "January 18"],
+  ["January Free Agents Become Trade Eligible", "January 15"],
+  ["Trade Deadline", "February 5"],
+  ["Midseason Owner Meeting", "February 6"],
+  ["All-Star Break Begins", "Wednesday of All-Star Week"],
+  ["All-Star Break Ends", "Following Wednesday"],
+  ["Contract Buyout Deadline", "March 1"],
+  ["Two-Way Contract Conversion Deadline", "March 4"],
+  ["NCAA Championship No Games", "First Monday of April"],
+  ["Regular Season Ends", "April 15"],
+  ["Play-In Tournament Begins", "April 16"],
+  ["Play-In Tournament Ends", "April 19"],
+  ["Playoffs Begin", "April 21"],
+  ["Draft Lottery", "June 18"],
+  ["Draft Combine", "June 19"],
+  ["Draft Round 1", "June 20"],
+  ["Draft Round 2", "June 21"],
+  ["League Meetings", "June 24"],
+  ["End-of-Season Owner Meeting", "June 25"],
+  ["Rookie Contract Signing Deadline", "June 28"],
+  ["Contract Options Deadline", "June 29"],
+  ["New Salary Cap & Aprons Announced", "July 1"],
+  ["Free Agency Moratorium Begins", "July 1"],
+  ["Official Free Agency Signings Begin", "July 6"],
+  ["Summer League Begins", "July 12"],
+  ["Summer League Ends", "July 22"]
+];
+
+function getFirstWeekdayOfMonth(year, month, weekday) {
+  const date = new Date(year, month, 1);
+  date.setDate(date.getDate() + ((weekday - date.getDay() + 7) % 7));
+  return date;
+}
+
+function getElectionDayDate(year) {
+  return getFirstWeekdayOfMonth(year, 10, 2);
+}
+
+function getNcaaChampionshipDate(year) {
+  return getFirstWeekdayOfMonth(year, 3, 1);
+}
+
+function getAllStarBreakDatesForSeason(seasonStartYear = gameState.seasonStartYear) {
+  const start = getSecondWednesdayOfFebruary(Number(seasonStartYear) + 1);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 7);
+  return { start, end };
+}
+
+function getFcdSeasonCalendarEvents(seasonStartYear = gameState.seasonStartYear) {
+  const year = Number(seasonStartYear);
+  const nextYear = year + 1;
+  const allStar = getAllStarBreakDatesForSeason(year);
+
+  return [
+    ["Season Ticket Renewal & Financial Planning", new Date(year, 7, 15)],
+    ["Schedule Release", new Date(year, 7, 18)],
+    ["Hall of Fame Ceremony", new Date(year, 7, 22)],
+    ["Media Day", new Date(year, 8, 22)],
+    ["Training Camp Begins", new Date(year, 8, 25)],
+    ["Preseason Begins", new Date(year, 9, 5)],
+    ["Preseason Ends", new Date(year, 9, 18)],
+    ["Opening Night", new Date(year, 9, 22)],
+    ["Election Day - No Games", getElectionDayDate(year)],
+    ["The Cup Games Begin", new Date(year, 10, 11)],
+    ["The Cup Game 2", new Date(year, 10, 18)],
+    ["The Cup Game 3", new Date(year, 10, 25)],
+    ["The Cup Game 4", new Date(year, 11, 2)],
+    ["The Cup Quarterfinals", new Date(year, 11, 9)],
+    ["The Cup Quarterfinals", new Date(year, 11, 10)],
+    ["The Cup Semifinals", new Date(year, 11, 13)],
+    ["The Cup Final", new Date(year, 11, 15)],
+    ["Christmas Day Games", new Date(year, 11, 25)],
+    ["Rivals Week Begins", new Date(nextYear, 0, 12)],
+    ["January Free Agents Become Trade Eligible", new Date(nextYear, 0, 15)],
+    ["Rivals Week Friday", new Date(nextYear, 0, 16)],
+    ["Rivals Week Ends", new Date(nextYear, 0, 18)],
+    ["Trade Deadline", new Date(nextYear, 1, 5)],
+    ["Midseason Owner Meeting", new Date(nextYear, 1, 6)],
+    ["All-Star Break Begins", allStar.start],
+    ["All-Star Break Ends", allStar.end],
+    ["Contract Buyout Deadline", new Date(nextYear, 2, 1)],
+    ["Two-Way Contract Conversion Deadline", new Date(nextYear, 2, 4)],
+    ["NCAA Championship - No Games", getNcaaChampionshipDate(nextYear)],
+    ["Regular Season Ends", new Date(nextYear, 3, 15)],
+    ["Play-In Tournament Begins", new Date(nextYear, 3, 16)],
+    ["Play-In Tournament Ends", new Date(nextYear, 3, 19)],
+    ["Playoffs Begin", new Date(nextYear, 3, 21)],
+    ["Draft Lottery", new Date(nextYear, 5, 18)],
+    ["Draft Combine", new Date(nextYear, 5, 19)],
+    ["Draft Round 1", new Date(nextYear, 5, 20)],
+    ["Draft Round 2", new Date(nextYear, 5, 21)],
+    ["League Meetings", new Date(nextYear, 5, 24)],
+    ["End-of-Season Owner Meeting", new Date(nextYear, 5, 25)],
+    ["Rookie Contract Signing Deadline", new Date(nextYear, 5, 28)],
+    ["Contract Options Deadline", new Date(nextYear, 5, 29)],
+    ["New Salary Cap & Aprons Announced", new Date(nextYear, 6, 1)],
+    ["Free Agency Moratorium Begins", new Date(nextYear, 6, 1)],
+    ["Official Free Agency Signings Begin", new Date(nextYear, 6, 6)],
+    ["Summer League Begins", new Date(nextYear, 6, 12)],
+    ["Summer League Ends", new Date(nextYear, 6, 22)]
+  ].map(([name, date]) => ({ name, date }));
+}
+
+function getKeyDateOccurrence(dateLabel, year) {
+  if (dateLabel === "First Tuesday of November") {
+    return getElectionDayDate(year);
+  }
+
+  if (dateLabel === "First Monday of April") {
+    return getNcaaChampionshipDate(year);
+  }
+
+  if (dateLabel === "Wednesday of All-Star Week") {
+    return getSecondWednesdayOfFebruary(year);
+  }
+
+  if (dateLabel === "Following Wednesday") {
+    const date = getSecondWednesdayOfFebruary(year);
+    date.setDate(date.getDate() + 7);
+    return date;
+  }
+
+  const parsedDate = new Date(`${dateLabel}, ${year}`);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
+function getRollingKeyDates() {
+  const currentDate = new Date(gameState.currentDate);
+  currentDate.setHours(0, 0, 0, 0);
+
+  return FCD_KEY_DATES.map(([eventName, dateLabel], index) => {
+    let occurrence = getKeyDateOccurrence(dateLabel, currentDate.getFullYear());
+
+    if (!occurrence) {
+      occurrence = new Date(currentDate.getFullYear() + 1, 11, 31);
+    } else if (occurrence < currentDate) {
+      occurrence = getKeyDateOccurrence(dateLabel, currentDate.getFullYear() + 1);
+    }
+
+    return {
+      eventName,
+      dateLabel,
+      occurrence,
+      index
+    };
+  }).sort((a, b) => {
+    const dateDifference = a.occurrence - b.occurrence;
+    return dateDifference || a.index - b.index;
+  });
+}
+
+function formatRollingKeyDate(item) {
+  return item.occurrence.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+function displayKeyDatesScreen() {
+  const root = document.getElementById("key-dates-root");
+  if (!root) return;
+
+  const rollingDates = getRollingKeyDates();
+
+  root.innerHTML = `
+    <div class="card">
+      <h2>Key Dates</h2>
+
+      <table class="key-dates-table">
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rollingDates.map((item, index) => `
+            <tr class="${index === 0 ? "key-date-up-next" : ""}">
+              <td>
+                ${index === 0 ? '<span class="key-date-up-next-label">Up Next</span>' : ""}
+                ${item.eventName}
+              </td>
+              <td>${formatRollingKeyDate(item)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+
 function getSecondWednesdayOfFebruary(year) {
   const date = new Date(year, 1, 1); // February 1
 
@@ -10,17 +226,11 @@ function getSecondWednesdayOfFebruary(year) {
 }
 
 function getAllStarBreakStartDate() {
-  return getSecondWednesdayOfFebruary(gameState.seasonStartYear + 1);
+  return getAllStarBreakDatesForSeason().start;
 }
 
 function getAllStarBreakEndDate() {
-  const start = getAllStarBreakStartDate();
-  const end = new Date(start);
-
-  // Break is Wednesday through Monday. Tuesday is first day back.
-  end.setDate(end.getDate() + 6);
-
-  return end;
+  return getAllStarBreakDatesForSeason().end;
 }
 
 function isDateDuringAllStarBreak(date) {
@@ -32,220 +242,7 @@ function isDateDuringAllStarBreak(date) {
   start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
 
-  return current >= start && current < end;
-}
-
-function createRealisticUserSchedule(selectedTeamId) {
-  const selectedTeam = baseTeams.find(team => Number(team.id) === Number(selectedTeamId));
-
-  if (!selectedTeam) {
-    console.warn("Cannot create schedule. Selected team not found:", selectedTeamId);
-    return [];
-  }
-
-  const divisionOpponents = baseTeams.filter(team =>
-    Number(team.id) !== Number(selectedTeamId) &&
-    team.conference === selectedTeam.conference &&
-    team.hiddenDivision === selectedTeam.hiddenDivision
-  );
-
-  const sameConferenceOtherDivision = baseTeams.filter(team =>
-    Number(team.id) !== Number(selectedTeamId) &&
-    team.conference === selectedTeam.conference &&
-    team.hiddenDivision !== selectedTeam.hiddenDivision
-  );
-
-  const oppositeConference = baseTeams.filter(team =>
-    team.conference !== selectedTeam.conference
-  );
-
-  const shuffledSameConference = shuffleArray(sameConferenceOtherDivision);
-  const fourGameConferenceOpponents = shuffledSameConference.slice(0, 6);
-  const threeGameConferenceOpponents = shuffledSameConference.slice(6);
-
-  let matchups = [];
-
-  function addMatchups(opponent, count) {
-    for (let i = 0; i < count; i++) {
-      matchups.push({
-        opponent,
-        home: i % 2 === 0
-      });
-    }
-  }
-
-  for (let opponent of divisionOpponents) {
-    addMatchups(opponent, 4);
-  }
-
-  for (let opponent of fourGameConferenceOpponents) {
-    addMatchups(opponent, 4);
-  }
-
-  for (let opponent of threeGameConferenceOpponents) {
-    addMatchups(opponent, 3);
-  }
-
-  for (let opponent of oppositeConference) {
-    addMatchups(opponent, 2);
-  }
-
-  if (matchups.length !== 82) {
-    console.warn("Schedule matchup formula did not create 82 games:", matchups.length);
-  }
-
-  matchups = shuffleArray(matchups).slice(0, 82);
-
-  return buildUserScheduleFromMatchups(selectedTeamId, matchups);
-}
-
-function buildUserScheduleFromMatchups(selectedTeamId, matchups) {
-  ensureCupStateForSchedule();
-
-  const cupGroupOpponents = getUserCupGroupOpponents(selectedTeamId);
-  const cupDates = getCupGroupDates();
-
-  const games = [];
-  const cupOpponentIdsUsed = new Set();
-
-  for (let i = 0; i < matchups.length; i++) {
-    const matchup = matchups[i];
-    const opponent = matchup.opponent;
-
-    const shouldBecomeCupGroupGame =
-      cupOpponentIdsUsed.size < 4 &&
-      cupGroupOpponents.some(team => Number(team.id) === Number(opponent.id)) &&
-      !cupOpponentIdsUsed.has(Number(opponent.id));
-
-    if (shouldBecomeCupGroupGame) {
-      const cupIndex = cupOpponentIdsUsed.size;
-      cupOpponentIdsUsed.add(Number(opponent.id));
-
-      games.push(createUserScheduleGame({
-        opponent,
-        date: cupDates[cupIndex],
-        home: cupIndex % 2 === 0,
-        competition: "The Cup Group",
-        cupGame: true,
-        countsForRegularSeason: true,
-        seriesId: `cup_group_${cupIndex}`
-      }));
-    } else {
-      games.push(createUserScheduleGame({
-        opponent,
-        date: null,
-        home: matchup.home,
-        competition: "Regular Season",
-        cupGame: false,
-        countsForRegularSeason: true,
-        seriesId: null
-      }));
-    }
-  }
-
-  assignDatesToNormalRegularSeasonGames(games);
-
-  const cleanGames = games
-    .filter(game => game && game.opponentId && game.opponentName && game.date)
-    .slice(0, 82)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  if (cleanGames.length !== 82) {
-    console.warn("Clean user schedule is not 82 games:", cleanGames.length);
-  }
-
-  return cleanGames;
-}
-
-function createUserScheduleGame(options) {
-  return {
-    id: `g_${Date.now()}_${Math.random()}`,
-    date: options.date ? new Date(options.date) : null,
-    opponentId: options.opponent.id,
-    opponentName: options.opponent.name,
-    opponentAbbrev: options.opponent.abbrev,
-    home: options.home,
-    played: false,
-    result: null,
-    ourScore: null,
-    opponentScore: null,
-    competition: options.competition || "Regular Season",
-    countsForRegularSeason: options.countsForRegularSeason !== false,
-    cupGame: options.cupGame === true,
-    playoffGame: false,
-    playInGame: false,
-    seriesId: options.seriesId || null,
-    parentSeriesId: null,
-    gameNumber: null,
-    topPerformers: []
-  };
-}
-
-
-function assignDatesToNormalRegularSeasonGames(games) {
-  const reservedDateKeys = new Set(
-    games
-      .filter(game => game.cupGame && game.date)
-      .map(game => formatDateKey(game.date))
-  );
-
-  const normalGames = games.filter(game => !game.cupGame);
-
-  const monthlyTargets = getRegularSeasonMonthlyTargets();
-  const normalGamesByMonthTarget = [];
-  let totalNormalTarget = 0;
-
-  for (let target of monthlyTargets) {
-    const cupGamesInMonth = games.filter(game =>
-      game.cupGame &&
-      game.date &&
-      game.countsForRegularSeason !== false &&
-      new Date(game.date).getMonth() === target.month &&
-      new Date(game.date).getFullYear() === gameState.seasonStartYear + target.yearOffset
-    ).length;
-
-    const normalTarget = Math.max(0, target.target - cupGamesInMonth);
-
-    normalGamesByMonthTarget.push({
-      ...target,
-      normalTarget
-    });
-
-    totalNormalTarget += normalTarget;
-  }
-
-  if (totalNormalTarget !== normalGames.length) {
-    const difference = normalGames.length - totalNormalTarget;
-    normalGamesByMonthTarget[normalGamesByMonthTarget.length - 1].normalTarget += difference;
-  }
-
-  let normalIndex = 0;
-
-  for (let target of normalGamesByMonthTarget) {
-    const monthPool = getDatePoolForMonthlyTarget(target, reservedDateKeys);
-    const selectedDates = pickDatesForMonth(monthPool, target.normalTarget);
-
-    for (let date of selectedDates) {
-      if (normalIndex >= normalGames.length) break;
-
-      normalGames[normalIndex].date = new Date(date);
-      reservedDateKeys.add(formatDateKey(date));
-      normalIndex++;
-    }
-  }
-
-  if (normalIndex < normalGames.length) {
-    const fallbackPool = getRegularSeasonDatePoolWithAllStarBreak()
-      .filter(date => !reservedDateKeys.has(formatDateKey(date)));
-
-    for (let date of fallbackPool) {
-      if (normalIndex >= normalGames.length) break;
-
-      normalGames[normalIndex].date = new Date(date);
-      reservedDateKeys.add(formatDateKey(date));
-      normalIndex++;
-    }
-  }
+  return current >= start && current <= end;
 }
 
 function getRegularSeasonMonthlyTargets() {
@@ -254,7 +251,7 @@ function getRegularSeasonMonthlyTargets() {
       key: "october",
       month: 9,
       yearOffset: 0,
-      startDay: 20,
+      startDay: 22,
       endDay: 31,
       target: 5
     },
@@ -323,7 +320,7 @@ function getRegularSeasonDatePoolWithAllStarBreak() {
     const current = new Date(year, target.month, target.startDay);
 
     while (current.getMonth() === target.month && current.getDate() <= lastDay) {
-      if (!isDateDuringAllStarBreak(current)) {
+      if (!fcdIsLeagueNoGameDate(current) && !fcdIsReservedShowcaseDate(current)) {
         dates.push(new Date(current));
       }
 
@@ -343,7 +340,11 @@ function getDatePoolForMonthlyTarget(target, reservedDateKeys = new Set()) {
   while (current.getMonth() === target.month && current.getDate() <= lastDay) {
     const key = formatDateKey(current);
 
-    if (!reservedDateKeys.has(key) && !isDateDuringAllStarBreak(current)) {
+    if (
+      !reservedDateKeys.has(key) &&
+      !fcdIsLeagueNoGameDate(current) &&
+      !fcdIsReservedShowcaseDate(current)
+    ) {
       dates.push(new Date(current));
     }
 
@@ -431,128 +432,6 @@ function pickRealisticSeasonDates(datePool, count) {
   return selected.slice(0, count);
 }
 
-function createGamesAgainstOpponent(opponent, numberOfGames) {
-  const games = [];
-
-  if (numberOfGames === 4) {
-    games.push(createScheduleGame(opponent, true, "Regular Season"));
-    games.push(createScheduleGame(opponent, true, "Regular Season"));
-    games.push(createScheduleGame(opponent, false, "Regular Season"));
-    games.push(createScheduleGame(opponent, false, "Regular Season"));
-  }
-
-  if (numberOfGames === 3) {
-    const homeTwice = Math.random() > 0.5;
-
-    games.push(createScheduleGame(opponent, homeTwice, "Regular Season"));
-    games.push(createScheduleGame(opponent, homeTwice, "Regular Season"));
-    games.push(createScheduleGame(opponent, !homeTwice, "Regular Season"));
-  }
-
-  if (numberOfGames === 2) {
-    games.push(createScheduleGame(opponent, true, "Regular Season"));
-    games.push(createScheduleGame(opponent, false, "Regular Season"));
-  }
-
-  return games;
-}
-
-function createScheduleGame(opponent, home, competition) {
-  return {
-    id: Date.now() + Math.random(),
-    date: null,
-    opponentId: opponent.id,
-    opponentName: opponent.name,
-    opponentAbbrev: opponent.abbrev,
-    home,
-    played: false,
-    result: null,
-    ourScore: null,
-    opponentScore: null,
-    competition,
-    countsForRegularSeason: competition !== "The Cup Final",
-    cupGame: false,
-    playoffGame: false,
-    playInGame: false,
-    seriesId: null,
-    parentSeriesId: null,
-    gameNumber: null,
-    topPerformers: []
-  };
-}
-
-function assignRegularSeasonDates(games) {
-  const seasonStart = new Date(gameState.seasonStartYear, 9, 21); // Oct 21
-  const seasonEnd = new Date(gameState.seasonStartYear + 1, 3, 12); // Apr 12
-
-  const datePool = [];
-
-  const current = new Date(seasonStart);
-
-  while (current <= seasonEnd) {
-    if (!isDateDuringAllStarBreak(current)) {
-      datePool.push(new Date(current));
-    }
-
-    current.setDate(current.getDate() + 1);
-  }
-
-  const selectedDates = pickRegularSeasonDatesWithBackToBacks(datePool, games.length);
-
-  for (let i = 0; i < games.length; i++) {
-    games[i].date = new Date(selectedDates[i]);
-    games[i].played = false;
-    games[i].result = null;
-    games[i].ourScore = null;
-    games[i].opponentScore = null;
-    games[i].competition = "Regular Season";
-    games[i].countsForRegularSeason = true;
-    games[i].cupGame = false;
-    games[i].playoffGame = false;
-    games[i].playInGame = false;
-    games[i].topPerformers = [];
-  }
-
-  return games.sort((a, b) => new Date(a.date) - new Date(b.date));
-}
-
-function pickRegularSeasonDatesWithBackToBacks(datePool, gameCount) {
-  if (gameCount <= 0) return [];
-  if (gameCount >= datePool.length) return datePool.slice(0, gameCount);
-
-  let selectedDates = pickEvenlySpacedDates(datePool, gameCount);
-
-  /*
-    Add some realistic back-to-backs.
-    We keep the same number of games, but move a few games onto the day after another game.
-  */
-
-  const targetBackToBacks = 12;
-  let createdBackToBacks = 0;
-
-  for (let i = 2; i < selectedDates.length - 2; i += 7) {
-    if (createdBackToBacks >= targetBackToBacks) break;
-
-    const previousDate = selectedDates[i - 1];
-    const backToBackDate = addDays(previousDate, 1);
-    const nextDate = selectedDates[i + 1];
-
-    const backToBackIsInPool = datePool.some(date => isSameDate(date, backToBackDate));
-    const alreadyUsed = selectedDates.some(date => isSameDate(date, backToBackDate));
-
-    if (!backToBackIsInPool) continue;
-    if (alreadyUsed) continue;
-    if (isDateDuringAllStarBreak(backToBackDate)) continue;
-    if (backToBackDate >= nextDate) continue;
-
-    selectedDates[i] = backToBackDate;
-    createdBackToBacks++;
-  }
-
-  selectedDates.sort((a, b) => new Date(a) - new Date(b));
-
-  return selectedDates;
-}
 
 function getSeasonPhase() {
   if (!gameState || !gameState.currentDate) return "Unknown";
@@ -579,7 +458,7 @@ function getSeasonPhase() {
   const year = gameState.seasonStartYear;
 
   if (gameState.currentDate < new Date(year, 8, 25)) return "Offseason";
-  if (gameState.currentDate < new Date(year, 9, 20)) return "Training Camp";
+  if (gameState.currentDate < new Date(year, 9, 22)) return "Training Camp";
   if (gameState.currentDate <= new Date(year + 1, 3, 15)) return "Regular Season";
   if (gameState.currentDate <= new Date(year + 1, 3, 20)) return "Play-In";
   if (gameState.currentDate <= new Date(year + 1, 5, 19)) return "Playoffs";
@@ -883,13 +762,28 @@ function processCalendarEvents() {
   if (gameState.processedEvents[key]) return;
 
   const year = gameState.seasonStartYear;
+  const currentYear = new Date(gameState.currentDate).getFullYear();
+
+  if (
+    datesMatch(gameState.currentDate, new Date(currentYear, 7, 18)) &&
+    typeof prepareLeagueScheduleRelease === "function"
+  ) {
+    prepareLeagueScheduleRelease(currentYear);
+    addInboxMessage(
+      "Schedule Released",
+      `The ${getSeasonLabel(currentYear)} full league schedule and Cup groups are now available.`,
+      "event"
+    );
+    gameState.processedEvents[key] = true;
+    return;
+  }
 
   const events = [
     { date: new Date(year, 8, 25), title: "Training Camp Opens", body: "Training camp has opened. This is the time to establish your team identity.", type: "event" },
-    { date: new Date(year, 9, 20), title: "Opening Night", body: "Opening night has arrived. The regular season begins now.", type: "event" },
-    { date: new Date(year, 11, 8), title: "The Cup Knockout Stage", body: "The Cup knockout stage is being set.", type: "event" },
-    { date: new Date(year + 1, 1, 8), title: "Trade Deadline", body: "Today is the trade deadline. Transfers are still a future system.", type: "event" },
-    { date: new Date(year + 1, 1, 16), title: "All-Star Break", body: "The league has reached the All-Star break. Review your team direction.", type: "event" },
+    { date: new Date(year, 9, 22), title: "Opening Night", body: "Opening night has arrived. The regular season begins now.", type: "event" },
+    { date: new Date(year, 11, 9), title: "The Cup Knockout Stage", body: "The Cup knockout stage is being set.", type: "event" },
+    { date: new Date(year + 1, 1, 5), title: "Trade Deadline", body: "Today is the trade deadline.", type: "event" },
+    { date: getAllStarBreakStartDate(), title: "All-Star Break", body: "The league has reached the All-Star break. Review your team direction.", type: "event" },
     { date: new Date(year + 1, 3, 15), title: "Regular Season Ends", body: "The regular season ends today. The postseason race is now final.", type: "event" },
     { date: new Date(year + 1, 3, 16), title: "Play-In Tournament Begins", body: "The Play-In Tournament begins.", type: "event" },
     { date: new Date(year + 1, 3, 21), title: "Playoffs Begin", body: "The playoffs begin.", type: "event" },
@@ -1142,16 +1036,24 @@ gameState.seasonStartYear = nextSeasonStartYear;
 gameState.seasonLabel = getSeasonLabel(nextSeasonStartYear);
 gameState.currentDate = new Date(nextSeasonStartYear, 8, 25);
 
+  const releasedSchedule =
+    gameState.pendingLeagueSchedule &&
+    Number(gameState.pendingLeagueSchedule.seasonStartYear) === nextSeasonStartYear
+      ? gameState.pendingLeagueSchedule
+      : null;
+
   agePlayersForNewSeason();
   resetTeamRecordsForNewSeason();
 
   gameState.userSchedule = [];
+  gameState.leagueSchedule = releasedSchedule ? releasedSchedule.leagueSchedule : [];
+  gameState.leagueScheduleMeta = releasedSchedule ? releasedSchedule.leagueScheduleMeta : null;
   gameState.rotation = null;
   gameState.teamStats = {};
   gameState.processedEvents = {};
   gameState.salaryCap = SALARY_CAP;
 
-  gameState.cup = createCupState();
+  gameState.cup = releasedSchedule ? releasedSchedule.cup : createCupState();
   gameState.playoffs = createEmptyPlayoffState();
   gameState.awardsCeremony = null;
   gameState.seasonReadyForRollover = false;
@@ -1168,6 +1070,7 @@ gameState.currentDate = new Date(nextSeasonStartYear, 8, 25);
   gameState.userSchedule = createRealisticUserSchedule(gameState.selectedTeamId);
   assignCupGamesToUserSchedule();
   validateUserSchedule82();
+  gameState.pendingLeagueSchedule = null;
 
   gameState.draft = createDraftState(gameState.seasonStartYear);
   validateDraftClass();
@@ -1480,52 +1383,6 @@ function updateAllPlayerLabelsAndTypes() {
   }
 }
 
-function cleanUserRegularSeasonSchedule() {
-  if (!gameState || !gameState.userSchedule) return;
-
-  const keptRegularGames = [];
-  const removedGameIds = new Set();
-  const usedDateKeys = new Set();
-
-  const regularGames = gameState.userSchedule
-    .filter(game =>
-      !game.cupGame &&
-      !game.playoffGame &&
-      !game.playInGame &&
-      game.countsForRegularSeason !== false
-    )
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  for (let game of regularGames) {
-    const dateKey = formatDateKey(game.date);
-
-    if (game.played) {
-      keptRegularGames.push(game);
-      usedDateKeys.add(dateKey);
-      continue;
-    }
-
-    if (keptRegularGames.length >= 82) {
-      removedGameIds.add(game.id);
-      continue;
-    }
-
-    if (usedDateKeys.has(dateKey)) {
-      removedGameIds.add(game.id);
-      continue;
-    }
-
-    keptRegularGames.push(game);
-    usedDateKeys.add(dateKey);
-  }
-
-  if (removedGameIds.size > 0) {
-    gameState.userSchedule = gameState.userSchedule.filter(game => !removedGameIds.has(game.id));
-
-    console.log(`Schedule cleanup removed ${removedGameIds.size} duplicate or extra regular-season game(s).`);
-  }
-}
-
 function getUserRegularSeasonGamesPlayed() {
   const selectedTeam = getSelectedTeam();
   if (!selectedTeam) return 0;
@@ -1540,93 +1397,6 @@ function isUserRegularSeasonGame(game) {
     !game.playInGame &&
     game.countsForRegularSeason !== false
   );
-}
-
-function rebuildUserScheduleToClean82() {
-  if (!gameState || !gameState.userSchedule) return;
-
-  const countableGames = gameState.userSchedule.filter(game =>
-    !game.playoffGame &&
-    !game.playInGame &&
-    game.countsForRegularSeason !== false
-  );
-
-  const cupGames = countableGames.filter(game => game.cupGame);
-  const normalGames = countableGames.filter(game => !game.cupGame);
-
-  const normalGamesNeeded = Math.max(0, 82 - cupGames.length);
-
-  const keptNormalGames = normalGames
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, normalGamesNeeded);
-
-  const keptCountableIds = new Set();
-
-  for (let game of cupGames) {
-    keptCountableIds.add(game.id);
-  }
-
-  for (let game of keptNormalGames) {
-    keptCountableIds.add(game.id);
-  }
-
-  gameState.userSchedule = gameState.userSchedule.filter(game => {
-    const isCountable =
-      !game.playoffGame &&
-      !game.playInGame &&
-      game.countsForRegularSeason !== false;
-
-    if (!isCountable) return true;
-
-    return keptCountableIds.has(game.id);
-  });
-
-  spreadUserRegularSeasonGames();
-}
-
-function spreadUserRegularSeasonGames() {
-  if (!gameState || !gameState.userSchedule) return;
-
-  const countableGames = gameState.userSchedule.filter(game =>
-    !game.playoffGame &&
-    !game.playInGame &&
-    game.countsForRegularSeason !== false
-  );
-
-  const cupGames = countableGames.filter(game => game.cupGame);
-  const normalGames = countableGames
-    .filter(game => !game.cupGame)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const reservedDateKeys = new Set(
-    cupGames.map(game => formatDateKey(game.date))
-  );
-
-  const datePool = getCleanRegularSeasonDatePool()
-    .filter(date => !reservedDateKeys.has(formatDateKey(date)));
-
-  const selectedDates = pickEvenlySpacedDates(datePool, normalGames.length);
-
-  for (let i = 0; i < normalGames.length; i++) {
-    normalGames[i].date = new Date(selectedDates[i]);
-  }
-
-  gameState.userSchedule.sort((a, b) => new Date(a.date) - new Date(b.date));
-}
-
-function getCleanRegularSeasonDatePool() {
-  const dates = [];
-  const startDate = new Date(gameState.seasonStartYear, 9, 21);
-  const endDate = new Date(gameState.seasonStartYear + 1, 3, 12);
-
-  const current = new Date(startDate);
-
-  while (current <= endDate) {
-    dates.push(new Date(current));
-    current.setDate(current.getDate() + 1);
-  }
-
-  return dates;
 }
 
 function pickEvenlySpacedDates(datePool, count) {
@@ -1673,12 +1443,6 @@ function debugUserScheduleCount() {
   console.log("Cup countable games:", cupCountable.length);
 }
 
-function removeCancelledGamesFromUserScheduleDisplay() {
-  if (!gameState || !gameState.userSchedule) return;
-
-  gameState.userSchedule = gameState.userSchedule.filter(game => !game.cancelled);
-}
-
 function processAllStarBreakToday() {
   if (!gameState.started) return;
 
@@ -1691,7 +1455,7 @@ function processAllStarBreakToday() {
   if (isSameDate(gameState.currentDate, start)) {
     addInboxMessage(
       "All-Star Break Begins",
-      `The league is now on All-Star break. Games resume on ${formatDate(addDays(end, 0))}.`,
+      `The league is now on All-Star break. Games resume on ${formatDate(addDays(end, 1))}.`,
       "event",
       false
     );
@@ -1702,7 +1466,7 @@ function processAllStarBreakToday() {
 
 function isSummerLeaguePeriod() {
   const dateKey = getCurrentDateKey();
-  return dateKey >= 708 && dateKey <= 720;
+  return dateKey >= 712 && dateKey <= 722;
 }
 
 function getOffseasonPhaseLabel() {
@@ -1755,7 +1519,7 @@ function getOffseasonPhaseLabel() {
   }
 
   if (isSummerLeaguePeriod()) {
-    const summerLeagueStart = new Date(gameState.seasonStartYear, 6, 8);
+    const summerLeagueStart = new Date(gameState.seasonStartYear, 6, 12);
     const dayNumber = Math.floor((gameState.currentDate - summerLeagueStart) / (1000 * 60 * 60 * 24)) + 1;
     return `Summer League: Day ${Math.max(1, dayNumber)}`;
   }
@@ -2713,59 +2477,102 @@ function fcdCreateLeagueScheduleGame(options) {
 function fcdBuildSameConferenceFourGamePairs(teams) {
   const fourGamePairs = new Set();
 
-  const conferences = ["East", "West"];
+  for (let conference of ["East", "West"]) {
+    const divisions = {};
 
-  for (let conference of conferences) {
-    const confTeams = teams
+    teams
       .filter(team => String(team.conference) === conference)
-      .sort((a, b) => Number(a.id) - Number(b.id));
+      .forEach(team => {
+        const division = String(team.hiddenDivision || "Division");
+        if (!divisions[division]) divisions[division] = [];
+        divisions[division].push(team);
+      });
 
-    const candidates = [];
+    const divisionGroups = Object.values(divisions)
+      .map(group => group.sort((a, b) => Number(a.id) - Number(b.id)));
 
-    for (let i = 0; i < confTeams.length; i++) {
-      for (let j = i + 1; j < confTeams.length; j++) {
-        const a = confTeams[i];
-        const b = confTeams[j];
+    for (let aIndex = 0; aIndex < divisionGroups.length; aIndex++) {
+      for (let bIndex = aIndex + 1; bIndex < divisionGroups.length; bIndex++) {
+        const groupA = divisionGroups[aIndex];
+        const groupB = divisionGroups[bIndex];
+        const rotation = fcdStableHash(
+          `${gameState.seasonLabel}_${conference}_${aIndex}_${bIndex}`
+        ) % groupB.length;
 
-        if (a.hiddenDivision === b.hiddenDivision) continue;
-
-        candidates.push({
-          a,
-          b,
-          score: fcdStableHash(`${gameState.seasonLabel}_${conference}_${a.id}_${b.id}`)
+        groupA.forEach((teamA, teamIndex) => {
+          for (let offset = 0; offset < 3; offset++) {
+            const teamB = groupB[(teamIndex + rotation + offset) % groupB.length];
+            fourGamePairs.add(fcdPairKey(teamA.id, teamB.id));
+          }
         });
       }
-    }
-
-    candidates.sort((a, b) => a.score - b.score);
-
-    const degree = {};
-    confTeams.forEach(team => {
-      degree[team.id] = 0;
-    });
-
-    let safety = 0;
-
-    while (Object.values(degree).some(value => value < 6) && safety < 20) {
-      safety++;
-
-      for (let item of candidates) {
-        if (degree[item.a.id] >= 6 || degree[item.b.id] >= 6) continue;
-
-        const key = fcdPairKey(item.a.id, item.b.id);
-
-        if (fourGamePairs.has(key)) continue;
-
-        fourGamePairs.add(key);
-        degree[item.a.id]++;
-        degree[item.b.id]++;
-      }
-
-      candidates.reverse();
     }
   }
 
   return fourGamePairs;
+}
+
+function fcdChooseBalancedExtraHomeTeams(threeGamePairs) {
+  const result = new Map();
+
+  for (let conference of ["East", "West"]) {
+    const pairs = threeGamePairs.filter(pair =>
+      String(pair.teamA.conference) === conference
+    );
+    const outgoing = {};
+    const remaining = {};
+
+    pairs.forEach(pair => {
+      outgoing[pair.teamA.id] = 0;
+      outgoing[pair.teamB.id] = 0;
+      remaining[pair.teamA.id] = Number(remaining[pair.teamA.id] || 0) + 1;
+      remaining[pair.teamB.id] = Number(remaining[pair.teamB.id] || 0) + 1;
+    });
+
+    function assign(index) {
+      if (index >= pairs.length) {
+        return Object.values(outgoing).every(count => count === 2);
+      }
+
+      const pair = pairs[index];
+      const choices = [pair.teamA.id, pair.teamB.id]
+        .sort((a, b) => outgoing[a] - outgoing[b]);
+
+      for (let homeId of choices) {
+        const otherId = Number(homeId) === Number(pair.teamA.id)
+          ? pair.teamB.id
+          : pair.teamA.id;
+
+        if (outgoing[homeId] >= 2) continue;
+
+        outgoing[homeId]++;
+        remaining[pair.teamA.id]--;
+        remaining[pair.teamB.id]--;
+
+        const feasible =
+          outgoing[otherId] + remaining[otherId] >= 2 &&
+          outgoing[homeId] + remaining[homeId] >= 2;
+
+        if (feasible) {
+          result.set(fcdPairKey(pair.teamA.id, pair.teamB.id), Number(homeId));
+          if (assign(index + 1)) return true;
+          result.delete(fcdPairKey(pair.teamA.id, pair.teamB.id));
+        }
+
+        outgoing[homeId]--;
+        remaining[pair.teamA.id]++;
+        remaining[pair.teamB.id]++;
+      }
+
+      return false;
+    }
+
+    if (!assign(0)) {
+      console.warn(`Could not perfectly balance three-game home assignments for ${conference}.`);
+    }
+  }
+
+  return result;
 }
 
 function fcdCreateRawLeagueMatchups() {
@@ -2841,23 +2648,15 @@ function fcdCreateRawLeagueMatchups() {
         fcdStableHash(`${b.teamA.id}_${b.teamB.id}_${gameState.seasonLabel}`);
     });
 
+  const balancedExtraHomes = fcdChooseBalancedExtraHomeTeams(sortedThreeGamePairs);
+
   for (let pair of sortedThreeGamePairs) {
     addGame(pair.teamA.id, pair.teamB.id);
     addGame(pair.teamB.id, pair.teamA.id);
 
-    const aNeedsExtra = extraHomeCounts[pair.teamA.id] < 2;
-    const bNeedsExtra = extraHomeCounts[pair.teamB.id] < 2;
-
-    let extraHomeTeamId = pair.teamA.id;
-
-    if (aNeedsExtra && bNeedsExtra) {
-      extraHomeTeamId =
-        extraHomeCounts[pair.teamA.id] <= extraHomeCounts[pair.teamB.id]
-          ? pair.teamA.id
-          : pair.teamB.id;
-    } else if (!aNeedsExtra && bNeedsExtra) {
-      extraHomeTeamId = pair.teamB.id;
-    }
+    const extraHomeTeamId =
+      balancedExtraHomes.get(fcdPairKey(pair.teamA.id, pair.teamB.id)) ||
+      pair.teamA.id;
 
     const awayTeamId = Number(extraHomeTeamId) === Number(pair.teamA.id)
       ? pair.teamB.id
@@ -2922,11 +2721,11 @@ function fcdBalanceLeagueScheduleHomeAway(games) {
 
 function fcdGetLeagueCupGroupDates() {
   return [
-    new Date(gameState.seasonStartYear, 10, 3),
-    new Date(gameState.seasonStartYear, 10, 7),
-    new Date(gameState.seasonStartYear, 10, 14),
-    new Date(gameState.seasonStartYear, 10, 21),
-    new Date(gameState.seasonStartYear, 10, 28)
+    new Date(gameState.seasonStartYear, 10, 11),
+    new Date(gameState.seasonStartYear, 10, 18),
+    new Date(gameState.seasonStartYear, 10, 25),
+    new Date(gameState.seasonStartYear, 11, 2),
+    new Date(gameState.seasonStartYear, 11, 3)
   ];
 }
 
@@ -3046,6 +2845,29 @@ function fcdCreateMonthlyRemainingTargets() {
   return remaining;
 }
 
+function fcdIsLeagueNoGameDate(dateValue) {
+  const date = new Date(dateValue);
+  const electionDay = getElectionDayDate(gameState.seasonStartYear);
+  const ncaaFinal = getNcaaChampionshipDate(gameState.seasonStartYear + 1);
+
+  return (
+    fcdSameDate(date, electionDay) ||
+    fcdSameDate(date, ncaaFinal) ||
+    isDateDuringAllStarBreak(date)
+  );
+}
+
+function fcdIsReservedShowcaseDate(dateValue) {
+  const date = new Date(dateValue);
+  const year = gameState.seasonStartYear;
+
+  return (
+    fcdSameDate(date, new Date(year, 11, 25)) ||
+    fcdSameDate(date, new Date(year + 1, 0, 16)) ||
+    fcdSameDate(date, new Date(year + 1, 3, 15))
+  );
+}
+
 function fcdDecrementMonthlyTarget(remaining, teamId, dateValue) {
   const date = new Date(dateValue);
   const key = `${date.getFullYear()}_${date.getMonth()}`;
@@ -3062,7 +2884,7 @@ function fcdGetDatePoolForTarget(target) {
   const current = new Date(year, target.month, target.startDay);
 
   while (current.getMonth() === target.month && current.getDate() <= lastDay) {
-    if (!isDateDuringAllStarBreak(current)) {
+    if (!fcdIsLeagueNoGameDate(current) && !fcdIsReservedShowcaseDate(current)) {
       dates.push(new Date(current));
     }
 
@@ -3104,6 +2926,176 @@ function fcdFindBestDateForLeagueGame(game, target, usedTeamsByDate, gamesByDate
   }
 
   return null;
+}
+
+function fcdGetRosterStrengthForSchedule(team) {
+  const roster = gameState.rosters && Array.isArray(gameState.rosters[team.id])
+    ? gameState.rosters[team.id]
+    : [];
+
+  const topPlayers = roster
+    .map(player => Number(player.currentAbility || 0))
+    .filter(value => value > 0)
+    .sort((a, b) => b - a)
+    .slice(0, 8);
+
+  if (topPlayers.length) {
+    return topPlayers.reduce((total, value) => total + value, 0) / topPlayers.length;
+  }
+
+  return Number(team.teamStrength || 0);
+}
+
+function fcdFindAvailableMatchup(games, teamAId, teamBId) {
+  return games.find(game => {
+    if (game.cupGame || game.fcdSpecialDate) return false;
+
+    return (
+      (Number(game.homeTeamId) === Number(teamAId) && Number(game.awayTeamId) === Number(teamBId)) ||
+      (Number(game.homeTeamId) === Number(teamBId) && Number(game.awayTeamId) === Number(teamAId))
+    );
+  }) || null;
+}
+
+function fcdMoveMatchupToSpecialDate(game, date, label) {
+  if (!game) return false;
+
+  game.date = new Date(date);
+  game.fcdSpecialDate = label;
+  return true;
+}
+
+function fcdAssignChristmasGames(games) {
+  const teams = fcdGetTeamsForScheduleGeneration()
+    .slice()
+    .sort((a, b) =>
+      fcdGetRosterStrengthForSchedule(b) - fcdGetRosterStrengthForSchedule(a)
+    )
+    .slice(0, 10);
+  const date = new Date(gameState.seasonStartYear, 11, 25);
+
+  for (let index = 0; index < teams.length; index += 2) {
+    const game = fcdFindAvailableMatchup(games, teams[index].id, teams[index + 1].id);
+
+    if (!fcdMoveMatchupToSpecialDate(game, date, "Christmas Day")) {
+      console.warn("Could not schedule Christmas matchup:", teams[index].name, teams[index + 1].name);
+    }
+  }
+}
+
+function fcdResolveRivalryTeam(name, usedIds) {
+  const teams = fcdGetTeamsForScheduleGeneration();
+  const normalized = String(name).toLowerCase();
+  const city = normalized.split(" ")[0];
+
+  return teams.find(team =>
+    !usedIds.has(Number(team.id)) &&
+    String(team.name).toLowerCase() === normalized
+  ) || teams.find(team =>
+    !usedIds.has(Number(team.id)) &&
+    String(team.name).toLowerCase().startsWith(`${city} `)
+  ) || null;
+}
+
+function fcdGetRivalryPairs() {
+  const requestedPairs = [
+    ["Boston Harbor", "New York Empire"],
+    ["Philadelphia Liberty", "Brooklyn Bridges"],
+    ["Toronto North", "Detroit Engines"],
+    ["Cleveland Rockers", "Chicago Wind"],
+    ["Indiana Racers", "Milwaukee Stags"],
+    ["Miami Wave", "Orlando Stars"],
+    ["Atlanta Flight", "Charlotte Swarm"],
+    ["Washington Monuments", "New Orleans Krewe"],
+    ["Dallas Wranglers", "Houston Launch"],
+    ["San Antonio Marshals", "Oklahoma Storm"],
+    ["Denver Peaks", "Utah Peaks"],
+    ["Phoenix Firebirds", "Minnesota Frost"],
+    ["Los Angeles Legends", "Los Angeles Surf"],
+    ["Golden State Guardians", "Sacramento Royals"],
+    ["Portland Pioneers", "Memphis Blues"]
+  ];
+  const usedIds = new Set();
+  const pairs = [];
+
+  requestedPairs.forEach(([aName, bName]) => {
+    const teamA = fcdResolveRivalryTeam(aName, usedIds);
+    if (teamA) usedIds.add(Number(teamA.id));
+
+    const teamB = fcdResolveRivalryTeam(bName, usedIds);
+    if (teamB) usedIds.add(Number(teamB.id));
+
+    if (teamA && teamB) {
+      pairs.push([teamA, teamB]);
+    } else {
+      console.warn("Rivalry team match failed:", aName, bName);
+    }
+  });
+
+  const unusedTeams = fcdGetTeamsForScheduleGeneration()
+    .filter(team => !usedIds.has(Number(team.id)));
+
+  for (let index = 0; index + 1 < unusedTeams.length; index += 2) {
+    pairs.push([unusedTeams[index], unusedTeams[index + 1]]);
+  }
+
+  return pairs;
+}
+
+function fcdAssignRivalsWeekGames(games) {
+  const date = new Date(gameState.seasonStartYear + 1, 0, 16);
+
+  fcdGetRivalryPairs().forEach(([teamA, teamB]) => {
+    const game = fcdFindAvailableMatchup(games, teamA.id, teamB.id);
+
+    if (!fcdMoveMatchupToSpecialDate(game, date, "Rivals Week")) {
+      console.warn("Could not schedule rivalry matchup:", teamA.name, teamB.name);
+    }
+  });
+}
+
+function fcdFindFinalDayPairing(games, remainingTeams, pairs = []) {
+  if (!remainingTeams.length) return pairs;
+
+  const teamA = remainingTeams[0];
+
+  for (let index = 1; index < remainingTeams.length; index++) {
+    const teamB = remainingTeams[index];
+    const game = fcdFindAvailableMatchup(games, teamA.id, teamB.id);
+    if (!game) continue;
+
+    const nextTeams = remainingTeams.filter((team, teamIndex) =>
+      teamIndex !== 0 && teamIndex !== index
+    );
+    const result = fcdFindFinalDayPairing(games, nextTeams, [...pairs, [game]]);
+    if (result) return result;
+  }
+
+  return null;
+}
+
+function fcdAssignFinalDayGames(games) {
+  const teams = fcdGetTeamsForScheduleGeneration()
+    .slice()
+    .sort((a, b) => Number(a.id) - Number(b.id));
+  const pairings = fcdFindFinalDayPairing(games, teams);
+  const date = new Date(gameState.seasonStartYear + 1, 3, 15);
+
+  if (!pairings || pairings.length !== 15) {
+    console.warn("Could not create a complete 15-game final day.");
+    return;
+  }
+
+  pairings.forEach(([game]) => {
+    fcdMoveMatchupToSpecialDate(game, date, "Regular Season Final Day");
+  });
+}
+
+function fcdAssignLeagueShowcaseDates(games) {
+  fcdAssignChristmasGames(games);
+  fcdAssignRivalsWeekGames(games);
+  fcdAssignFinalDayGames(games);
+  games.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function fcdAssignLeagueScheduleDates(games) {
@@ -3209,6 +3201,8 @@ function fcdAssignLeagueScheduleDates(games) {
   games.forEach(game => {
     fcdGetLeagueScheduleTime(game);
   });
+
+  fcdAssignLeagueShowcaseDates(games);
 }
 
 function fcdSetUserViewFieldsOnLeagueGame(game) {
@@ -3283,6 +3277,66 @@ function validateLeagueSchedule82() {
 
   if (badCounts.length) console.warn("Some teams do not have exactly 82 games:", badCounts);
   if (badHomeCounts.length) console.warn("Some teams do not have exactly 41 home games:", badHomeCounts);
+
+  const report = getLeagueScheduleValidationReport();
+  console.log("League schedule rules:", report);
+
+  if (report.duplicateTeamDates.length) {
+    console.warn("Teams have multiple games on the same date:", report.duplicateTeamDates);
+  }
+
+  if (report.electionDayGames || report.allStarBreakGames || report.ncaaChampionshipGames) {
+    console.warn("Games were found on a league blackout date:", report);
+  }
+
+  if (report.christmasGames !== 5 || report.rivalsWeekGames !== 15 || report.finalDayGames !== 15) {
+    console.warn("A showcase date has the wrong game count:", report);
+  }
+}
+
+function getLeagueScheduleValidationReport() {
+  if (!gameState || !Array.isArray(gameState.leagueSchedule)) return null;
+
+  const games = gameState.leagueSchedule;
+  const gamesByDate = {};
+  const teamsByDate = {};
+  const year = gameState.seasonStartYear;
+  const allStar = getAllStarBreakDatesForSeason(year);
+
+  games.forEach(game => {
+    const dateKey = fcdDateKey(game.date);
+    gamesByDate[dateKey] = Number(gamesByDate[dateKey] || 0) + 1;
+    if (!teamsByDate[dateKey]) teamsByDate[dateKey] = [];
+    teamsByDate[dateKey].push(Number(game.homeTeamId), Number(game.awayTeamId));
+  });
+
+  const duplicateTeamDates = Object.entries(teamsByDate)
+    .filter(([, teamIds]) => new Set(teamIds).size !== teamIds.length)
+    .map(([dateKey]) => dateKey);
+
+  const countGamesInRange = (start, end) => games.filter(game => {
+    const date = new Date(game.date);
+    return date >= start && date <= end;
+  }).length;
+
+  return {
+    totalLeagueGames: games.length,
+    userGames: Array.isArray(gameState.userSchedule) ? gameState.userSchedule.length : 0,
+    duplicateTeamDates,
+    electionDayGames: Number(gamesByDate[fcdDateKey(getElectionDayDate(year))] || 0),
+    allStarBreakGames: countGamesInRange(allStar.start, allStar.end),
+    ncaaChampionshipGames: Number(gamesByDate[fcdDateKey(getNcaaChampionshipDate(year + 1))] || 0),
+    christmasGames: Number(gamesByDate[fcdDateKey(new Date(year, 11, 25))] || 0),
+    rivalsWeekGames: Number(gamesByDate[fcdDateKey(new Date(year + 1, 0, 16))] || 0),
+    finalDayGames: Number(gamesByDate[fcdDateKey(new Date(year + 1, 3, 15))] || 0),
+    cupDates: games
+      .filter(game => game.cupGame)
+      .reduce((totals, game) => {
+        const dateKey = fcdDateKey(game.date);
+        totals[dateKey] = Number(totals[dateKey] || 0) + 1;
+        return totals;
+      }, {})
+  };
 }
 
 function initializeLeagueScheduleForSeason() {
@@ -3302,13 +3356,63 @@ function initializeLeagueScheduleForSeason() {
     seasonLabel: gameState.seasonLabel,
     seasonStartYear: gameState.seasonStartYear,
     generatedAt: new Date().toISOString(),
-    version: 1
+    version: 2
   };
 
   syncUserScheduleFromLeagueSchedule();
   validateLeagueSchedule82();
 
   return gameState.leagueSchedule;
+}
+
+function prepareLeagueScheduleRelease(targetSeasonStartYear) {
+  if (!gameState || !gameState.started) return null;
+
+  const targetYear = Number(targetSeasonStartYear);
+
+  if (
+    gameState.pendingLeagueSchedule &&
+    Number(gameState.pendingLeagueSchedule.seasonStartYear) === targetYear
+  ) {
+    return gameState.pendingLeagueSchedule;
+  }
+
+  const activeState = {
+    seasonStartYear: gameState.seasonStartYear,
+    seasonLabel: gameState.seasonLabel,
+    cup: gameState.cup,
+    leagueSchedule: gameState.leagueSchedule,
+    leagueScheduleMeta: gameState.leagueScheduleMeta,
+    userSchedule: gameState.userSchedule
+  };
+
+  gameState.seasonStartYear = targetYear;
+  gameState.seasonLabel = getSeasonLabel(targetYear);
+  gameState.cup = createCupState();
+  gameState.leagueSchedule = [];
+  gameState.leagueScheduleMeta = null;
+  gameState.userSchedule = [];
+
+  initializeLeagueScheduleForSeason();
+
+  const releasedSchedule = {
+    seasonStartYear: targetYear,
+    seasonLabel: gameState.seasonLabel,
+    generatedAt: new Date().toISOString(),
+    leagueSchedule: gameState.leagueSchedule,
+    leagueScheduleMeta: gameState.leagueScheduleMeta,
+    cup: gameState.cup
+  };
+
+  gameState.seasonStartYear = activeState.seasonStartYear;
+  gameState.seasonLabel = activeState.seasonLabel;
+  gameState.cup = activeState.cup;
+  gameState.leagueSchedule = activeState.leagueSchedule;
+  gameState.leagueScheduleMeta = activeState.leagueScheduleMeta;
+  gameState.userSchedule = activeState.userSchedule;
+  gameState.pendingLeagueSchedule = releasedSchedule;
+
+  return releasedSchedule;
 }
 
 function ensureLeagueScheduleForCurrentSeason() {
@@ -3318,7 +3422,11 @@ function ensureLeagueScheduleForCurrentSeason() {
     !Array.isArray(gameState.leagueSchedule) ||
     gameState.leagueSchedule.length < 1000 ||
     !gameState.leagueScheduleMeta ||
-    gameState.leagueScheduleMeta.seasonLabel !== gameState.seasonLabel;
+    gameState.leagueScheduleMeta.seasonLabel !== gameState.seasonLabel ||
+    (
+      Number(gameState.leagueScheduleMeta.version || 0) < 2 &&
+      !gameState.leagueSchedule.some(game => game.played)
+    );
 
   if (needsSchedule) {
     return initializeLeagueScheduleForSeason();
@@ -3525,7 +3633,7 @@ function processOtherTeamGamesToday() {
 
   const currentDate = new Date(gameState.currentDate);
 
-  if (currentDate < new Date(gameState.seasonStartYear, 9, 20)) return;
+  if (currentDate < new Date(gameState.seasonStartYear, 9, 22)) return;
   if (currentDate > new Date(gameState.seasonStartYear + 1, 3, 15)) return;
 
   const key = `league_schedule_games_${formatDateKey(currentDate)}`;

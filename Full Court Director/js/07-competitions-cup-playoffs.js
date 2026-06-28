@@ -70,14 +70,21 @@ function getUserCupGroupOpponents(selectedTeamId) {
 
 function getCupGroupDates() {
   return [
-    new Date(gameState.seasonStartYear, 10, 3),
-    new Date(gameState.seasonStartYear, 10, 7),
-    new Date(gameState.seasonStartYear, 10, 14),
-    new Date(gameState.seasonStartYear, 10, 21)
+    new Date(gameState.seasonStartYear, 10, 11),
+    new Date(gameState.seasonStartYear, 10, 18),
+    new Date(gameState.seasonStartYear, 10, 25),
+    new Date(gameState.seasonStartYear, 11, 2)
   ];
 }
 
 function assignCupGamesToUserSchedule() {
+  if (gameState && Array.isArray(gameState.leagueSchedule) && gameState.leagueSchedule.length) {
+    if (typeof syncUserScheduleFromLeagueSchedule === "function") {
+      syncUserScheduleFromLeagueSchedule();
+    }
+    return;
+  }
+
   if (!gameState || !gameState.userSchedule || !gameState.cup) return;
 
   const userId = Number(gameState.selectedTeamId);
@@ -90,10 +97,10 @@ function assignCupGamesToUserSchedule() {
     .slice(0, 4);
 
   const cupTargetDates = [
-    new Date(gameState.seasonStartYear, 10, 4),
     new Date(gameState.seasonStartYear, 10, 11),
     new Date(gameState.seasonStartYear, 10, 18),
-    new Date(gameState.seasonStartYear, 10, 25)
+    new Date(gameState.seasonStartYear, 10, 25),
+    new Date(gameState.seasonStartYear, 11, 2)
   ];
 
   cupOpponentIds.forEach((opponentId, index) => {
@@ -546,7 +553,7 @@ function validateUserSchedule82() {
     console.warn("Games by Dec 31 should be 31 or 32:", gamesByEndOfCalendarYear);
   }
 
-  const seasonStart = new Date(gameState.seasonStartYear, 9, 20);
+  const seasonStart = new Date(gameState.seasonStartYear, 9, 22);
   const seasonEnd = new Date(gameState.seasonStartYear + 1, 3, 14, 23, 59, 59);
 
   if (firstGame && firstGame < seasonStart) {
@@ -708,7 +715,7 @@ function advanceCupBracketIfNeeded() {
     const final = createCupKnockoutGame(
       winners[0],
       winners[1],
-      new Date(gameState.seasonStartYear, 11, 16),
+      new Date(gameState.seasonStartYear, 11, 15),
       "The Cup Final"
     );
 

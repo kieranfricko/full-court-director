@@ -69,6 +69,7 @@ const navigationSections = {
   defaultScreen: "calendar-screen",
   tabs: [
     { label: "Calendar", screenId: "calendar-screen" },
+    { label: "Key Dates", screenId: "key-dates-screen" },
     { label: "Team Schedule", screenId: "schedule-screen" },
     { label: "League Schedule", screenId: "league-schedule-screen" }
   ]
@@ -147,6 +148,13 @@ const navigationSections = {
   }
 };
 
+function shouldHideSecondaryNav(sectionKey, screenId) {
+  return (
+    sectionKey === "front-office" &&
+    screenId === "front-office-overview-screen"
+  );
+}
+
 function showMainSection(sectionKey) {
   const section = navigationSections[sectionKey];
 
@@ -167,11 +175,19 @@ function showMainSection(sectionKey) {
     button.classList.toggle("active", button.dataset.section === sectionKey);
   }
 
-  renderSecondaryNav(sectionKey);
-
-  if (section.defaultScreen) {
-    showSecondaryScreen(section.defaultScreen);
+if (section.defaultScreen) {
+  if (shouldHideSecondaryNav(sectionKey, section.defaultScreen)) {
+    const nav = document.getElementById("secondary-nav");
+    if (nav) {
+      nav.innerHTML = "";
+      nav.style.display = "none";
+    }
+  } else {
+    renderSecondaryNav(sectionKey);
   }
+
+  showSecondaryScreen(section.defaultScreen);
+}
 
   if (sectionKey === "gameplan") {
     setTimeout(() => {
@@ -217,6 +233,25 @@ function renderSecondaryNav(sectionKey) {
 
 function showSecondaryScreen(screenId) {
   currentSecondaryScreen = screenId;
+
+  const nav = document.getElementById("secondary-nav");
+
+if (nav) {
+  if (shouldHideSecondaryNav(currentMainSection, screenId)) {
+    nav.innerHTML = "";
+    nav.style.display = "none";
+  } else {
+    nav.style.display = "";
+
+    if (
+      nav.children.length === 0 &&
+      currentMainSection &&
+      navigationSections[currentMainSection]
+    ) {
+      renderSecondaryNav(currentMainSection);
+    }
+  }
+}
 
   const screens = document.querySelectorAll(".screen");
 
@@ -328,6 +363,10 @@ if (screenId === "rookie-signing-screen") {
 
 if (screenId === "trade-deadline-screen") {
   displayTradeDeadline();
+}
+
+if (screenId === "key-dates-screen") {
+  displayKeyDatesScreen();
 }
 
 if (screenId === "trade-block-screen") {
@@ -685,24 +724,16 @@ played: game.played
     }
   }
 
-  const year = gameState.seasonStartYear;
-
-  const events = [
-    { date: new Date(year, 5, 20), name: "Draft Night" },
-    { date: new Date(year, 8, 25), name: "Training Camp" },
-    { date: new Date(year, 9, 20), name: "Opening Night" },
-    { date: new Date(year, 11, 9), name: "The Cup QF" },
-    { date: new Date(year, 11, 13), name: "The Cup SF" },
-    { date: new Date(year, 11, 16), name: "The Cup Final" },
-    { date: new Date(year + 1, 3, 16), name: "Play-In Begins" },
-    { date: new Date(year + 1, 3, 21), name: "Playoffs Begin" },
-    { date: new Date(year + 1, 5, 3), name: "The Finals Begin" }
-  ];
+  const events = typeof getFcdSeasonCalendarEvents === "function"
+    ? getFcdSeasonCalendarEvents(gameState.seasonStartYear)
+    : [];
 
   for (let event of events) {
     if (datesMatch(event.date, date)) {
       items.push({
-        type: "calendar-league-event",
+        type: event.name.includes("No Games")
+          ? "calendar-league-event calendar-no-games-event"
+          : "calendar-league-event",
         text: event.name
       });
     }
@@ -994,3 +1025,328 @@ function displayHistory() {
 
   updateHistoryTopTabActiveState();
 }
+
+/* =========================================================
+   FCD TOP NAV REDESIGN
+   Put this at the BOTTOM of js/15-navigation.js
+========================================================= */
+
+const FCD_TOP_NAV_TARGETS = {
+  dashboard: {
+    label: "Dashboard",
+    screenIds: ["dashboard-screen", "dashboard"]
+  },
+  league: {
+    label: "League",
+    screenIds: ["league-screen", "standings-screen", "league-standings-screen", "league"]
+  },
+  team: {
+    label: "Team",
+    screenIds: ["team-screen", "team-roster-screen", "roster-screen", "team"]
+  },
+  gameplan: {
+    label: "Gameplan",
+    screenIds: ["gameplan-screen", "rotation-screen", "gameplan"]
+  },
+  stats: {
+    label: "Stats",
+    screenIds: ["stats-screen", "league-stats-screen", "stats"]
+  },
+  "front-office": {
+    label: "Front Office",
+    screenIds: ["front-office-screen", "front-office-overview-screen", "front-office"]
+  },
+  calendar: {
+    label: "Calendar",
+    screenIds: ["calendar-screen", "schedule-screen", "calendar"]
+  },
+  history: {
+    label: "History",
+    screenIds: ["history-screen", "team-history-screen", "history"]
+  },
+  settings: {
+    label: "Settings",
+    screenIds: ["settings-screen", "settings"]
+  }
+};
+
+function getFirstExistingFcdScreenId(screenIds) {
+  for (const id of screenIds) {
+    if (document.getElementById(id)) {
+      return id;
+    }
+  }
+
+  return screenIds[0];
+}
+
+function setActiveFcdTopTab(tabName) {
+  document.querySelectorAll(".fcd-top-tab").forEach((button) => {
+    button.classList.toggle("active", button.dataset.fcdTab === tabName);
+  });
+}
+
+function showFcdScreenById(screenId) {
+  if (!screenId) return false;
+
+  if (typeof showScreen === "function") {
+    try {
+      showScreen(screenId);
+      return true;
+    } catch (error) {
+      console.warn("showScreen failed for:", screenId, error);
+    }
+  }
+
+  if (typeof showMainScreen === "function") {
+    try {
+      showMainScreen(screenId);
+      return true;
+    } catch (error) {
+      console.warn("showMainScreen failed for:", screenId, error);
+    }
+  }
+
+  if (typeof navigateToScreen === "function") {
+    try {
+      navigateToScreen(screenId);
+      return true;
+    } catch (error) {
+      console.warn("navigateToScreen failed for:", screenId, error);
+    }
+  }
+
+  const target = document.getElementById(screenId);
+
+  if (!target) {
+    console.warn("No screen found for:", screenId);
+    return false;
+  }
+
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.remove("active");
+    screen.style.display = "none";
+  });
+
+  target.classList.add("active");
+  target.style.display = "block";
+
+  return true;
+}
+
+function openFcdTopTab(tabName) {
+  closeFcdTopDropdown();
+
+  const target = FCD_TOP_NAV_TARGETS[tabName];
+
+  if (!target) {
+    console.warn("Unknown FCD top tab:", tabName);
+    return;
+  }
+
+  setActiveFcdTopTab(tabName);
+
+  const sectionKey = tabName === "calendar" ? "schedule" : tabName;
+
+  if (navigationSections[sectionKey]) {
+    showMainSection(sectionKey);
+  } else {
+    const screenId = getFirstExistingFcdScreenId(target.screenIds);
+    showFcdScreenById(screenId);
+  }
+
+  refreshFcdTopNavGM();
+}
+
+function getFcdTopNavSectionKey(tabName) {
+  return tabName === "calendar" ? "schedule" : tabName;
+}
+
+function closeFcdTopDropdown() {
+  const menu = document.getElementById("fcd-top-dropdown-menu");
+
+  if (menu) {
+    menu.remove();
+  }
+}
+
+function openFcdTopDropdownScreen(tabName, screenId) {
+  const sectionKey = getFcdTopNavSectionKey(tabName);
+
+  setActiveFcdTopTab(tabName);
+  showMainSection(sectionKey);
+  showSecondaryScreen(screenId);
+  closeFcdTopDropdown();
+}
+
+function openFcdFrontOfficeDropdownScreen(sectionKey, screenId) {
+  setActiveFcdTopTab("front-office");
+  showMainSection(sectionKey);
+  showSecondaryScreen(screenId);
+  closeFcdTopDropdown();
+}
+
+function getFcdFrontOfficeDropdownGroups() {
+  return [
+    { label: "Staff", sectionKey: "front-office" },
+    { label: "Draft", sectionKey: "draft" },
+    { label: "Trades", sectionKey: "trade" },
+    { label: "Free Agency", sectionKey: "free-agency" }
+  ];
+}
+
+function appendFcdFrontOfficeDropdownGroups(menu) {
+  for (const groupData of getFcdFrontOfficeDropdownGroups()) {
+    const section = navigationSections[groupData.sectionKey];
+    if (!section || !Array.isArray(section.tabs)) continue;
+
+    const group = document.createElement("div");
+    group.className = "fcd-top-dropdown-group";
+
+    const groupHeader = document.createElement("div");
+    groupHeader.className = "fcd-top-dropdown-group-header";
+
+    const labelButton = document.createElement("button");
+    labelButton.type = "button";
+    labelButton.className = "fcd-top-dropdown-group-label";
+    labelButton.textContent = groupData.label;
+    labelButton.onclick = () =>
+      openFcdFrontOfficeDropdownScreen(groupData.sectionKey, section.defaultScreen);
+
+    const arrowButton = document.createElement("button");
+    arrowButton.type = "button";
+    arrowButton.className = "fcd-top-dropdown-group-arrow";
+    arrowButton.setAttribute("aria-label", `Open ${groupData.label} submenu`);
+    arrowButton.textContent = "⌄";
+
+    const submenu = document.createElement("div");
+    submenu.className = "fcd-top-dropdown-submenu";
+
+    arrowButton.onclick = () => {
+      const willOpen = !group.classList.contains("open");
+
+      menu.querySelectorAll(".fcd-top-dropdown-group.open").forEach((openGroup) => {
+        openGroup.classList.remove("open");
+      });
+
+      group.classList.toggle("open", willOpen);
+    };
+
+    for (const tab of section.tabs) {
+      const tabButton = document.createElement("button");
+      tabButton.type = "button";
+      tabButton.textContent = tab.label;
+      tabButton.onclick = () =>
+        openFcdFrontOfficeDropdownScreen(groupData.sectionKey, tab.screenId);
+      submenu.appendChild(tabButton);
+    }
+
+    groupHeader.appendChild(labelButton);
+    groupHeader.appendChild(arrowButton);
+    group.appendChild(groupHeader);
+    group.appendChild(submenu);
+    menu.appendChild(group);
+  }
+}
+
+function toggleFcdTopDropdown(tabName, trigger) {
+  const sectionKey = getFcdTopNavSectionKey(tabName);
+  const section = navigationSections[sectionKey];
+  const existingMenu = document.getElementById("fcd-top-dropdown-menu");
+
+  if (existingMenu && existingMenu.dataset.tabName === tabName) {
+    closeFcdTopDropdown();
+    return;
+  }
+
+  closeFcdTopDropdown();
+
+  if (!section || !Array.isArray(section.tabs) || !trigger) return;
+
+  const gameScreen = document.getElementById("game-screen");
+  if (!gameScreen) return;
+
+  const gameBox = gameScreen.getBoundingClientRect();
+  const triggerBox = trigger.getBoundingClientRect();
+  const scale = gameBox.width / 1600 || 1;
+  const menu = document.createElement("div");
+
+  menu.id = "fcd-top-dropdown-menu";
+  menu.className = "fcd-top-dropdown-menu";
+  menu.dataset.tabName = tabName;
+  menu.style.left = `${(triggerBox.right - gameBox.left) / scale - 210}px`;
+  menu.style.top = `${(triggerBox.bottom - gameBox.top) / scale + 4}px`;
+
+  if (tabName === "front-office") {
+    appendFcdFrontOfficeDropdownGroups(menu);
+  } else {
+    for (const tab of section.tabs) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = tab.label;
+      button.onclick = () => openFcdTopDropdownScreen(tabName, tab.screenId);
+      menu.appendChild(button);
+    }
+  }
+
+  gameScreen.appendChild(menu);
+}
+
+function handleFcdTopDropdownKey(event, tabName, trigger) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  toggleFcdTopDropdown(tabName, trigger);
+}
+
+document.addEventListener("click", (event) => {
+  if (
+    !event.target.closest(".fcd-tab-chevron") &&
+    !event.target.closest(".fcd-top-dropdown-menu")
+  ) {
+    closeFcdTopDropdown();
+  }
+});
+
+function refreshFcdTopNavGM() {
+  const nameEl = document.getElementById("fcd-top-nav-gm-name");
+  const avatarEl = document.getElementById("fcd-top-nav-gm-avatar");
+
+  if (!nameEl && !avatarEl) return;
+
+  const gmName =
+    gameState?.gmName ||
+    gameState?.userGMName ||
+    gameState?.userGmName ||
+    gameState?.gm?.name ||
+    "Test GM";
+
+  if (nameEl) {
+    nameEl.textContent = gmName;
+  }
+
+  if (avatarEl) {
+    const initials = gmName
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word.charAt(0))
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+    avatarEl.textContent = initials || "GM";
+  }
+}
+
+function initializeFcdTopNav() {
+  refreshFcdTopNavGM();
+
+  const activeButton = document.querySelector(".fcd-top-tab.active");
+
+  if (!activeButton) {
+    setActiveFcdTopTab("dashboard");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initializeFcdTopNav);

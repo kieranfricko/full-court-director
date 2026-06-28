@@ -24,6 +24,7 @@ function startGame() {
     userSchedule: [],
     leagueSchedule: [],
     leagueScheduleMeta: null,
+    pendingLeagueSchedule: null,
     rosters: {},
     staff: {},
     freeAgents: [],
@@ -43,7 +44,6 @@ function startGame() {
     finalsCompletedDate: null
   };
 
-   gameState.userSchedule = createRealisticUserSchedule(selectedId);
    gameState.staff = createAllTeamStaff();
   if (typeof installPlayerDatabaseIntoSave === "function") {
   installPlayerDatabaseIntoSave();
@@ -54,8 +54,6 @@ function startGame() {
 ensureFreeAgents();
 gameState.rotation = createDefaultRotation();
 ensureTeamStats();
-assignCupGamesToUserSchedule();
-validateUserSchedule82();
 
 gameState.draft = createDraftState(gameState.seasonStartYear);
 validateDraftClass();
@@ -69,6 +67,10 @@ if (typeof ensureAwardWatchState === "function") {
 if (typeof applySavedRosterImportPack === "function") {
   applySavedRosterImportPack();
 }
+
+gameState.userSchedule = createRealisticUserSchedule(selectedId);
+assignCupGamesToUserSchedule();
+validateUserSchedule82();
 
   addInboxMessage("Welcome to Full Court Director", "You are responsible for roster construction, gameplan, player development, The Cup, and the postseason.", "staff");
   addInboxMessage("Training Camp Opens", "Training camp has opened. Prepare your team for the regular season.", "event");
@@ -164,6 +166,7 @@ displayStandings();
   updateEnterDraftButtons();
   displayFrontOfficeStaff();
   displayLeagueStaffBrowser();
+  displayKeyDatesScreen();
 
   if (typeof displayStaffMovementPage === "function") {
     displayStaffMovementPage();
@@ -393,6 +396,53 @@ initializeNavigation();
 
 
   refreshAll();
+}
+
+function normalizeGameStateAfterLoad() {
+  if (!gameState) return;
+
+  gameState.currentDate = new Date(gameState.currentDate);
+
+  if (gameState.finalsCompletedDate) {
+    gameState.finalsCompletedDate = new Date(gameState.finalsCompletedDate);
+  }
+
+  const normalizeGames = (games) => {
+    if (!Array.isArray(games)) return;
+
+    games.forEach(game => {
+      if (game.date) game.date = new Date(game.date);
+      if (!Array.isArray(game.topPerformers)) game.topPerformers = [];
+      if (game.boxScore && game.boxScore.date) {
+        game.boxScore.date = new Date(game.boxScore.date);
+      }
+    });
+  };
+
+  normalizeGames(gameState.leagueSchedule);
+  normalizeGames(gameState.userSchedule);
+
+  if (gameState.cup && Array.isArray(gameState.cup.games)) {
+    normalizeGames(gameState.cup.games);
+  }
+
+  if (gameState.pendingLeagueSchedule) {
+    normalizeGames(gameState.pendingLeagueSchedule.leagueSchedule);
+
+    if (
+      gameState.pendingLeagueSchedule.cup &&
+      Array.isArray(gameState.pendingLeagueSchedule.cup.games)
+    ) {
+      normalizeGames(gameState.pendingLeagueSchedule.cup.games);
+    }
+  }
+
+  if (!Array.isArray(gameState.leagueSchedule)) gameState.leagueSchedule = [];
+  if (!gameState.leagueScheduleMeta) gameState.leagueScheduleMeta = null;
+
+  if (typeof ensureLeagueScheduleForCurrentSeason === "function") {
+    ensureLeagueScheduleForCurrentSeason();
+  }
 }
 
 function resetCareer() {

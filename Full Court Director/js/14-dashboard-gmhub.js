@@ -60,6 +60,18 @@ function displayHeader() {
   setText("header-season", gameState.seasonLabel);
   setText("header-date", formatDate(gameState.currentDate));
   setText("header-record", `${selectedTeam.wins}-${selectedTeam.losses}`);
+
+  updateTopNavDateBoxes();
+}
+
+function updateTopNavDateBoxes() {
+  if (!gameState || !gameState.currentDate) return;
+
+  const date = new Date(gameState.currentDate);
+
+  setText("fcd-date-month", date.getMonth() + 1);
+  setText("fcd-date-day", date.getDate());
+  setText("fcd-date-year", String(date.getFullYear()).slice(-2));
 }
 
 function getGMMessageTypeLabel(type) {
@@ -3594,6 +3606,8 @@ function handleDashboardContextAction() {
   const button = document.getElementById("dashboard-context-action-button");
   const action = button ? button.dataset.action : getDashboardContextAction().action;
 
+if (action === "calendar-context-label") return;
+
 if (action === "awards-ceremony") {
   if (typeof openAwardsCeremonyFromDashboard === "function") {
     openAwardsCeremonyFromDashboard();
@@ -4039,7 +4053,7 @@ function displayDashboard() {
   if (capElement) capElement.classList.toggle("over-cap", capSpace < 0);
   if (capStatusElement) capStatusElement.classList.toggle("over-cap", capSpace < 0);
 
-  setText("dashboard-chemistry", getDashboardChemistry());
+  setText("dashboard-chemistry", `${getDashboardChemistry()}%`);
   setText("dashboard-owner-happiness", getDashboardOwnerHappiness());
   setText("dashboard-playoff-odds", getDashboardPlayoffOdds(selectedTeam));
 
@@ -4053,6 +4067,8 @@ if (userLogo) {
 }
 
     displayDashboardNextGame(selectedTeam);
+    displayDashboardCompactNextGame(selectedTeam);
+    displayDashboardSeasonOverview(selectedTeam);
     displayNextBigEventCard();
     displayDashboardScheduleStrip();
 
@@ -4065,6 +4081,398 @@ if (userLogo) {
     displayDashboardStatsCenter();
     displayDashboardContextButtons();
     displayDashboardOffseasonHub();
+    displayDashboardBottomCards();
+}
+
+function displayDashboardCompactNextGame(selectedTeam) {
+  const card = document.querySelector(".dashboard-compact-next-game-card");
+  if (!card || !selectedTeam) return;
+
+  const nextGame = getNextGame();
+  const userLogo = document.getElementById("dashboard-compact-user-logo");
+  const opponentLogo = document.getElementById("dashboard-compact-opponent-logo");
+
+  setText("dashboard-compact-user-name", selectedTeam.name);
+  setText(
+    "dashboard-compact-user-record",
+    `${selectedTeam.wins || 0}-${selectedTeam.losses || 0}`
+  );
+
+  if (userLogo) {
+    userLogo.innerHTML = getTeamLogoHTML(
+      selectedTeam,
+      "team-logo-placeholder dashboard-compact-team-logo"
+    );
+  }
+
+  if (!nextGame) {
+    setText("dashboard-compact-game-phase", getSeasonPhase());
+    setText("dashboard-compact-opponent-name", "No Game Scheduled");
+    setText("dashboard-compact-opponent-record", "--");
+    setText("dashboard-compact-game-date", "--");
+    setText("dashboard-compact-game-time", "--");
+    setText("dashboard-compact-game-arena", "--");
+
+    if (opponentLogo) {
+      opponentLogo.innerHTML =
+        '<div class="team-logo-placeholder dashboard-compact-team-logo team-logo-empty">--</div>';
+    }
+
+    return;
+  }
+
+  const opponent =
+    gameState.teams.find(
+      (team) => Number(team.id) === Number(nextGame.opponentId)
+    ) ||
+    getTeamById(nextGame.opponentId) ||
+    getBaseTeamById(nextGame.opponentId);
+
+  const arenaTeam = getDashboardArenaTeamForGame(
+    nextGame,
+    selectedTeam,
+    opponent
+  );
+
+  setText("dashboard-compact-game-phase", getSeasonPhase());
+  setText(
+    "dashboard-compact-opponent-name",
+    opponent ? opponent.name : nextGame.opponentName || "Opponent"
+  );
+  setText(
+    "dashboard-compact-opponent-record",
+    opponent ? `${opponent.wins || 0}-${opponent.losses || 0}` : "--"
+  );
+  setText("dashboard-compact-game-date", formatDate(nextGame.date));
+  setText("dashboard-compact-game-time", nextGame.fcdGameTime || "7:30 PM");
+  setText(
+    "dashboard-compact-game-arena",
+    getDashboardArenaName(arenaTeam)
+  );
+
+  if (opponentLogo) {
+    opponentLogo.innerHTML = opponent
+      ? getTeamLogoHTML(
+          opponent,
+          "team-logo-placeholder dashboard-compact-team-logo"
+        )
+      : '<div class="team-logo-placeholder dashboard-compact-team-logo team-logo-empty">OPP</div>';
+  }
+}
+
+function displayDashboardSeasonOverview(selectedTeam) {
+  if (!selectedTeam) return;
+
+  const record = `${selectedTeam.wins || 0}-${selectedTeam.losses || 0}`;
+  const conferenceRank = getConferenceRank(selectedTeam.id);
+  const divisionTeams = gameState.teams
+    .filter(
+      (team) =>
+        team.conference === selectedTeam.conference &&
+        team.division === selectedTeam.division
+    )
+    .sort((a, b) => {
+      if ((b.wins || 0) !== (a.wins || 0)) return (b.wins || 0) - (a.wins || 0);
+      return (a.losses || 0) - (b.losses || 0);
+    });
+  const divisionRank =
+    divisionTeams.findIndex(
+      (team) => Number(team.id) === Number(selectedTeam.id)
+    ) + 1;
+
+  const playedGames = (gameState.userSchedule || []).filter((game) => game.played);
+  const lastTenGames = playedGames.slice(-10);
+  const lastTenWins = lastTenGames.filter((game) =>
+    String(game.result || "").startsWith("W")
+  ).length;
+
+  let streakType = "";
+  let streakLength = 0;
+
+  for (const game of [...playedGames].reverse()) {
+    const resultType = String(game.result || "").startsWith("W") ? "W" : "L";
+
+    if (!streakType) streakType = resultType;
+    if (resultType !== streakType) break;
+    streakLength += 1;
+  }
+
+  const roster = gameState.rosters[gameState.selectedTeamId] || [];
+  const moraleScores = {
+    ecstatic: 100,
+    happy: 90,
+    content: 76,
+    okay: 65,
+    neutral: 65,
+    unhappy: 42,
+    angry: 25
+  };
+  const moraleTotal = roster.reduce((sum, player) => {
+    const morale = String(player.morale || "happy").toLowerCase();
+    return sum + (moraleScores[morale] || 65);
+  }, 0);
+  const teamMorale = roster.length
+    ? Math.round(moraleTotal / roster.length)
+    : 75;
+
+  let fanInterest = 75;
+  if (
+    typeof getTeamFinanceState === "function" &&
+    typeof getTeamFanInterest === "function"
+  ) {
+    fanInterest = getTeamFanInterest(
+      selectedTeam,
+      getTeamFinanceState(selectedTeam.id)
+    );
+  }
+
+  setText("dashboard-season-record", record);
+  setText(
+    "dashboard-season-conf-rank",
+    conferenceRank ? `${conferenceRank}${getOrdinalSuffix(conferenceRank)}` : "--"
+  );
+  setText(
+    "dashboard-season-div-rank",
+    divisionRank > 0 ? `${divisionRank}${getOrdinalSuffix(divisionRank)}` : "--"
+  );
+  setText(
+    "dashboard-season-streak",
+    streakLength ? `${streakType}${streakLength}` : "--"
+  );
+  setText(
+    "dashboard-season-last-ten",
+    `${lastTenWins}-${lastTenGames.length - lastTenWins}`
+  );
+  setText("dashboard-team-morale", `${teamMorale}%`);
+  setText("dashboard-fan-interest", `${fanInterest}%`);
+  setDashboardSeasonMeter("dashboard-chemistry-meter", getDashboardChemistry());
+  setDashboardSeasonMeter("dashboard-morale-meter", teamMorale);
+  setDashboardSeasonMeter("dashboard-fan-interest-meter", fanInterest);
+}
+
+function setDashboardSeasonMeter(elementId, value) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  const safeValue = Math.max(0, Math.min(100, Number(value) || 0));
+  element.style.setProperty(
+    "--dashboard-meter-height",
+    `${Math.round(safeValue * 0.82)}px`
+  );
+}
+
+function displayDashboardBottomCards() {
+  const selectedTeam = getSelectedTeam();
+  if (!selectedTeam) return;
+
+  displayDashboardStartingFive(selectedTeam);
+  displayDashboardFinancesSummary(selectedTeam);
+  displayDashboardInjuriesSummary(selectedTeam);
+}
+
+function getDashboardStartingFivePlayers() {
+  const positions = ["PG", "SG", "SF", "PF", "C"];
+  const roster = getRosterByTeamId(gameState.selectedTeamId);
+  const rosterById = new Map(
+    roster.map((player) => [Number(player.id), player])
+  );
+  const starters = {};
+  const usedIds = new Set();
+  const rotationSlots =
+    gameState.rotation && Array.isArray(gameState.rotation.slots)
+      ? gameState.rotation.slots
+      : [];
+
+  for (const position of positions) {
+    const slot = rotationSlots.find(
+      (item) => item.starter && item.position === position
+    );
+    const player = slot ? rosterById.get(Number(slot.playerId)) : null;
+
+    if (player) {
+      starters[position] = player;
+      usedIds.add(Number(player.id));
+    }
+  }
+
+  const fallbackRoster =
+    typeof getSortedRoster === "function" ? getSortedRoster() : roster;
+
+  for (const position of positions) {
+    if (starters[position]) continue;
+
+    let player = fallbackRoster.find((candidate) => {
+      const secondary = Array.isArray(candidate.secondaryPositions)
+        ? candidate.secondaryPositions
+        : [];
+
+      return (
+        !usedIds.has(Number(candidate.id)) &&
+        (candidate.primaryPosition === position || secondary.includes(position))
+      );
+    });
+
+    if (!player) {
+      player = fallbackRoster.find(
+        (candidate) => !usedIds.has(Number(candidate.id))
+      );
+    }
+
+    if (player) {
+      starters[position] = player;
+      usedIds.add(Number(player.id));
+    }
+  }
+
+  return positions.map((position) => ({
+    position,
+    player: starters[position] || null
+  }));
+}
+
+function displayDashboardStartingFive() {
+  const container = document.getElementById("dashboard-starting-five");
+  if (!container) return;
+
+  const starters = getDashboardStartingFivePlayers();
+
+  container.innerHTML = starters
+    .map(({ position, player }) => {
+      if (!player) {
+        return `
+          <div class="dashboard-starter-tile empty">
+            <span>${position}</span>
+            <div class="dashboard-starter-face player-silhouette"></div>
+            <strong>Open Slot</strong>
+            <small>#--</small>
+          </div>
+        `;
+      }
+
+      const faceHtml =
+        typeof getPlayerFaceHTML === "function"
+          ? getPlayerFaceHTML(player, "dashboard-starter-face")
+          : '<div class="dashboard-starter-face player-silhouette"></div>';
+      const rawJerseyNumber =
+        player.jerseyNumber ?? player.number ?? player.jersey ?? "--";
+      const jerseyNumber = ["", "unknown", "n/a", "null", "undefined"].includes(
+        String(rawJerseyNumber).trim().toLowerCase()
+      )
+        ? "--"
+        : rawJerseyNumber;
+
+      return `
+        <div class="dashboard-starter-tile">
+          <span>${position}</span>
+          ${faceHtml}
+          <strong>${escapeDashboardBottomHtml(player.name || "Player")}</strong>
+          <small>#${escapeDashboardBottomHtml(jerseyNumber)}</small>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function displayDashboardFinancesSummary(selectedTeam) {
+  const salaryCap = Number(gameState.salaryCap || SALARY_CAP);
+  const payroll =
+    typeof getRosterPayroll === "function"
+      ? getRosterPayroll(selectedTeam.id)
+      : getTeamPayroll(selectedTeam.id);
+  const capSpace = salaryCap - payroll;
+  const luxuryTax =
+    typeof getLuxuryTaxLine === "function"
+      ? getLuxuryTaxLine()
+      : Math.round(salaryCap * 1.215);
+  const firstApron =
+    typeof getFirstApronLine === "function"
+      ? getFirstApronLine()
+      : luxuryTax + 7;
+  const secondApron =
+    typeof getSecondApronLine === "function"
+      ? getSecondApronLine()
+      : luxuryTax + 17.5;
+  const capUsage = Math.max(
+    0,
+    Math.min(100, Math.round((payroll / Math.max(1, salaryCap)) * 100))
+  );
+
+  setText("dashboard-bottom-cap-space", formatDashboardMoney(capSpace));
+  setText("dashboard-bottom-salary-cap", formatMoney(salaryCap));
+  setText("dashboard-bottom-luxury-tax", formatMoney(luxuryTax));
+  setText("dashboard-bottom-first-apron", formatMoney(firstApron));
+  setText("dashboard-bottom-second-apron", formatMoney(secondApron));
+
+  const ring = document.getElementById("dashboard-cap-space-ring");
+  if (ring) {
+    ring.style.setProperty("--dashboard-cap-usage", `${capUsage}%`);
+    ring.classList.toggle("over-cap", capSpace < 0);
+  }
+}
+
+function formatDashboardMoney(value) {
+  const amount = Number(value || 0);
+  return amount < 0 ? `-${formatMoney(Math.abs(amount))}` : formatMoney(amount);
+}
+
+function displayDashboardInjuriesSummary() {
+  const container = document.getElementById("dashboard-bottom-injury-list");
+  if (!container) return;
+
+  const injuredPlayers = getRosterByTeamId(gameState.selectedTeamId)
+    .filter(
+      (player) =>
+        player.injured ||
+        player.isInjured ||
+        Number(player.injuryDaysRemaining || player.daysRemaining || 0) > 0
+    )
+    .sort(
+      (a, b) =>
+        Number(b.injuryDaysRemaining || b.daysRemaining || 0) -
+        Number(a.injuryDaysRemaining || a.daysRemaining || 0)
+    )
+    .slice(0, 3);
+
+  if (injuredPlayers.length === 0) {
+    container.innerHTML =
+      '<div class="dashboard-no-injuries">No current injuries.</div>';
+    return;
+  }
+
+  container.innerHTML = injuredPlayers
+    .map((player) => {
+      const faceHtml =
+        typeof getPlayerFaceHTML === "function"
+          ? getPlayerFaceHTML(player, "dashboard-injury-face")
+          : '<div class="dashboard-injury-face player-silhouette"></div>';
+      const injuryName =
+        player.injuryName || player.injuryType || "Unavailable";
+      const daysRemaining = Number(
+        player.injuryDaysRemaining || player.daysRemaining || 0
+      );
+      const status = daysRemaining > 0 ? `${daysRemaining} days` : "TBD";
+
+      return `
+        <div class="dashboard-injury-row">
+          ${faceHtml}
+          <div>
+            <strong>${escapeDashboardBottomHtml(player.name || "Player")}</strong>
+            <span>${escapeDashboardBottomHtml(injuryName)}</span>
+          </div>
+          <small>${status}</small>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function escapeDashboardBottomHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function isDashboardDraftComplete() {
@@ -4133,6 +4541,61 @@ function isDashboardPlayoffsContextActive() {
   return current >= playoffStart;
 }
 
+function getDashboardCalendarContextLabel() {
+  const current = new Date(gameState.currentDate);
+  current.setHours(0, 0, 0, 0);
+
+  const seasonYear = current.getMonth() >= 7
+    ? current.getFullYear()
+    : current.getFullYear() - 1;
+  const nextYear = seasonYear + 1;
+  const allStar = typeof getAllStarBreakDatesForSeason === "function"
+    ? getAllStarBreakDatesForSeason(seasonYear)
+    : { start: new Date(nextYear, 1, 12), end: new Date(nextYear, 1, 19) };
+  const ncaaDate = typeof getNcaaChampionshipDate === "function"
+    ? getNcaaChampionshipDate(nextYear)
+    : new Date(nextYear, 3, 1);
+  const finalsEnd = gameState.finalsCompletedDate
+    ? new Date(gameState.finalsCompletedDate)
+    : null;
+  const between = (start, end) => current >= start && current <= end;
+  const sameDay = (date) =>
+    current.getFullYear() === date.getFullYear() &&
+    current.getMonth() === date.getMonth() &&
+    current.getDate() === date.getDate();
+
+  if (between(new Date(seasonYear, 7, 15), new Date(seasonYear, 7, 17))) return "Financial Planning";
+  if (between(new Date(seasonYear, 7, 18), new Date(seasonYear, 8, 21))) return "View Schedule";
+  if (between(new Date(seasonYear, 8, 22), new Date(seasonYear, 9, 4))) return "Training Camp";
+  if (between(new Date(seasonYear, 9, 5), new Date(seasonYear, 9, 21))) return "Preseason";
+  if (between(new Date(seasonYear, 9, 22), new Date(seasonYear, 10, 10))) return "Season Hub";
+  if (between(new Date(seasonYear, 10, 11), new Date(seasonYear, 11, 15))) return "The Cup";
+  if (between(new Date(seasonYear, 11, 16), new Date(nextYear, 0, 11))) return "Season Hub";
+  if (between(new Date(nextYear, 0, 12), new Date(nextYear, 0, 18))) return "Rivals Week";
+  if (between(new Date(nextYear, 0, 19), new Date(nextYear, 1, 4))) return "Trade Center";
+  if (sameDay(new Date(nextYear, 1, 5))) return "Trade Deadline";
+  if (between(new Date(nextYear, 1, 6), new Date(allStar.start.getTime() - 86400000))) return "Owner Meeting";
+  if (between(allStar.start, allStar.end)) return "All-Star Weekend";
+  if (between(new Date(allStar.end.getTime() + 86400000), new Date(nextYear, 1, 28))) return "Season Hub";
+  if (between(new Date(nextYear, 2, 1), new Date(nextYear, 2, 3))) return "Free Agents";
+  if (between(new Date(nextYear, 2, 4), new Date(ncaaDate.getTime() - 86400000))) return "Roster Management";
+  if (between(ncaaDate, new Date(nextYear, 3, 14))) return "Scouting";
+  if (sameDay(new Date(nextYear, 3, 15))) return "Playoff Picture";
+  if (between(new Date(nextYear, 3, 16), new Date(nextYear, 3, 19))) return "Play-In Tournament";
+  if (current >= new Date(nextYear, 3, 20) && (!finalsEnd || current <= finalsEnd)) return "Playoffs";
+  if (finalsEnd && current > finalsEnd && current <= new Date(nextYear, 5, 17)) return "Contracts";
+  if (sameDay(new Date(nextYear, 5, 18))) return "Draft Lottery";
+  if (sameDay(new Date(nextYear, 5, 19))) return "Draft Combine";
+  if (between(new Date(nextYear, 5, 20), new Date(nextYear, 5, 21))) return "Draft";
+  if (between(new Date(nextYear, 5, 22), new Date(nextYear, 5, 23))) return "Rookie Contracts";
+  if (sameDay(new Date(nextYear, 5, 24))) return "League Meeting";
+  if (sameDay(new Date(nextYear, 5, 25))) return "Owner Meeting";
+  if (between(new Date(nextYear, 5, 26), new Date(nextYear, 5, 29))) return "Contracts";
+  if (between(new Date(nextYear, 6, 1), new Date(nextYear, 6, 11))) return "Free Agency";
+  if (between(new Date(nextYear, 6, 12), new Date(nextYear, 6, 22))) return "Summer League";
+  return "Front Office";
+}
+
 function getDashboardContextAction() {
   if (!gameState || !gameState.started) {
     return {
@@ -4142,6 +4605,13 @@ function getDashboardContextAction() {
       className: "roster"
     };
   }
+
+  return {
+    visible: true,
+    label: getDashboardCalendarContextLabel(),
+    action: "calendar-context-label",
+    className: "roster"
+  };
 
   const dateKey = getDashboardDateKey();
   const offseasonActive = gameState.offseasonActive === true;
@@ -4797,14 +5267,16 @@ function displayDashboardScheduleStrip() {
 
   const recentGames = gameState.userSchedule
     .filter(game => game.played)
-    .slice(-3);
+    .slice(-2);
 
   const upcomingGames = gameState.userSchedule
     .filter(game => !game.played && !isCancelledFutureGame(game))
     .filter(game => new Date(game.date) >= new Date(gameState.currentDate))
     .slice(0, 3);
 
-  if (recentGames.length === 0 && upcomingGames.length === 0) {
+  const games = [...recentGames, ...upcomingGames];
+
+  if (games.length === 0) {
     timelineContainer.innerHTML = `
       <div class="dashboard-schedule-empty">
         No schedule items yet.
@@ -4812,31 +5284,37 @@ function displayDashboardScheduleStrip() {
     `;
   }
 
-  for (let game of recentGames) {
+  for (let game of games) {
     const item = document.createElement("div");
+    const opponent = getTeamById(game.opponentId) || getBaseTeamById(game.opponentId);
+    const isPlayed = game.played || !!game.boxScore;
     const won = game.result && game.result.startsWith("W");
 
-    item.className = won
-      ? "dashboard-schedule-item result-win"
-      : "dashboard-schedule-item result-loss";
+    item.className = isPlayed
+      ? won
+        ? "dashboard-schedule-item result-win"
+        : "dashboard-schedule-item result-loss"
+      : "dashboard-schedule-item upcoming-game";
 
     item.innerHTML = `
-      <strong>${getClickableScoreHtml(game)}</strong>
-      <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
-      <small>${formatShortDate(game.date)} · ${game.competition || "Regular Season"}</small>
-    `;
+      <div class="dashboard-schedule-item-copy">
+        <strong>${isPlayed ? getClickableScoreHtml(game) : formatShortDate(game.date)}</strong>
+        <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
 
-    timelineContainer.appendChild(item);
-  }
+        ${
+          isPlayed
+            ? `<button type="button" class="dashboard-box-score-button" onclick="openBoxScore('${game.id}')">Box Score</button>`
+            : `<small>${game.competition || "Regular Season"}</small>`
+        }
+      </div>
 
-  for (let game of upcomingGames) {
-    const item = document.createElement("div");
-    item.className = "dashboard-schedule-item upcoming-game";
-
-    item.innerHTML = `
-      <strong>${formatShortDate(game.date)}</strong>
-      <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
-      <small>${game.competition || "Regular Season"}</small>
+      <div class="dashboard-schedule-item-logo">
+        ${
+          opponent && typeof getTeamLogoHTML === "function"
+            ? getTeamLogoHTML(opponent, "team-logo-placeholder dashboard-schedule-logo")
+            : `<span class="dashboard-schedule-logo-fallback">${game.opponentAbbrev || "OPP"}</span>`
+        }
+      </div>
     `;
 
     timelineContainer.appendChild(item);
@@ -4954,7 +5432,7 @@ function displayDashboardStandings() {
 
   if (!container || !selectedTeam) return;
 
-  setText("dashboard-standings-title", `${selectedTeam.conference}ern Conference Standings`);
+ setText("dashboard-standings-title", "Standings");
 
   const teams = gameState.teams
     .filter(team => team.conference === selectedTeam.conference)
@@ -4965,14 +5443,10 @@ function displayDashboardStandings() {
 
   container.innerHTML = `
     <div class="dashboard-standings-row header">
-      <span>#</span>
-      <span></span>
-      <span>Team</span>
-      <span>W-L</span>
-      <span>Pct</span>
-      <span>GB</span>
-      <span>Strk</span>
-    </div>
+  <span>#</span>
+  <span>Team</span>
+  <span>GB</span>
+</div>
   `;
 
   const firstPlaceWins = teams.length > 0 ? teams[0].wins || 0 : 0;
@@ -4994,27 +5468,24 @@ function displayDashboardStandings() {
     const pct = gamesPlayed > 0 ? (wins / gamesPlayed).toFixed(3).replace("0", "") : ".000";
     const gb = i === 0 ? "--" : (((firstPlaceWins - wins) + (losses - firstPlaceLosses)) / 2).toFixed(1);
 
-    row.innerHTML = `
-      <span class="dashboard-standing-rank ${getDashboardStandingRankClass(team, i + 1, bottomThreeIds)}">${i + 1}</span>
+row.innerHTML = `
+  <span class="dashboard-standing-rank ${getDashboardStandingRankClass(team, i + 1, bottomThreeIds)}">
+    ${i + 1}
+  </span>
 
-      <span class="dashboard-standings-logo-cell">
-        ${getTeamLogoHTML(team, "team-logo-placeholder team-logo-small dashboard-standings-logo")}
-      </span>
+  <span class="dashboard-standings-team-cell">
+    ${getTeamLogoHTML(team, "team-logo-placeholder team-logo-tiny dashboard-standings-mini-logo")}
+    <button
+      type="button"
+      class="dashboard-standings-team-link"
+      onclick="openTeamFromDashboardStandings(${team.id})"
+    >
+      ${getGameplanCardTeamNameParts(team).nickname}
+    </button>
+  </span>
 
-      <span>
-        <button
-          type="button"
-          class="dashboard-standings-team-link"
-          onclick="openTeamFromDashboardStandings(${team.id})"
-        >
-          ${team.name}
-        </button>
-      </span>
-      <span>${wins}-${losses}</span>
-      <span>${pct}</span>
-      <span>${gb}</span>
-      <span>${getDashboardFakeStreak(team)}</span>
-    `;
+  <span class="dashboard-standings-gb">${gb}</span>
+`;
 
     container.appendChild(row);
   }
@@ -5104,28 +5575,64 @@ function displayDashboardUpcomingGames() {
 
   container.innerHTML = "";
 
-  const upcomingGames = gameState.userSchedule
-    .filter(game => !game.played && !isCancelledFutureGame(game))
-    .filter(game => new Date(game.date) >= new Date(gameState.currentDate))
-    .slice(0, 4);
+  const currentDate = new Date(gameState.currentDate);
 
-  if (upcomingGames.length === 0) {
-    container.innerHTML = `<div class="dashboard-schedule-empty">No upcoming games.</div>`;
-    return;
-  }
+  const games = gameState.userSchedule
+    .filter(game => new Date(game.date) >= currentDate || game.boxScore)
+    .slice(0, 5);
 
-  for (let game of upcomingGames) {
+  for (let game of games) {
     const item = document.createElement("div");
     item.className = "dashboard-schedule-item upcoming-game";
 
+    const opponent = getTeamById(game.opponentId) || getBaseTeamById(game.opponentId);
+    const gamePlayed = !!game.boxScore || game.played || game.completed;
+
     item.innerHTML = `
-      <strong>${formatShortDate(game.date)}</strong>
-      <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
-      <small>${game.competition}</small>
+      <div class="dashboard-schedule-item-copy">
+        <strong>${gamePlayed ? (game.result || getClickableScoreHtml(game)) : formatShortDate(game.date)}</strong>
+        <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
+
+        ${
+          gamePlayed
+            ? `<button type="button" class="dashboard-box-score-button" onclick="openBoxScore('${game.id}')">Box Score</button>`
+            : `<small>${game.competition || "Regular Season"}</small>`
+        }
+      </div>
+
+      <div class="dashboard-schedule-item-logo">
+        ${
+          opponent && typeof getTeamLogoHTML === "function"
+            ? getTeamLogoHTML(opponent, "team-logo-placeholder dashboard-schedule-logo")
+            : `<span class="dashboard-schedule-logo-fallback">${game.opponentAbbrev || "OPP"}</span>`
+        }
+      </div>
     `;
 
     container.appendChild(item);
   }
+}
+
+function getDashboardScheduleTeamLogoHTML(team) {
+  const logoPath =
+    team?.logo ||
+    team?.logoPath ||
+    team?.image ||
+    team?.imageUrl ||
+    team?.teamLogo ||
+    "";
+
+  if (logoPath) {
+    return `
+      <img
+        class="dashboard-schedule-logo-img"
+        src="${logoPath}"
+        alt="${team.name || team.abbrev || "Team"}"
+      >
+    `;
+  }
+
+  return `<span class="dashboard-schedule-logo-fallback">${team?.abbrev || "OPP"}</span>`;
 }
 
 function getTeamLevelLabel(team) {

@@ -6,6 +6,10 @@
 
   <title>Full Court Director</title>
 
+  <link rel="icon" type="image/png" href="images/main/fcd-secondary-logo.png">
+  <link rel="icon" href="images/main/fcd-secondary-logo.png" sizes="32x32">
+<link rel="apple-touch-icon" href="images/main/fcd-secondary-logo.png">
+
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/themes.css" />
   <link rel="stylesheet" href="css/layout.css" />
@@ -24,10 +28,11 @@
         <div class="start-simple-card">
           <div class="start-title-kicker">Basketball Management</div>
 
-          <h1 class="start-logo-text simple-logo">
-            <span>Full Court</span>
-            <span>Director</span>
-          </h1>
+          <img
+            src="images/main/full-court-director-logo.png"
+            alt="Full Court Director"
+            class="start-main-logo"
+          />
 
           <p class="start-subtitle">
             Build the franchise. Control the game.
@@ -246,8 +251,95 @@
 
     </div>
   </div>
+
     <!-- GAME SCREEN -->
   <div id="game-screen" class="game-screen hidden">
+    <header class="fcd-top-nav">
+<div class="fcd-brand">
+  <img
+    src="images/main/full-court-director-logo.png"
+    alt="Full Court Director"
+    class="fcd-brand-logo"
+  />
+
+  <div class="fcd-date-boxes" aria-label="Current date">
+    <div class="fcd-date-box">
+      <span>Month</span>
+      <strong id="fcd-date-month">--</strong>
+    </div>
+
+    <div class="fcd-date-box">
+      <span>Day</span>
+      <strong id="fcd-date-day">--</strong>
+    </div>
+
+    <div class="fcd-date-box">
+      <span>Year</span>
+      <strong id="fcd-date-year">--</strong>
+    </div>
+  </div>
+</div>
+
+  <nav class="fcd-main-tabs" aria-label="Main navigation">
+    <button type="button" class="fcd-top-tab active" data-fcd-tab="dashboard" onclick="openFcdTopTab('dashboard')">
+      <span>Dashboard</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="league" onclick="openFcdTopTab('league')">
+      <span>League</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open League menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('league', this)" onkeydown="handleFcdTopDropdownKey(event, 'league', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="team" onclick="openFcdTopTab('team')">
+      <span>Team</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open Team menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('team', this)" onkeydown="handleFcdTopDropdownKey(event, 'team', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="gameplan" onclick="openFcdTopTab('gameplan')">
+      <span>Gameplan</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open Gameplan menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('gameplan', this)" onkeydown="handleFcdTopDropdownKey(event, 'gameplan', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="stats" onclick="openFcdTopTab('stats')">
+      <span>Stats</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open Stats menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('stats', this)" onkeydown="handleFcdTopDropdownKey(event, 'stats', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="front-office" onclick="openFcdTopTab('front-office')">
+      <span>Front Office</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open Front Office menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('front-office', this)" onkeydown="handleFcdTopDropdownKey(event, 'front-office', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="calendar" onclick="openFcdTopTab('calendar')">
+      <span>Calendar</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open Calendar menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('calendar', this)" onkeydown="handleFcdTopDropdownKey(event, 'calendar', this)">⌄</span>
+    </button>
+
+    <button type="button" class="fcd-top-tab" data-fcd-tab="history" onclick="openFcdTopTab('history')">
+      <span>History</span>
+      <span class="fcd-tab-chevron" role="button" tabindex="0" aria-label="Open History menu" onclick="event.stopPropagation(); toggleFcdTopDropdown('history', this)" onkeydown="handleFcdTopDropdownKey(event, 'history', this)">⌄</span>
+    </button>
+  </nav>
+
+<div class="fcd-top-actions">
+  <button type="button" class="fcd-icon-button" title="Search">
+    ⌕
+  </button>
+
+  <button type="button" class="fcd-icon-button" title="Settings" onclick="openFcdTopTab('settings')">
+    ⚙
+  </button>
+
+  <div class="fcd-gm-pill">
+    <div id="fcd-top-nav-gm-avatar" class="fcd-gm-avatar">GM</div>
+    <div class="fcd-gm-text">
+      <div id="fcd-top-nav-gm-name">Test GM</div>
+      <small>General Manager</small>
+    </div>
+  </div>
+</div>
+</header>
+
     <aside class="sidebar">
       <button type="button" class="active" data-section="dashboard" onclick="showMainSection('dashboard')">
   Dashboard
@@ -311,167 +403,143 @@
     </aside>
 
     <main class="main-content">
-      <header class="top-header">
-        <div>
-          <h1 id="header-team-name">Full Court Director</h1>
-          <p id="header-role">General Manager</p>
-        </div>
-
-        <div class="header-right">
-          <span id="header-season">2026-27</span>
-          <span id="header-date">Sep 25, 2026</span>
-          <span id="header-record">0-0</span>
-
-          <button type="button" onclick="simDay()">
-            Advance
-          </button>
-        </div>
-      </header>
-
       <nav id="secondary-nav" class="secondary-nav"></nav>
             <!-- DASHBOARD SCREEN -->
       <section id="dashboard-screen" class="screen active-screen">
         <div class="new-dashboard">
-
-
-          <div class="dashboard-schedule-event-row">
-  <div class="dashboard-schedule-left">
-
-          <!-- TOP TEAM SCHEDULE STRIP -->
-          <div class="dashboard-schedule-card">
-            <div class="dashboard-section-title-row">
-              <h2>Team Schedule</h2>
-            </div>
-
-            <div class="dashboard-schedule-carousel">
-
-              <div id="dashboard-schedule-track" class="dashboard-schedule-track">
-                <div id="dashboard-recent-results" class="dashboard-schedule-items"></div>
-                <div id="dashboard-upcoming-games" class="dashboard-schedule-items"></div>
-              </div>
-
-            </div>
-          </div>
-</div>
-
-  <div id="dashboard-next-big-event-card" class="dashboard-next-big-event-card"></div>
-</div>
           <!-- MAIN DASHBOARD ROW -->
           <div class="dashboard-main-grid">
+<div class="dashboard-left-rail">
 
-            <!-- GAME CENTER CARD -->
-<div class="dashboard-today-game-card">
+<!-- COMPACT NEXT GAME CARD -->
+<div class="dashboard-compact-next-game-card">
+  <div class="dashboard-compact-next-game-header">
+    <h2>Next Game</h2>
+    <span id="dashboard-compact-game-phase">Regular Season</span>
+  </div>
 
-  <div id="dashboard-game-center-normal">
-    <div class="dashboard-game-center-header">
-      <div>
-        <span>Game Center</span>
-        <h2 id="dashboard-game-countdown">Next Game</h2>
-      </div>
-
-      <strong id="dashboard-game-type">Regular Season</strong>
+  <div class="dashboard-compact-matchup">
+    <div class="dashboard-compact-team">
+      <div id="dashboard-compact-user-logo" class="dashboard-compact-logo">FC</div>
+      <strong id="dashboard-compact-user-name">Team</strong>
+      <span id="dashboard-compact-user-record">0-0</span>
     </div>
 
-    <div class="dashboard-today-content">
-      <div class="dashboard-today-left">
-        <h1 id="dashboard-date">Sep 25, 2026</h1>
-        <p id="dashboard-season-phase">Training Camp</p>
+    <div class="dashboard-compact-vs">VS</div>
 
-        <div id="dashboard-next-game-meta" class="dashboard-next-game-meta">
-          <div>
-            <span>Time</span>
-            <strong id="dashboard-next-game-time">7:30 PM</strong>
-          </div>
-
-          <div>
-            <span>Location</span>
-            <strong id="dashboard-next-game-location">No Game</strong>
-          </div>
-
-          <div>
-            <span>Arena</span>
-            <strong id="dashboard-next-game-arena">--</strong>
-          </div>
-
-          <div>
-            <span>Arena Capacity</span>
-            <strong id="dashboard-next-game-arena-capacity">--</strong>
-          </div>
-        </div>
-      </div>
-
-      <div id="dashboard-matchup-display" class="dashboard-matchup-display">
-        <div class="dashboard-matchup-team">
-          <div id="dashboard-user-logo" class="dashboard-fake-logo">FC</div>
-          <strong id="dashboard-team-name">Team Name</strong>
-          <span id="dashboard-record">0-0</span>
-        </div>
-
-        <div class="dashboard-vs">VS</div>
-
-        <div class="dashboard-matchup-team">
-          <div id="dashboard-opponent-logo" class="dashboard-fake-logo opponent">OPP</div>
-          <strong id="dashboard-next-opponent-name">No Game</strong>
-          <span id="dashboard-next-opponent-record">--</span>
-        </div>
-      </div>
-
-      <div id="dashboard-team-comparison" class="dashboard-team-comparison">
-        <div>
-          <strong id="dashboard-comparison-user-record">0-0</strong>
-          <span>Record</span>
-        </div>
-
-        <div>
-          <strong id="dashboard-comparison-user-ppg">0.0</strong>
-          <span>PTS/G</span>
-        </div>
-
-        <div>
-          <strong id="dashboard-comparison-user-rank">--</strong>
-          <span>Conf Rank</span>
-        </div>
-
-        <div>
-          <strong id="dashboard-comparison-opponent-record">--</strong>
-          <span>Record</span>
-        </div>
-
-        <div>
-          <strong id="dashboard-comparison-opponent-ppg">--</strong>
-          <span>PTS/G</span>
-        </div>
-
-        <div>
-          <strong id="dashboard-comparison-opponent-rank">--</strong>
-          <span>Conf Rank</span>
-        </div>
-      </div>
-
-      <div class="dashboard-action-row">
-        <button type="button" class="dashboard-advance-button" onclick="simDay()">
-          Advance
-        </button>
-
-        <div class="dashboard-context-button-slot">
-          <button
-            id="dashboard-context-action-button"
-            type="button"
-            class="dashboard-context-action-button roster hidden"
-            onclick="handleDashboardContextAction()"
-          >
-            Review Roster
-          </button>
-        </div>
-      </div>
+    <div class="dashboard-compact-team">
+      <div id="dashboard-compact-opponent-logo" class="dashboard-compact-logo">OPP</div>
+      <strong id="dashboard-compact-opponent-name">Opponent</strong>
+      <span id="dashboard-compact-opponent-record">0-0</span>
     </div>
   </div>
 
-  <div id="dashboard-offseason-hub" class="dashboard-offseason-hub hidden"></div>
-
+  <div class="dashboard-compact-game-meta">
+    <div><span aria-hidden="true">▣</span><strong id="dashboard-compact-game-date">--</strong></div>
+    <div><span aria-hidden="true">◷</span><strong id="dashboard-compact-game-time">--</strong></div>
+    <div><span aria-hidden="true">⌖</span><strong id="dashboard-compact-game-arena">--</strong></div>
+  </div>
 </div>
-            
 
+<div class="dashboard-season-overview-card">
+  <h2>Season Overview</h2>
+
+  <div class="dashboard-season-record-grid">
+    <div><span>Record</span><strong id="dashboard-season-record">0-0</strong></div>
+    <div><span>Conf. Rank</span><strong id="dashboard-season-conf-rank">--</strong></div>
+    <div><span>Div. Rank</span><strong id="dashboard-season-div-rank">--</strong></div>
+    <div><span>Streak</span><strong id="dashboard-season-streak">--</strong></div>
+    <div><span>Last 10</span><strong id="dashboard-season-last-ten">0-0</strong></div>
+  </div>
+
+  <div class="dashboard-season-status-actions">
+    <div class="dashboard-season-percentages">
+      <div id="dashboard-chemistry-meter">
+        <span>Team Chem</span>
+        <i class="dashboard-season-meter-bar" aria-hidden="true"></i>
+        <strong id="dashboard-chemistry">--%</strong>
+      </div>
+      <div id="dashboard-morale-meter">
+        <span>Team Morale</span>
+        <i class="dashboard-season-meter-bar" aria-hidden="true"></i>
+        <strong id="dashboard-team-morale">--%</strong>
+      </div>
+      <div id="dashboard-fan-interest-meter">
+        <span>Fan Interest</span>
+        <i class="dashboard-season-meter-bar" aria-hidden="true"></i>
+        <strong id="dashboard-fan-interest">--%</strong>
+      </div>
+    </div>
+
+    <div class="dashboard-season-buttons">
+      <button type="button" class="dashboard-advance-button" onclick="simDay()">Advance</button>
+      <button
+        type="button"
+        class="dashboard-review-roster-button"
+        onclick="showMainSection('team')"
+      >
+        Review Roster
+      </button>
+      <button
+        id="dashboard-context-action-button"
+        type="button"
+        class="dashboard-context-action-button roster"
+        onclick="handleDashboardContextAction()"
+      >
+        Review Roster
+      </button>
+    </div>
+  </div>
+</div>
+
+<section class="dashboard-bottom-card dashboard-roster-summary-card">
+  <div class="dashboard-bottom-card-header">
+    <div>
+      <h2>Team Roster</h2>
+      <span>Starting 5</span>
+    </div>
+  </div>
+
+  <div id="dashboard-starting-five" class="dashboard-starting-five"></div>
+
+  <button
+    type="button"
+    class="dashboard-bottom-card-link"
+    onclick="showMainSection('team'); showSecondaryScreen('roster-screen')"
+  >
+    View Roster
+  </button>
+</section>
+</div>
+
+<div class="dashboard-right-workspace">
+<div class="dashboard-schedule-countdown-row">
+
+ <div class="dashboard-schedule-card">
+  <div class="dashboard-section-title-row">
+    <h2>Team Schedule</h2>
+  </div>
+
+  <div class="dashboard-schedule-carousel">
+    <div id="dashboard-schedule-track" class="dashboard-schedule-track">
+      <div id="dashboard-recent-results" class="dashboard-schedule-items"></div>
+      <div id="dashboard-upcoming-games" class="dashboard-schedule-items"></div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-event-countdown-card">
+  <span>Countdown To</span>
+  <strong>Opening Night</strong>
+
+  <div class="dashboard-event-countdown-number">
+    <b id="dashboard-event-countdown-days">26</b>
+    <small>Days</small>
+  </div>
+</div>
+</div>
+
+<div class="dashboard-hub-standings-row">
 <!-- GENERAL MANAGER HUB -->
 <div class="dashboard-gm-hub-card">
   <div class="gm-hub-device">
@@ -595,89 +663,83 @@
   </div>
 </div>
 
-          <!-- BOTTOM DASHBOARD ROW -->
-          <div class="dashboard-bottom-grid">
+<aside class="dashboard-standings-card dashboard-standings-card-compact">
+  <h2 id="dashboard-standings-title">Conference Standings</h2>
+  <div id="dashboard-standings-list" class="dashboard-standings-list"></div>
+</aside>
+</div>
 
-            <!-- MINI STANDINGS -->
-            <div class="dashboard-standings-card">
-              <h2 id="dashboard-standings-title">Conference Standings</h2>
-              <div id="dashboard-standings-list" class="dashboard-standings-list"></div>
-            </div>
+<div class="dashboard-bottom-secondary-cards">
+  <section class="dashboard-bottom-card dashboard-finances-summary-card">
+    <div class="dashboard-bottom-card-header">
+      <h2>Finances Overview</h2>
+    </div>
 
-            <!-- STATS CENTER -->
-            <div class="dashboard-stats-center-card">
-              <div class="dashboard-section-title-row">
-                <h2>Stats Center</h2>
-                <button type="button" onclick="showMainSection('stats')">View Full Stats ›</button>
-              </div>
+    <div class="dashboard-finances-summary-body">
+      <div id="dashboard-cap-space-ring" class="dashboard-cap-space-ring">
+        <div>
+          <strong id="dashboard-bottom-cap-space">$0M</strong>
+          <span>Cap Space</span>
+        </div>
+      </div>
 
-              <div id="dashboard-stats-center" class="dashboard-stats-center"></div>
-            </div>
+      <div class="dashboard-finance-lines">
+        <div><span>Salary Cap</span><strong id="dashboard-bottom-salary-cap">$0M</strong></div>
+        <div><span>Luxury Tax</span><strong id="dashboard-bottom-luxury-tax">$0M</strong></div>
+        <div><span>1st Apron</span><strong id="dashboard-bottom-first-apron">$0M</strong></div>
+        <div><span>2nd Apron</span><strong id="dashboard-bottom-second-apron">$0M</strong></div>
+      </div>
+    </div>
 
-            <!-- CLUB OVERVIEW -->
-            <div class="dashboard-club-overview-card">
-              <h2>Club Overview</h2>
+    <button
+      type="button"
+      class="dashboard-bottom-card-link"
+      onclick="showMainSection('team'); showSecondaryScreen('finances-screen')"
+    >
+      View Finances
+    </button>
+  </section>
 
-              <div class="dashboard-club-grid">
-                <div>
-                  <span>Record</span>
-                  <strong id="dashboard-club-record">0-0</strong>
-                  <small id="dashboard-club-rank">--</small>
-                </div>
+  <section class="dashboard-bottom-card dashboard-key-dates-card">
+    <div class="dashboard-bottom-card-header">
+      <h2>Key Dates</h2>
+    </div>
 
-                <div>
-                  <span>Team Chemistry</span>
-                  <strong id="dashboard-chemistry">82</strong>
-                  <small>Good</small>
-                </div>
+    <div class="dashboard-key-dates-empty">
+      <div class="dashboard-calendar-placeholder" aria-hidden="true">▦</div>
+      <p>No key dates scheduled yet.</p>
+    </div>
 
-                <div>
-                  <span>Team Level</span>
-                  <strong id="dashboard-overall">Unknown</strong>
-                  <small id="dashboard-team-level-label">Team Level</small>
-                </div>
+    <button
+      type="button"
+      class="dashboard-bottom-card-link"
+      onclick="showMainSection('schedule'); showSecondaryScreen('key-dates-screen')"
+    >
+      View Calendar
+    </button>
+  </section>
 
-                <div>
-                  <span>Payroll</span>
-                  <strong id="dashboard-payroll">$0M</strong>
-                  <small id="dashboard-payroll-rank">League Rank</small>
-                </div>
+  <section class="dashboard-bottom-card dashboard-injuries-summary-card">
+    <div class="dashboard-bottom-card-header">
+      <h2>Injury Report</h2>
+    </div>
 
-                <div>
-                  <span>Cap Space</span>
-                  <strong id="dashboard-cap-space">$0M</strong>
-                  <small id="dashboard-cap-status">Cap Status</small>
-                </div>
+    <div id="dashboard-bottom-injury-list" class="dashboard-bottom-injury-list"></div>
 
-                <div>
-                  <span>Owner Happiness</span>
-                  <strong id="dashboard-owner-happiness">73</strong>
-                  <small>Satisfied</small>
-                </div>
-
-                <div>
-                  <span>Playoff Odds</span>
-                  <strong id="dashboard-playoff-odds">--</strong>
-                  <small>Projected</small>
-                </div>
-
-                <div>
-                  <span>Conf. Rank</span>
-                  <strong id="dashboard-conference-rank">--</strong>
-                  <small id="dashboard-conference">Conference</small>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-quick-links hidden">
-            <button type="button" onclick="showMainSection('team')">View Squad</button>
-            <button type="button" onclick="showMainSection('gameplan')">Set Gameplan</button>
-            <button type="button" onclick="showMainSection('free-agency')">Free Agency</button>
-            <button type="button" onclick="showMainSection('league')">League</button>
-          </div>
+    <button
+      type="button"
+      class="dashboard-bottom-card-link"
+      onclick="showMainSection('gameplan'); showSecondaryScreen('injury-report-screen')"
+    >
+      View All Injuries
+    </button>
+  </section>
+</div>
+</div>
 
         </div>
+
+      </div>
       </section>
             <!-- FULL INBOX SCREEN -->
       <section id="full-inbox-screen" class="screen">
@@ -919,80 +981,71 @@
           <button type="button">Youth Development</button>
         </div>
       </section>
-            <!-- FRONT OFFICE: MAIN OVERVIEW SCREEN -->
-      <section id="front-office-overview-screen" class="screen">
-        <div class="front-office-page">
 
-          <div class="front-office-top-bar">
-            <div>
-              <h2>Front Office</h2>
-              <p>Manage your general manager profile, staff structure, budget, and organization identity.</p>
-            </div>
 
-            <div class="front-office-status-strip">
-              <div>
-                <span>Staff Budget</span>
-                <strong id="front-office-budget">$18.7M / $24.0M</strong>
-              </div>
+ <!-- FRONT OFFICE: MAIN OVERVIEW SCREEN -->
+<section id="front-office-overview-screen" class="screen">
+  <div class="front-office-home-page">
+    <div class="front-office-home-header">
+      <h2>Front Office</h2>
+      <p>Manage the organization. Build the future. Control every major part of your franchise.</p>
+    </div>
 
-              <div>
-                <span>Staff Chemistry</span>
-                <strong id="front-office-chemistry">92</strong>
-              </div>
-
-              <div>
-                <span>Organization</span>
-                <strong id="front-office-grade">A+</strong>
-              </div>
-            </div>
-          </div>
-
-          <div class="front-office-gm-grid">
-            <div class="card front-office-gm-card">
-              <h2>General Manager</h2>
-
-              <div class="front-office-gm-profile">
-                <div id="front-office-gm-face" class="front-office-gm-face">GM</div>
-
-                <div>
-                  <span>Current General Manager</span>
-                  <strong id="front-office-gm-name">Your GM</strong>
-                  <p id="front-office-gm-info">Your background and hometown will appear here.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="card front-office-owner-card">
-              <h2>Owner Confidence</h2>
-
-              <div class="front-office-big-number">
-                <strong id="front-office-owner-confidence">73</strong>
-                <span>Satisfied</span>
-              </div>
-
-              <p>Owner confidence will eventually affect job security and expectations.</p>
-            </div>
-
-            <div class="card front-office-reputation-card">
-              <h2>GM Reputation</h2>
-
-              <div class="front-office-big-number">
-                <strong id="front-office-reputation">New GM</strong>
-                <span id="front-office-background-label">Former Scout</span>
-              </div>
-
-              <p>Your reputation will grow through wins, trades, draft success, and championships.</p>
-            </div>
-          </div>
-
-          <div class="front-office-main-actions">
-            <button type="button" onclick="showTab('staff-overview-screen')">View Staff Overview</button>
-            <button type="button" onclick="showTab('coaching-staff-screen')">Manage Coaching Staff</button>
-            <button type="button" onclick="showTab('staff-market-screen')">Staff Search</button>
-          </div>
-
+    <div class="front-office-home-grid">
+      <button
+        type="button"
+        class="front-office-home-card staff-card"
+        onclick="showMainSection('front-office'); showSecondaryScreen('staff-overview-screen');"
+      >
+        <div>
+          <span>Hires · Roles · Development</span>
+          <h3>Staff</h3>
+          <p>Build your basketball operations team. Manage coaches, scouts, medical staff, and executives.</p>
         </div>
-      </section>
+        <strong>Open Staff →</strong>
+      </button>
+
+      <button
+        type="button"
+        class="front-office-home-card draft-card"
+        onclick="showMainSection('draft')"
+      >
+        <div>
+          <span>Picks · Prospects · Strategy</span>
+          <h3>Draft</h3>
+          <p>Scout prospects, view the draft board, manage picks, and prepare for draft night.</p>
+        </div>
+        <strong>Open Draft →</strong>
+      </button>
+
+      <button
+        type="button"
+        class="front-office-home-card trades-card"
+        onclick="showMainSection('trade')"
+      >
+        <div>
+          <span>Negotiate · Analyze · Improve</span>
+          <h3>Trades</h3>
+          <p>Explore trade possibilities, negotiate packages, and reshape your roster.</p>
+        </div>
+        <strong>Open Trades →</strong>
+      </button>
+
+      <button
+        type="button"
+        class="front-office-home-card freeagency-card"
+        onclick="showMainSection('free-agency')"
+      >
+        <div>
+          <span>Contracts · Cap Space · Signings</span>
+          <h3>Free Agency</h3>
+          <p>Evaluate free agents, manage offers, and complete your roster for the season.</p>
+        </div>
+        <strong>Open Free Agency →</strong>
+      </button>
+    </div>
+  </div>
+</section>
 
       <!-- FRONT OFFICE: STAFF OVERVIEW SCREEN -->
             <!-- FRONT OFFICE: STAFF OVERVIEW SCREEN -->
@@ -2100,6 +2153,11 @@
           <div id="calendar-grid-days" class="calendar-days"></div>
         </div>
       </section>
+
+      <!-- CALENDAR: KEY DATES SCREEN -->
+<section id="key-dates-screen" class="screen">
+  <div id="key-dates-root"></div>
+</section>
 
       <!-- SCHEDULE: TEAM SCHEDULE SCREEN -->
       <section id="schedule-screen" class="screen">
@@ -4509,7 +4567,7 @@
       <script src="js/12-trade-center.js"></script>
       <script src="js/19-team-picks-database.js"></script>
       <script src="js/13-draft.js"></script>
-      <script src="js/14-dashboard-gmhub.js"></script>
+      <script src="js/14-dashboard-gmhub.js?v=20260627-dashboard-bottom-row-2"></script>
       <script src="js/15-navigation.js"></script>
       <script src="js/15-phone-conversations.js"></script>
       <script src="js/16-gameplan-practices-injuries.js"></script>
