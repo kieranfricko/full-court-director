@@ -248,6 +248,15 @@ function processCupKnockoutSetup() {
 
   addInboxMessage("The Cup Knockout Stage Set", "The Cup quarterfinal matchups have been set.", "event");
 
+  if (typeof addLeagueEventNews === "function") {
+    addLeagueEventNews(
+      "cup_quarterfinals",
+      "The Cup Quarterfinals Begin",
+      "Eight teams remain in the race for The Cup.",
+      { priority: 90, imageType: "game", teamIds: qualifiers }
+    );
+  }
+
   addUserCupKnockoutGamesToSchedule();
 }
 
@@ -341,18 +350,29 @@ function addUserCupKnockoutGamesToSchedule() {
     if (countsForRegularSeason) {
       replaceRegularSeasonSlotWithCupKnockoutGame(cupGame, opponent);
     } else {
-      gameState.userSchedule.push(createUserScheduleGame({
-        opponent,
-        date: cupGame.date,
+      gameState.userSchedule.push({
+        id: `cup_user_${cupGame.id}`,
+        date: new Date(cupGame.date),
+        opponentId: opponent.id,
+        opponentName: opponent.name,
+        opponentAbbrev: opponent.abbrev,
         home: false,
+        played: false,
+        result: null,
+        ourScore: null,
+        opponentScore: null,
         competition: cupGame.round,
         cupGame: true,
         cupRound: "Final",
         countsForRegularSeason: false,
         replacedByCup: false,
         neutralSite: true,
-        seriesId: cupGame.id
-      }));
+        playoffGame: false,
+        playInGame: false,
+        seriesId: cupGame.id,
+        parentSeriesId: null,
+        topPerformers: []
+      });
     }
   }
 
@@ -383,15 +403,28 @@ function replaceRegularSeasonSlotWithCupKnockoutGame(cupGame, opponent) {
 
   if (!slot) return false;
 
+  slot.originalHomeTeamId = slot.homeTeamId;
+  slot.originalAwayTeamId = slot.awayTeamId;
   slot.originalOpponentId = slot.opponentId;
   slot.originalOpponentName = slot.opponentName;
   slot.originalCompetition = slot.competition || "Regular Season";
   slot.originalDate = new Date(slot.date);
 
+  const userId = Number(gameState.selectedTeamId);
+  const userTeam = getTeamById(userId) || getBaseTeamById(userId);
+  const userIsHome = cupGame.round === "The Cup Quarterfinal";
+
+  slot.homeTeamId = userIsHome ? userId : Number(opponent.id);
+  slot.awayTeamId = userIsHome ? Number(opponent.id) : userId;
+  slot.homeTeamName = userIsHome ? userTeam.name : opponent.name;
+  slot.awayTeamName = userIsHome ? opponent.name : userTeam.name;
+  slot.homeTeamAbbrev = userIsHome ? userTeam.abbrev : opponent.abbrev;
+  slot.awayTeamAbbrev = userIsHome ? opponent.abbrev : userTeam.abbrev;
   slot.date = new Date(cupDate);
   slot.opponentId = opponent.id;
   slot.opponentName = opponent.name;
-  slot.home = cupGame.round === "The Cup Quarterfinal";
+  slot.opponentAbbrev = opponent.abbrev;
+  slot.home = userIsHome;
   slot.competition = cupGame.round;
   slot.cupGame = true;
   slot.cupRound = cupGame.round.replace("The Cup ", "");
@@ -622,6 +655,18 @@ function playCupKnockoutGame(cupGame) {
   cupGame.loserId = result.loserId;
   cupGame.played = true;
 
+  const performers = generatePlayerStatsForGame(teamA.id, teamB.id, result.scoreA, result.scoreB);
+
+  if (typeof addGameResultNews === "function") {
+    addGameResultNews({
+      ...cupGame,
+      homeTeamId: cupGame.teamAId,
+      awayTeamId: cupGame.teamBId,
+      homeScore: cupGame.teamAScore,
+      awayScore: cupGame.teamBScore
+    }, performers);
+  }
+
   if (cupGame.countsForRegularSeason) {
     applyRegularSeasonResult(teamA, teamB, result.winnerId);
   }
@@ -703,6 +748,14 @@ function advanceCupBracketIfNeeded() {
     gameState.cup.games = gameState.cup.games.concat(semifinals);
 
     addInboxMessage("The Cup Semifinals Set", "The Cup semifinals have been scheduled.", "event");
+    if (typeof addLeagueEventNews === "function") {
+      addLeagueEventNews(
+        "cup_semifinals",
+        "The Cup Semifinals Are Set",
+        "Four teams remain with a place in The Cup Final on the line.",
+        { priority: 92, imageType: "game", teamIds: winners }
+      );
+    }
     addUserCupKnockoutGamesToSchedule();
     return;
   }
@@ -723,6 +776,14 @@ function advanceCupBracketIfNeeded() {
     gameState.cup.games.push(final);
 
     addInboxMessage("The Cup Final Set", "The Cup Final has been scheduled. This game does not count toward the regular season record.", "event");
+    if (typeof addLeagueEventNews === "function") {
+      addLeagueEventNews(
+        "cup_final",
+        "The Cup Final Matchup Is Set",
+        "The final two teams will meet for The Cup championship.",
+        { priority: 96, imageType: "game", teamIds: winners }
+      );
+    }
     addUserCupKnockoutGamesToSchedule();
     refreshAll();
     return;
@@ -740,6 +801,14 @@ function advanceCupBracketIfNeeded() {
     gameState.history.cupWinners.unshift(`${gameState.seasonLabel}: ${champion.name}`);
 
     addInboxMessage("The Cup Champion", `${champion.name} won The Cup.`, "event");
+    if (typeof addLeagueEventNews === "function") {
+      addLeagueEventNews(
+        "cup_champion",
+        `${champion.name} Win The Cup`,
+        `${champion.name} defeated ${runnerUp ? runnerUp.name : "their opponent"} to claim the championship.`,
+        { priority: 100, imageType: "team", teamId: champion.id, teamIds: [champion.id, runnerUp?.id].filter(Boolean) }
+      );
+    }
 
     showModal(
       "The Cup Champion",
@@ -794,7 +863,31 @@ function simulateOtherCupGroupGamesToday() {
       const result = simTeamVsTeam(teamA, teamB);
       applyRegularSeasonResult(teamA, teamB, result.winnerId);
       updateCupStats(teamA.id, teamB.id, result.scoreA, result.scoreB);
-      generatePlayerStatsForGame(teamA.id, teamB.id, result.scoreA, result.scoreB);
+      const performers = generatePlayerStatsForGame(teamA.id, teamB.id, result.scoreA, result.scoreB);
+
+      if (typeof addGameResultNews === "function") {
+        const cupGroupGame = {
+          id: `cup_group_${gameState.seasonLabel}_${month + 1}_${day}_${teamA.id}_${teamB.id}`,
+          date: new Date(gameState.currentDate),
+          competition: "The Cup Group Stage",
+          cupGame: true,
+          played: true,
+          teamAId: teamA.id,
+          teamBId: teamB.id,
+          winnerId: result.winnerId,
+          loserId: result.loserId,
+          teamAScore: result.scoreA,
+          teamBScore: result.scoreB
+        };
+
+        addGameResultNews({
+          ...cupGroupGame,
+          homeTeamId: cupGroupGame.teamAId,
+          awayTeamId: cupGroupGame.teamBId,
+          homeScore: result.scoreA,
+          awayScore: result.scoreB
+        }, performers);
+      }
     }
   }
 }
@@ -852,6 +945,14 @@ function initializePlayIn() {
   createPlayInConference("West", west);
 
   addInboxMessage("Play-In Tournament Begins", "The Play-In Tournament has begun. Seeds 7-10 battle for the final two playoff spots.", "event");
+  if (typeof addLeagueEventNews === "function") {
+    addLeagueEventNews(
+      "play_in_set",
+      "Play-In Tournament Field Is Set",
+      "Seeds seven through ten will compete for the final postseason places.",
+      { priority: 90, imageType: "league" }
+    );
+  }
   addUserPlayInGamesToSchedule();
 }
 
@@ -1085,6 +1186,14 @@ function initializePlayoffs() {
   createFirstRoundSeries("West", westSeeds);
 
   addInboxMessage("Playoffs Begin", "The playoff bracket has been set. The path to The Finals begins now.", "event");
+  if (typeof addLeagueEventNews === "function") {
+    addLeagueEventNews(
+      "playoffs_set",
+      "Playoff Field Officially Set",
+      "The postseason bracket is complete and the first round is ready to begin.",
+      { priority: 98, imageType: "league" }
+    );
+  }
   scheduleCurrentRoundGames();
 }
 
@@ -1256,7 +1365,17 @@ function playPlayoffGame(series, playoffGame) {
   playoffGame.teamAScore = result.scoreA;
   playoffGame.teamBScore = result.scoreB;
 
-  generatePlayerStatsForGame(teamA.id, teamB.id, result.scoreA, result.scoreB);
+  const performers = generatePlayerStatsForGame(teamA.id, teamB.id, result.scoreA, result.scoreB);
+
+  if (typeof addGameResultNews === "function") {
+    addGameResultNews({
+      ...playoffGame,
+      homeTeamId: series.teamAId,
+      awayTeamId: series.teamBId,
+      homeScore: playoffGame.teamAScore,
+      awayScore: playoffGame.teamBScore
+    }, performers);
+  }
 
   if (result.winnerId === series.teamAId) {
     series.winsA++;
@@ -1280,6 +1399,17 @@ function completeSeries(series) {
   } else {
     series.winnerId = series.teamBId;
     series.loserId = series.teamAId;
+  }
+
+  if (typeof addLeagueEventNews === "function") {
+    const winner = getTeamById(series.winnerId);
+    const loser = getTeamById(series.loserId);
+    addLeagueEventNews(
+      `series_${series.id}`,
+      `${winner?.name || "Team"} Advance Past ${loser?.name || "Their Opponent"}`,
+      `${winner?.name || "The winner"} won the ${series.round} series ${Math.max(series.winsA, series.winsB)}-${Math.min(series.winsA, series.winsB)}.`,
+      { priority: series.round === "The Finals" ? 100 : 88, imageType: "team", teamId: winner?.id, teamIds: [winner?.id, loser?.id].filter(Boolean) }
+    );
   }
 
   cancelRemainingUserPlayoffGames(series);

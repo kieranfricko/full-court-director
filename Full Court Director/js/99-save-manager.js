@@ -1,15 +1,21 @@
 // ============================================================
-// FULL COURT DIRECTOR - NAMED LOCAL SAVE MANAGER v1.01
+// FULL COURT DIRECTOR - INDEXEDDB SAVE MANAGER
 // ============================================================
 
 const FCD_SAVE_MANAGER = {
-  indexKey: "fcd_saves_index_v101",
+  dbName: "full_court_director_saves_v101",
+  dbVersion: 1,
+  storeName: "saves",
   activeSaveIdKey: "fcd_active_save_id_v101",
   pendingLoadKey: "fcd_pending_load_v101",
-  savePrefix: "fcd_save_v101_"
+  legacyIndexKey: "fcd_saves_index_v101",
+  legacySavePrefix: "fcd_save_v101_",
+  migrationCompleteKey: "fcd_indexeddb_migration_v101"
 };
 
 let fcdSaveClickTimer = null;
+let fcdSaveWriteChain = Promise.resolve();
+let fcdPlayRenderVersion = 0;
 
 function fcdSafeText(value) {
   return String(value ?? "")
@@ -34,88 +40,6 @@ function fcdSetGameState(state) {
   } catch (error) {}
 
   window.gameState = state;
-}
-
-function fcdGetSaveIndex() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(FCD_SAVE_MANAGER.indexKey));
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.warn("Could not read saved-games index:", error);
-    return [];
-  }
-}
-
-function fcdSetSaveIndex(index) {
-  localStorage.setItem(FCD_SAVE_MANAGER.indexKey, JSON.stringify(index));
-}
-
-function fcdRemoveObsoleteSaveStorage() {
-  const keys = [];
-
-  for (let index = 0; index < localStorage.length; index++) {
-    const key = localStorage.key(index);
-    if (key) keys.push(key);
-  }
-
-  keys.forEach(key => {
-    if (
-      key === "fullCourtDirectorSave" ||
-      key.startsWith("fcd_save_manager_")
-    ) {
-      localStorage.removeItem(key);
-    }
-  });
-}
-
-function fcdRemoveOrphanedNamedSavePayloads() {
-  const indexedIds = new Set(
-    fcdGetSaveIndex()
-      .map(item => item?.saveId)
-      .filter(Boolean)
-  );
-  const payloadKeys = [];
-
-  for (let index = 0; index < localStorage.length; index++) {
-    const key = localStorage.key(index);
-    if (key && key.startsWith(FCD_SAVE_MANAGER.savePrefix)) {
-      payloadKeys.push(key);
-    }
-  }
-
-  payloadKeys.forEach(key => {
-    const saveId = key.slice(FCD_SAVE_MANAGER.savePrefix.length);
-    if (!indexedIds.has(saveId)) {
-      localStorage.removeItem(key);
-    }
-  });
-}
-
-function fcdRepairSaveIndex() {
-  const index = fcdGetSaveIndex();
-  const repaired = index.filter(item => {
-    if (!item?.saveId) return false;
-
-    const raw = localStorage.getItem(`${FCD_SAVE_MANAGER.savePrefix}${item.saveId}`);
-    if (!raw) return false;
-
-    try {
-      return Boolean(JSON.parse(raw)?.gameState);
-    } catch (error) {
-      return false;
-    }
-  });
-
-  if (repaired.length !== index.length) {
-    fcdSetSaveIndex(repaired);
-  }
-
-  const activeSaveId = fcdGetActiveSaveId();
-  if (activeSaveId && !repaired.some(item => item.saveId === activeSaveId)) {
-    fcdSetActiveSaveId("");
-  }
-
-  return repaired;
 }
 
 function fcdGetActiveSaveId() {
@@ -145,53 +69,247 @@ function fcdGetTeamNameFromState(state) {
   return team?.name || state.selectedTeamName || state.userTeamName || "Unknown Team";
 }
 
-function fcdBuildSaveMeta(saveId, saveName, state) {
+function fcdBuildSaveMeta(saveId, saveName, state, updatedAt) {
   return {
     saveId,
     saveName,
     teamName: fcdGetTeamNameFromState(state),
     seasonLabel: state?.seasonLabel || "",
-    savedAt: new Date().toISOString()
+    savedAt: updatedAt
   };
 }
 
-function fcdBuildSavePayload(saveId, saveName, state) {
+function fcdBuildIndexedDbSave(saveId, saveName, state) {
+  const updatedAt = new Date().toISOString();
+
   return {
-    meta: fcdBuildSaveMeta(saveId, saveName, state),
-    gameState: JSON.parse(JSON.stringify(state))
+    id: saveId,
+    meta: fcdBuildSaveMeta(saveId, saveName, state, updatedAt),
+    gameState: JSON.parse(JSON.stringify(state)),
+    updatedAt
   };
 }
 
-function fcdWriteNamedSave(saveId, saveName, options = {}) {
+function fcdGetSaveSizeMb(saveObject) {
+  const bytes = new Blob([JSON.stringify(saveObject)]).size;
+  return (bytes / (1024 * 1024)).toFixed(2);
+}
+
+function openFcdSaveDb() {
+  return new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(new Error("IndexedDB is not available in this browser."));
+      return;
+    }
+
+    const request = indexedDB.open(
+      FCD_SAVE_MANAGER.dbName,
+      FCD_SAVE_MANAGER.dbVersion
+    );
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+
+      if (!db.objectStoreNames.contains(FCD_SAVE_MANAGER.storeName)) {
+        const store = db.createObjectStore(FCD_SAVE_MANAGER.storeName, {
+          keyPath: "id"
+        });
+        store.createIndex("updatedAt", "updatedAt", { unique: false });
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Could not open save database."));
+    request.onblocked = () => reject(new Error("Save database upgrade is blocked by another tab."));
+  });
+}
+
+async function saveGameToIndexedDB(saveId, saveObject) {
+  const db = await openFcdSaveDb();
+
+  try {
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(FCD_SAVE_MANAGER.storeName, "readwrite");
+      const store = transaction.objectStore(FCD_SAVE_MANAGER.storeName);
+
+      store.put({
+        ...saveObject,
+        id: saveId,
+        updatedAt: saveObject.updatedAt || new Date().toISOString()
+      });
+
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error || new Error("Save write failed."));
+      transaction.onabort = () => reject(transaction.error || new Error("Save write was aborted."));
+    });
+
+    console.log(
+      `[FCD Saves] Wrote ${saveId} (${fcdGetSaveSizeMb(saveObject)} MB)`
+    );
+    return true;
+  } finally {
+    db.close();
+  }
+}
+
+async function loadGameFromIndexedDB(saveId) {
+  const db = await openFcdSaveDb();
+
+  try {
+    const saveObject = await new Promise((resolve, reject) => {
+      const transaction = db.transaction(FCD_SAVE_MANAGER.storeName, "readonly");
+      const request = transaction.objectStore(FCD_SAVE_MANAGER.storeName).get(saveId);
+
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error || new Error("Save read failed."));
+    });
+
+    if (saveObject) {
+      console.log(
+        `[FCD Saves] Loaded ${saveId} (${fcdGetSaveSizeMb(saveObject)} MB)`
+      );
+    }
+
+    return saveObject;
+  } finally {
+    db.close();
+  }
+}
+
+async function deleteSaveFromIndexedDB(saveId) {
+  const db = await openFcdSaveDb();
+
+  try {
+    await new Promise((resolve, reject) => {
+      const transaction = db.transaction(FCD_SAVE_MANAGER.storeName, "readwrite");
+      transaction.objectStore(FCD_SAVE_MANAGER.storeName).delete(saveId);
+
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error || new Error("Save deletion failed."));
+      transaction.onabort = () => reject(transaction.error || new Error("Save deletion was aborted."));
+    });
+
+    console.log(`[FCD Saves] Deleted ${saveId}`);
+    return true;
+  } finally {
+    db.close();
+  }
+}
+
+async function listSavesFromIndexedDB() {
+  const db = await openFcdSaveDb();
+
+  try {
+    const saves = await new Promise((resolve, reject) => {
+      const transaction = db.transaction(FCD_SAVE_MANAGER.storeName, "readonly");
+      const request = transaction.objectStore(FCD_SAVE_MANAGER.storeName).getAll();
+
+      request.onsuccess = () => resolve(Array.isArray(request.result) ? request.result : []);
+      request.onerror = () => reject(request.error || new Error("Could not list saves."));
+    });
+
+    return saves.sort((a, b) =>
+      String(b.updatedAt || b.meta?.savedAt || "")
+        .localeCompare(String(a.updatedAt || a.meta?.savedAt || ""))
+    );
+  } finally {
+    db.close();
+  }
+}
+
+function fcdRemoveObsoleteSaveStorage() {
+  const keys = [];
+
+  for (let index = 0; index < localStorage.length; index++) {
+    const key = localStorage.key(index);
+    if (key) keys.push(key);
+  }
+
+  keys.forEach(key => {
+    if (key === "fullCourtDirectorSave" || key.startsWith("fcd_save_manager_")) {
+      localStorage.removeItem(key);
+    }
+  });
+}
+
+function fcdGetLegacyLocalSaveKeys() {
+  const keys = [];
+
+  for (let index = 0; index < localStorage.length; index++) {
+    const key = localStorage.key(index);
+
+    if (key && key.startsWith(FCD_SAVE_MANAGER.legacySavePrefix)) {
+      keys.push(key);
+    }
+  }
+
+  return keys;
+}
+
+async function fcdMigrateLocalStorageSaves() {
+  const button = document.getElementById("fcd-migrate-saves-button");
+  if (button) button.disabled = true;
+
+  const keys = fcdGetLegacyLocalSaveKeys();
+  let migrated = 0;
+
+  for (const key of keys) {
+    try {
+      const payload = JSON.parse(localStorage.getItem(key));
+      if (!payload?.gameState) throw new Error("Legacy payload has no gameState.");
+
+      const saveId =
+        payload.meta?.saveId ||
+        key.slice(FCD_SAVE_MANAGER.legacySavePrefix.length) ||
+        fcdCreateSaveId();
+      const updatedAt =
+        payload.meta?.savedAt ||
+        new Date().toISOString();
+      const saveObject = {
+        id: saveId,
+        meta: {
+          ...(payload.meta || {}),
+          saveId,
+          saveName: payload.meta?.saveName || "Migrated Save",
+          teamName: payload.meta?.teamName || fcdGetTeamNameFromState(payload.gameState),
+          seasonLabel: payload.meta?.seasonLabel || payload.gameState.seasonLabel || "",
+          savedAt: updatedAt
+        },
+        gameState: payload.gameState,
+        updatedAt
+      };
+
+      await saveGameToIndexedDB(saveId, saveObject);
+      localStorage.removeItem(key);
+      migrated++;
+      console.log(`[FCD Saves] Migrated ${key} to IndexedDB as ${saveId}`);
+    } catch (error) {
+      console.error(`[FCD Saves] Could not migrate ${key}:`, error);
+    }
+  }
+
+  if (fcdGetLegacyLocalSaveKeys().length === 0) {
+    localStorage.removeItem(FCD_SAVE_MANAGER.legacyIndexKey);
+    localStorage.setItem(FCD_SAVE_MANAGER.migrationCompleteKey, "true");
+  }
+
+  fcdShowSaveToast(
+    migrated
+      ? `${migrated} save${migrated === 1 ? "" : "s"} migrated.`
+      : "No saves were migrated."
+  );
+  await fcdRenderPlayScreen();
+  return migrated;
+}
+
+async function fcdWriteNamedSave(saveId, saveName, options = {}) {
   const state = fcdGetGameState();
   if (!state || state.started !== true || !saveId) return false;
 
-  fcdRemoveObsoleteSaveStorage();
-  fcdRemoveOrphanedNamedSavePayloads();
-
-  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
-  const payload = fcdBuildSavePayload(saveId, saveName, state);
-  const previousPayload = localStorage.getItem(payloadKey);
-  const previousIndexRaw = localStorage.getItem(FCD_SAVE_MANAGER.indexKey);
+  const saveObject = fcdBuildIndexedDbSave(saveId, saveName, state);
 
   try {
-    // Payload is always written and verified before its index row exists.
-    localStorage.setItem(payloadKey, JSON.stringify(payload));
-
-    if (!localStorage.getItem(payloadKey)) {
-      throw new Error(`Save payload verification failed for ${payloadKey}`);
-    }
-
-    const index = fcdGetSaveIndex();
-    const existingIndex = index.findIndex(item => item.saveId === saveId);
-
-    if (existingIndex >= 0) {
-      index[existingIndex] = payload.meta;
-    } else {
-      index.unshift(payload.meta);
-    }
-
-    fcdSetSaveIndex(index);
+    await saveGameToIndexedDB(saveId, saveObject);
     fcdSetActiveSaveId(saveId);
 
     if (options.toast !== false) {
@@ -200,88 +318,61 @@ function fcdWriteNamedSave(saveId, saveName, options = {}) {
 
     return true;
   } catch (error) {
-    console.error("Named save failed:", error);
-
-    if (previousPayload === null) {
-      localStorage.removeItem(payloadKey);
-    } else {
-      localStorage.setItem(payloadKey, previousPayload);
-    }
-
-    if (previousIndexRaw === null) {
-      localStorage.removeItem(FCD_SAVE_MANAGER.indexKey);
-    } else {
-      localStorage.setItem(FCD_SAVE_MANAGER.indexKey, previousIndexRaw);
-    }
+    console.error("[FCD Saves] Save failed:", error);
 
     if (options.toast !== false) {
-      const storageFull =
-        error?.name === "QuotaExceededError" ||
-        String(error?.message || "").toLowerCase().includes("quota");
-
-      fcdShowSaveToast(
-        storageFull
-          ? "Storage full. Delete an old save and try again."
-          : "Save failed."
-      );
-
-      if (storageFull) {
-        document.getElementById("fcd-save-name-dialog")?.classList.remove("open");
-        fcdOpenPlayScreen();
-      }
+      fcdShowSaveToast("Save failed.");
     }
 
     return false;
   }
 }
 
-function fcdCreateFirstSave(saveName) {
+async function fcdCreateFirstSave(saveName) {
   const state = fcdGetGameState();
   if (!state || state.started !== true) return false;
 
   const saveId = fcdCreateSaveId();
-  const created = fcdWriteNamedSave(saveId, saveName, { toast: true });
+  const created = await fcdWriteNamedSave(saveId, saveName, { toast: true });
 
-  if (created) fcdRenderPlayScreen();
+  if (created) await fcdRenderPlayScreen();
   return created;
 }
 
-function fcdSaveCurrentGame(silent = true) {
+async function fcdSaveCurrentGame(silent = true) {
   const state = fcdGetGameState();
   const activeSaveId = fcdGetActiveSaveId();
 
   if (!state || state.started !== true || !activeSaveId) return false;
 
-  const index = fcdGetSaveIndex();
-  const activeMeta = index.find(item => item.saveId === activeSaveId);
+  fcdSaveWriteChain = fcdSaveWriteChain
+    .catch(() => false)
+    .then(async () => {
+      const existingSave = await loadGameFromIndexedDB(activeSaveId);
 
-  if (!activeMeta) {
-    console.warn("Active save is missing from the save index:", activeSaveId);
-    return false;
-  }
+      if (!existingSave) {
+        console.warn("[FCD Saves] Active IndexedDB save is missing:", activeSaveId);
+        return false;
+      }
 
-  return fcdWriteNamedSave(activeSaveId, activeMeta.saveName, {
-    toast: !silent
-  });
+      return fcdWriteNamedSave(
+        activeSaveId,
+        existingSave.meta?.saveName || "Full Court Director Save",
+        { toast: !silent }
+      );
+    });
+
+  return fcdSaveWriteChain;
 }
 
-function fcdLoadSave(saveId) {
-  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
-  const raw = localStorage.getItem(payloadKey);
-
-  if (!raw) {
-    console.warn("Missing save payload:", payloadKey);
-    console.warn(
-      "Available FCD localStorage keys:",
-      Object.keys(localStorage).filter(key => key.startsWith("fcd"))
-    );
-    alert("Save not found.");
-    return false;
-  }
-
+async function fcdLoadSave(saveId) {
   try {
-    const payload = JSON.parse(raw);
-    if (!payload?.gameState) throw new Error("Save payload has no gameState.");
+    const saveObject = await loadGameFromIndexedDB(saveId);
+
+    if (!saveObject?.gameState) {
+      alert("Save not found.");
+      return false;
+    }
 
     localStorage.setItem(
       FCD_SAVE_MANAGER.pendingLoadKey,
@@ -291,64 +382,61 @@ function fcdLoadSave(saveId) {
     window.location.reload();
     return true;
   } catch (error) {
-    console.error("Could not load save:", error);
+    console.error("[FCD Saves] Could not load save:", error);
     alert("This save could not be loaded.");
     return false;
   }
 }
 
-function fcdDeleteSave(saveId) {
+async function fcdDeleteSave(saveId) {
   if (!confirm("Delete this save? This cannot be undone.")) return false;
 
-  const payloadKey = `${FCD_SAVE_MANAGER.savePrefix}${saveId}`;
-  const index = fcdGetSaveIndex().filter(item => item.saveId !== saveId);
+  try {
+    await deleteSaveFromIndexedDB(saveId);
 
-  localStorage.removeItem(payloadKey);
-  fcdSetSaveIndex(index);
+    if (fcdGetActiveSaveId() === saveId) {
+      fcdSetActiveSaveId("");
+    }
 
-  if (fcdGetActiveSaveId() === saveId) {
-    fcdSetActiveSaveId("");
+    await fcdRenderPlayScreen();
+    fcdShowSaveToast("Save deleted.");
+
+    const state = fcdGetGameState();
+    if (state?.started === true && !fcdGetActiveSaveId()) {
+      setTimeout(() => {
+        fcdClosePlayScreen();
+        fcdAskForSaveNameIfNeeded();
+      }, 150);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[FCD Saves] Delete failed:", error);
+    fcdShowSaveToast("Delete failed.");
+    return false;
   }
-
-  fcdRenderPlayScreen();
-  fcdShowSaveToast("Save deleted.");
-
-  const state = fcdGetGameState();
-  if (state?.started === true && !fcdGetActiveSaveId()) {
-    setTimeout(() => {
-      fcdClosePlayScreen();
-      fcdAskForSaveNameIfNeeded();
-    }, 150);
-  }
-
-  return true;
 }
 
-function fcdApplyPendingLoad() {
+async function fcdApplyPendingLoad() {
   const raw = localStorage.getItem(FCD_SAVE_MANAGER.pendingLoadKey);
   if (!raw) return false;
 
-  localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
-
   try {
     const pending = JSON.parse(raw);
-    const payload = pending?.gameState
-      ? pending
-      : JSON.parse(
-          localStorage.getItem(
-            `${FCD_SAVE_MANAGER.savePrefix}${pending?.saveId || ""}`
-          )
-        );
+    const saveObject = await loadGameFromIndexedDB(pending?.saveId || "");
 
-    if (!payload?.gameState) throw new Error("Pending save has no gameState.");
+    if (!saveObject?.gameState) {
+      throw new Error("Pending IndexedDB save was not found.");
+    }
 
-    fcdSetGameState(payload.gameState);
+    fcdSetGameState(saveObject.gameState);
     gameState.started = true;
 
     if (typeof normalizeGameStateAfterLoad === "function") {
       normalizeGameStateAfterLoad();
     }
 
+    localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
     document.getElementById("start-screen")?.classList.add("hidden");
     document.getElementById("game-screen")?.classList.remove("hidden");
     fcdClosePlayScreen();
@@ -364,58 +452,81 @@ function fcdApplyPendingLoad() {
     fcdShowSaveToast("Save loaded.");
     return true;
   } catch (error) {
-    console.error("Pending save load failed:", error);
+    localStorage.removeItem(FCD_SAVE_MANAGER.pendingLoadKey);
+    console.error("[FCD Saves] Pending load failed:", error);
     alert("This save could not be loaded.");
     return false;
   }
 }
 
-function fcdRenderPlayScreen() {
+async function fcdRenderPlayScreen() {
   const panel = document.getElementById("fcd-play-screen-panel");
   if (!panel) return;
 
-  const saves = fcdGetSaveIndex();
+  const renderVersion = ++fcdPlayRenderVersion;
+  panel.innerHTML = '<div class="fcd-save-loading">Loading saved games...</div>';
 
-  panel.innerHTML = `
-    <div class="fcd-save-page">
-      <div class="fcd-save-header">
-        <h2>Saved Games</h2>
-        <button type="button" onclick="fcdStartNewSave()">Start New Save</button>
-      </div>
+  try {
+    const saves = await listSavesFromIndexedDB();
+    if (renderVersion !== fcdPlayRenderVersion) return;
 
-      <div class="fcd-save-table">
-        <div class="fcd-save-row fcd-save-head">
-          <div>Save Name</div>
-          <div>Team</div>
-          <div>Season</div>
-          <div>Play</div>
-          <div>Delete</div>
+    const legacyCount = fcdGetLegacyLocalSaveKeys().length;
+
+    panel.innerHTML = `
+      <div class="fcd-save-page">
+        <div class="fcd-save-header">
+          <h2>Saved Games</h2>
+          <div class="fcd-save-header-actions">
+            ${legacyCount
+              ? `<button id="fcd-migrate-saves-button" type="button" onclick="fcdMigrateLocalStorageSaves()">
+                  Migrate ${legacyCount} Old Save${legacyCount === 1 ? "" : "s"}
+                </button>`
+              : ""}
+            <button type="button" onclick="fcdStartNewSave()">Start New Save</button>
+          </div>
         </div>
 
-        ${saves.length
-          ? saves.map(save => `
-            <div class="fcd-save-row">
-              <div>${fcdSafeText(save.saveName)}</div>
-              <div>${fcdSafeText(save.teamName)}</div>
-              <div>${fcdSafeText(save.seasonLabel)}</div>
-              <div>
-                <button type="button" onclick="fcdLoadSave('${fcdSafeText(save.saveId)}')">Play</button>
+        <div class="fcd-save-table">
+          <div class="fcd-save-row fcd-save-head">
+            <div>Save Name</div>
+            <div>Team</div>
+            <div>Season</div>
+            <div>Play</div>
+            <div>Delete</div>
+          </div>
+
+          ${saves.length
+            ? saves.map(save => `
+              <div class="fcd-save-row">
+                <div>${fcdSafeText(save.meta?.saveName || "Save")}</div>
+                <div>${fcdSafeText(save.meta?.teamName || "Unknown Team")}</div>
+                <div>${fcdSafeText(save.meta?.seasonLabel || "")}</div>
+                <div>
+                  <button type="button" onclick="fcdLoadSave('${fcdSafeText(save.id)}')">Play</button>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    class="fcd-delete-save-button"
+                    onclick="fcdDeleteSave('${fcdSafeText(save.id)}')"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div>
-                <button
-                  type="button"
-                  class="fcd-delete-save-button"
-                  onclick="fcdDeleteSave('${fcdSafeText(save.saveId)}')"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          `).join("")
-          : '<div class="fcd-save-empty-row">No saves yet. Start a new save.</div>'}
+            `).join("")
+            : '<div class="fcd-save-empty-row">No saves yet. Start a new save.</div>'}
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  } catch (error) {
+    console.error("[FCD Saves] Could not render saves:", error);
+    panel.innerHTML = `
+      <div class="fcd-save-empty-row">
+        Saved games could not be opened. Refresh and try again.
+      </div>
+    `;
+  }
 }
 
 function fcdInstallSaveManagerStyles() {
@@ -442,12 +553,22 @@ function fcdInstallSaveManagerStyles() {
       color: #f8fafc;
     }
 
-    .fcd-save-header {
+    .fcd-save-loading,
+    .fcd-save-empty-row {
+      padding: 30px 18px;
+      color: #cbd5e1;
+      font-weight: 800;
+    }
+
+    .fcd-save-header,
+    .fcd-save-header-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 22px;
+      gap: 12px;
     }
+
+    .fcd-save-header { margin-bottom: 22px; }
 
     .fcd-save-header h2 {
       margin: 0;
@@ -502,12 +623,6 @@ function fcdInstallSaveManagerStyles() {
       background: #081a3d;
       font-size: 11px;
       text-transform: uppercase;
-    }
-
-    .fcd-save-empty-row {
-      padding: 30px 18px;
-      color: #cbd5e1;
-      font-weight: 800;
     }
 
     #fcd-save-toast {
@@ -611,13 +726,11 @@ function fcdInstallSaveManagerUI() {
     `;
     document.body.appendChild(dialog);
   }
-
-  fcdRenderPlayScreen();
 }
 
-function fcdOpenPlayScreen() {
-  fcdRenderPlayScreen();
+async function fcdOpenPlayScreen() {
   document.getElementById("fcd-play-screen-overlay")?.classList.add("open");
+  await fcdRenderPlayScreen();
 }
 
 function fcdClosePlayScreen() {
@@ -663,16 +776,20 @@ function fcdAskForSaveNameIfNeeded() {
   return true;
 }
 
-function fcdConfirmFirstSaveName() {
+async function fcdConfirmFirstSaveName() {
   const state = fcdGetGameState();
   if (!state || state.started !== true || fcdGetActiveSaveId()) return false;
 
+  const button = document.querySelector("#fcd-save-name-dialog button");
   const input = document.getElementById("fcd-save-name-input");
   const teamName = fcdGetTeamNameFromState(state);
   const saveName = input && input.value.trim()
     ? input.value.trim()
     : `${teamName} Save`;
-  const created = fcdCreateFirstSave(saveName);
+
+  if (button) button.disabled = true;
+  const created = await fcdCreateFirstSave(saveName);
+  if (button) button.disabled = false;
 
   if (created) {
     document.getElementById("fcd-save-name-dialog")?.classList.remove("open");
@@ -686,18 +803,24 @@ function fcdInstallAutoSaveOnClick() {
     clearTimeout(fcdSaveClickTimer);
 
     fcdSaveClickTimer = setTimeout(() => {
-      fcdSaveCurrentGame(true);
+      fcdSaveCurrentGame(true).catch(error => {
+        console.error("[FCD Saves] Autosave failed:", error);
+      });
     }, 350);
   });
 }
 
-function fcdBootSaveManager() {
+async function fcdBootSaveManager() {
   fcdRemoveObsoleteSaveStorage();
-  fcdRepairSaveIndex();
-  fcdRemoveOrphanedNamedSavePayloads();
   fcdInstallSaveManagerUI();
   fcdInstallAutoSaveOnClick();
-  fcdApplyPendingLoad();
+
+  const loaded = await fcdApplyPendingLoad();
+  if (!loaded) await fcdRenderPlayScreen();
 }
 
-document.addEventListener("DOMContentLoaded", fcdBootSaveManager);
+document.addEventListener("DOMContentLoaded", () => {
+  fcdBootSaveManager().catch(error => {
+    console.error("[FCD Saves] Boot failed:", error);
+  });
+});

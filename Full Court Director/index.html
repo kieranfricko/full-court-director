@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/themes.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/component.css" />
-  <link rel="stylesheet" href="css/screens.css" />
+  <link rel="stylesheet" href="css/screens.css?v=20260629-profile-layout" />
   <link rel="stylesheet" href="css/viewport-scale.css" />
 </head>
 
@@ -84,123 +84,29 @@
             </button>
           </div>
 
-          <div class="gm-creation-grid">
+          <div class="gm-creation-grid gm-profile-only">
             <div class="gm-form-card">
-              <h2>GM Information</h2>
+              <h2>GM Profile</h2>
 
               <div class="gm-form-grid">
                 <div class="gm-field">
                   <label for="gm-first-name">First Name</label>
-                  <input id="gm-first-name" type="text" value="first name" />
+                  <input id="gm-first-name" type="text" value="Test" autocomplete="given-name" />
                 </div>
 
                 <div class="gm-field">
                   <label for="gm-last-name">Last Name</label>
-                  <input id="gm-last-name" type="text" value="last name" />
+                  <input id="gm-last-name" type="text" value="GM" autocomplete="family-name" />
                 </div>
 
                 <div class="gm-field">
                   <label for="gm-age">Age</label>
-                  <input id="gm-age" type="number" min="18" max="90" value="35" />
+                  <input id="gm-age" type="number" min="18" max="80" step="1" value="35" />
                 </div>
 
                 <div class="gm-field">
                   <label for="gm-nationality">Nationality</label>
-                  <input id="gm-nationality" type="text" value="United States" />
-                </div>
-
-                <div class="gm-field full-field">
-                  <label for="gm-hometown">Hometown</label>
-                  <input id="gm-hometown" type="text" value="Philadelphia, Pennsylvania" />
-                </div>
-
-                <div class="gm-field full-field">
-                  <label for="gm-background">Background</label>
-                  <select id="gm-background">
-                    <option>Former Scout</option>
-                    <option>Former Agent</option>
-                    <option>Former Coach</option>
-                    <option>Analytics Executive</option>
-                    <option>Former Player</option>
-                    <option>Business Executive</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="gm-face-card">
-              <h2>GM Face</h2>
-
-              <div id="gm-preview-card" class="gm-preview-card">
-                <div id="gm-preview-face" class="gm-preview-face">
-                  <div id="gm-preview-hair" class="gm-preview-hair"></div>
-                  <div id="gm-preview-glasses" class="gm-preview-glasses"></div>
-                  <div id="gm-preview-beard" class="gm-preview-beard"></div>
-                </div>
-
-                <h3 id="gm-preview-name">last name first nameo</h3>
-                <p id="gm-preview-description">Former Scout from Philadelphia, Pennsylvania</p>
-              </div>
-
-              <div class="gm-form-grid">
-                <div class="gm-field">
-                  <label for="gm-skin-tone">Skin Tone</label>
-                  <select id="gm-skin-tone" onchange="updateGMPreview()">
-                    <option value="light">Light</option>
-                    <option value="medium">Medium</option>
-                    <option value="tan">Tan</option>
-                    <option value="brown">Brown</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </div>
-
-                <div class="gm-field">
-                  <label for="gm-hair-style">Hair Style</label>
-                  <select id="gm-hair-style" onchange="updateGMPreview()">
-                    <option value="short">Short</option>
-                    <option value="fade">Fade</option>
-                    <option value="curly">Curly</option>
-                    <option value="bald">Bald</option>
-                  </select>
-                </div>
-
-                <div class="gm-field">
-                  <label for="gm-hair-color">Hair Color</label>
-                  <select id="gm-hair-color" onchange="updateGMPreview()">
-                    <option value="brown">Brown</option>
-                    <option value="black">Black</option>
-                    <option value="blonde">Blonde</option>
-                    <option value="gray">Gray</option>
-                    <option value="red">Red</option>
-                  </select>
-                </div>
-
-                <div class="gm-field">
-                  <label for="gm-facial-hair">Facial Hair</label>
-                  <select id="gm-facial-hair" onchange="updateGMPreview()">
-                    <option value="none">None</option>
-                    <option value="beard">Beard</option>
-                    <option value="goatee">Goatee</option>
-                    <option value="mustache">Mustache</option>
-                  </select>
-                </div>
-
-                <div class="gm-field">
-                  <label for="gm-glasses">Glasses</label>
-                  <select id="gm-glasses" onchange="updateGMPreview()">
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
-                </div>
-
-                <div class="gm-field">
-                  <label for="gm-suit-color">Suit Color</label>
-                  <select id="gm-suit-color" onchange="updateGMPreview()">
-                    <option value="navy">Navy</option>
-                    <option value="black">Black</option>
-                    <option value="gray">Gray</option>
-                    <option value="blue">Blue</option>
-                  </select>
+                  <input id="gm-nationality" type="text" value="United States" autocomplete="country-name" />
                 </div>
               </div>
             </div>
@@ -224,7 +130,7 @@
     <div class="setup-header-row team-grid-header-row">
       <div>
         <div class="start-title-kicker">Choose Your Franchise</div>
-        <h1>Select Your Team</h1>
+        <h1>Select Your Team - Let the Game Load when you Click a Team</h1>
         <p>
           Pick the organization your GM will lead. Click a team to start your career.
         </p>
@@ -477,7 +383,7 @@
         id="dashboard-context-action-button"
         type="button"
         class="dashboard-context-action-button roster"
-        onclick="handleDashboardContextAction()"
+        onclick="handleDashboardContextButtonClick()"
       >
         Review Roster
       </button>
@@ -495,6 +401,8 @@
 
   <div id="dashboard-starting-five" class="dashboard-starting-five"></div>
 
+  <div id="dashboard-roster-metrics" class="dashboard-roster-metrics"></div>
+
   <button
     type="button"
     class="dashboard-bottom-card-link"
@@ -510,24 +418,19 @@
 
  <div class="dashboard-schedule-card">
   <div class="dashboard-section-title-row">
-    <h2>Team Schedule</h2>
+    <h2>Schedule Bar</h2>
   </div>
 
-  <div class="dashboard-schedule-carousel">
-    <div id="dashboard-schedule-track" class="dashboard-schedule-track">
-      <div id="dashboard-recent-results" class="dashboard-schedule-items"></div>
-      <div id="dashboard-upcoming-games" class="dashboard-schedule-items"></div>
-    </div>
-  </div>
+  <div id="dashboard-schedule-bar" class="dashboard-five-day-schedule"></div>
 </div>
 
-<div class="dashboard-event-countdown-card">
+<div class="dashboard-countdown-card">
   <span>Countdown To</span>
-  <strong>Opening Night</strong>
+  <h2 id="dashboard-countdown-event-name">Opening Night</h2>
 
-  <div class="dashboard-event-countdown-number">
-    <b id="dashboard-event-countdown-days">26</b>
-    <small>Days</small>
+  <div class="dashboard-countdown-number-row">
+    <strong id="dashboard-countdown-days">0</strong>
+    <em id="dashboard-countdown-days-label">Days</em>
   </div>
 </div>
 </div>
@@ -676,12 +579,17 @@
         </div>
       </div>
 
-      <div class="dashboard-finance-lines">
-        <div><span>Salary Cap</span><strong id="dashboard-bottom-salary-cap">$0M</strong></div>
-        <div><span>Luxury Tax</span><strong id="dashboard-bottom-luxury-tax">$0M</strong></div>
-        <div><span>1st Apron</span><strong id="dashboard-bottom-first-apron">$0M</strong></div>
-        <div><span>2nd Apron</span><strong id="dashboard-bottom-second-apron">$0M</strong></div>
-      </div>
+<div class="dashboard-finance-lines">
+  <div class="dashboard-finance-payroll-line">
+    <span>Current Payroll</span>
+    <strong id="dashboard-bottom-current-payroll">$0M</strong>
+  </div>
+
+  <div><span>Salary Cap</span><strong id="dashboard-bottom-salary-cap">$0M</strong></div>
+  <div><span>Luxury Tax</span><strong id="dashboard-bottom-luxury-tax">$0M</strong></div>
+  <div><span>1st Apron</span><strong id="dashboard-bottom-first-apron">$0M</strong></div>
+  <div><span>2nd Apron</span><strong id="dashboard-bottom-second-apron">$0M</strong></div>
+</div>
     </div>
 
     <button
@@ -698,10 +606,7 @@
       <h2>Key Dates</h2>
     </div>
 
-    <div class="dashboard-key-dates-empty">
-      <div class="dashboard-calendar-placeholder" aria-hidden="true">▦</div>
-      <p>No key dates scheduled yet.</p>
-    </div>
+<div id="dashboard-key-dates-list" class="dashboard-key-dates-list"></div>
 
     <button
       type="button"
@@ -714,7 +619,7 @@
 
   <section class="dashboard-bottom-card dashboard-injuries-summary-card">
     <div class="dashboard-bottom-card-header">
-      <h2>Injury Report</h2>
+      <h2>League Headlines</h2>
     </div>
 
     <div id="dashboard-bottom-injury-list" class="dashboard-bottom-injury-list"></div>
@@ -724,7 +629,7 @@
       class="dashboard-bottom-card-link"
       onclick="showMainSection('gameplan'); showSecondaryScreen('injury-report-screen')"
     >
-      View All Injuries
+      News Later
     </button>
   </section>
 </div>
@@ -2259,6 +2164,25 @@
     </div>
   </div>
 </section>
+<!-- LEAGUE: SALARY CAP SCREEN -->
+<section id="salary-cap-screen" class="screen">
+  <div class="league-salary-cap-page">
+    <header class="league-salary-cap-header">
+      <div>
+        <span>League Finances</span>
+        <h1>Salary Cap</h1>
+        <p>League financial thresholds for the current season.</p>
+      </div>
+
+      <div class="league-salary-cap-season">
+        <span>Current Season</span>
+        <strong id="salary-cap-season-label">----</strong>
+      </div>
+    </header>
+
+    <div id="salary-cap-cards" class="league-salary-cap-grid"></div>
+  </div>
+</section>
 <!-- CALENDAR: LEAGUE SCHEDULE SCREEN -->
 <section id="league-schedule-screen" class="screen">
   <div id="league-schedule-root"></div>
@@ -2969,6 +2893,11 @@
 </section>
 
 
+<!-- PRE-FREE AGENCY SCREEN -->
+<section id="pre-free-agency-screen" class="screen">
+  <div id="pre-free-agency-root"></div>
+</section>
+
       <!-- FREE AGENCY SCREEN -->
 <section id="free-agency-screen" class="screen">
   <div class="free-agency-page-header">
@@ -3121,348 +3050,483 @@
 
 <!-- FREE AGENCY NEGOTIATION SCREEN -->
 <section id="free-agency-negotiation-screen" class="screen">
-  <div class="fa-negotiation-page">
-    <div class="fa-negotiation-header">
-      <button type="button" class="fa-neg-back-button" onclick="cancelFreeAgentNegotiation()">
-        ← Back to Free Agency
-      </button>
+  <div class="fa-contract-page">
 
-      <div class="fa-neg-title-block">
-        <h2>Free Agency Negotiation</h2>
-        <span id="fa-neg-subtitle">Contract discussion</span>
-      </div>
+    <button type="button" class="fa-contract-back" onclick="cancelFreeAgentNegotiation()">
+      ← Back to Free Agency
+    </button>
 
-      <div class="fa-neg-header-info">
-        <div>
-          <span>Date</span>
-          <strong id="fa-neg-date">--</strong>
-        </div>
+    <div class="fa-contract-layout">
 
-        <div>
-          <span>Cap Space</span>
-          <strong id="fa-neg-cap-space">$0M</strong>
-        </div>
+      <!-- LEFT: PLAYER DETAILS -->
+      <aside class="fa-contract-player-rail">
 
-        <div>
-          <span>Roster Spots</span>
-          <strong id="fa-neg-roster-spots">0</strong>
-        </div>
-      </div>
-    </div>
+        <section class="fa-contract-side-card">
+          <h3>Player Profile</h3>
 
-<div class="fa-negotiation-grid">
-  <!-- LEFT COLUMN -->
-  <div class="fa-neg-left-column">
-    <div class="fa-neg-card">
-      <h3>Player Information</h3>
+          <div class="fa-contract-player-profile">
+            <div class="fa-neg-player-silhouette fa-contract-player-face" id="fa-neg-player-face"></div>
 
-      <div class="fa-neg-player-identity">
-        <div class="fa-neg-player-silhouette" id="fa-neg-player-face"></div>
-
-        <div>
-          <span id="fa-neg-player-position-age">--</span>
-          <h2 id="fa-neg-player-name">Player Name</h2>
-          <p id="fa-neg-player-type">Player Type</p>
-        </div>
-      </div>
-
-      <div class="fa-neg-info-list">
-        <div>
-          <span>Media Reputation</span>
-          <strong id="fa-neg-media-reputation">Unknown</strong>
-        </div>
-
-        <div>
-          <span>Projected Ceiling</span>
-          <strong id="fa-neg-projected-ceiling">Unknown</strong>
-        </div>
-
-        <div>
-          <span>Free Agent Type</span>
-          <strong id="fa-neg-free-agent-type">UFA</strong>
-        </div>
-      </div>
-    </div>
-
-    <div class="fa-neg-card">
-      <h3>Player Priorities</h3>
-
-      <div id="fa-neg-priorities" class="fa-neg-priorities"></div>
-    </div>
-
-    <div class="fa-neg-card">
-      <h3>Agent / Camp Information</h3>
-
-      <div class="fa-neg-agent-row">
-        <div class="fa-neg-agent-avatar">A</div>
-
-        <div>
-          <strong id="fa-neg-agent-name">Player Representative</strong>
-          <span id="fa-neg-agent-title">Agent</span>
-        </div>
-      </div>
-
-      <div class="fa-neg-info-list">
-        <div>
-          <span>Camp Mood</span>
-          <strong id="fa-neg-camp-mood">Open to offers</strong>
-        </div>
-
-        <div>
-          <span>Negotiation Tone</span>
-          <strong id="fa-neg-tone">Calm</strong>
-        </div>
-      </div>
-
-      <div class="fa-neg-camp-message">
-        <span>Message from camp</span>
-        <p id="fa-neg-camp-message">
-          “We’re looking for the right combination of money, role, and team direction.”
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CENTER COLUMN -->
-  <div class="fa-neg-center-column">
-    <div class="fa-neg-card">
-      <h3>Your Offer</h3>
-
-      <div class="fa-neg-offer-builder">
-        <div class="fa-neg-offer-row" id="fa-offer-field-salary">
-          <label>Salary Per Year</label>
-
-          <div class="fa-neg-stepper">
-            <button type="button" onclick="adjustFreeAgentOfferSalary(-1)">− $1M</button>
-            <strong id="fa-neg-offer-salary">$0M</strong>
-            <button type="button" onclick="adjustFreeAgentOfferSalary(1)">+ $1M</button>
+            <div>
+              <h2 id="fa-neg-player-name">Player Name</h2>
+              <p id="fa-neg-player-position-age">C · Age 22</p>
+              <p id="fa-neg-player-size">6'11" · 250 lbs</p>
+              <span id="fa-neg-player-type">Defensive Center</span>
+            </div>
           </div>
 
-          <small id="fa-neg-salary-note">Current offer</small>
-        </div>
+          <div class="fa-contract-side-list">
+            <div>
+              <span>Media Reputation</span>
+              <strong id="fa-neg-media-reputation">Unknown</strong>
+            </div>
 
-        <div class="fa-neg-offer-row" id="fa-offer-field-years">
-          <label>Years</label>
+            <div>
+              <span>Projected Ceiling</span>
+              <strong id="fa-neg-projected-ceiling">Unknown</strong>
+            </div>
 
-          <div class="fa-neg-year-buttons">
-            <button type="button" onclick="setFreeAgentOfferYears(1)">1</button>
-            <button type="button" onclick="setFreeAgentOfferYears(2)">2</button>
-            <button type="button" onclick="setFreeAgentOfferYears(3)">3</button>
-            <button type="button" onclick="setFreeAgentOfferYears(4)">4</button>
-            <button type="button" onclick="setFreeAgentOfferYears(5)">5</button>
+            <div>
+              <span>Free Agent Type</span>
+              <strong id="fa-neg-free-agent-type">Unrestricted</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="fa-contract-side-card">
+          <h3>Player Priorities</h3>
+          <div id="fa-neg-priorities" class="fa-neg-priorities"></div>
+        </section>
+
+        <section class="fa-contract-side-card">
+          <h3>Agent / Camp Information</h3>
+
+          <div class="fa-contract-agent-row">
+            <div class="fa-contract-agent-avatar">A</div>
+
+            <div>
+              <strong id="fa-neg-agent-name">Player Representative</strong>
+              <span id="fa-neg-agent-title">Agent</span>
+            </div>
           </div>
 
-          <small id="fa-neg-years-note">Current offer</small>
-        </div>
+          <div class="fa-contract-agent-grid">
+            <div>
+              <span>Camp Mood</span>
+              <strong id="fa-neg-camp-mood">Open to offers</strong>
+            </div>
 
-        <div class="fa-neg-offer-row" id="fa-offer-field-role">
-          <label>Role Promise</label>
-
-          <select id="fa-neg-role-promise" onchange="updateFreeAgentNegotiationScreen()">
-            <option value="No Promise">No Promise</option>
-            <option value="Bench">Bench</option>
-            <option value="Rotation">Rotation</option>
-            <option value="Sixth Man">Sixth Man</option>
-            <option value="Starter">Starter</option>
-            <option value="Star Player">Star Player</option>
-          </select>
-
-          <small id="fa-neg-role-note">Current offer</small>
-        </div>
-
-        <div class="fa-neg-offer-row" id="fa-offer-field-minutes">
-          <label>Minutes Promise</label>
-
-          <select id="fa-neg-minutes-promise" onchange="updateFreeAgentNegotiationScreen()">
-            <option value="No Promise">No Promise</option>
-            <option value="10+ MPG">10+ MPG</option>
-            <option value="15+ MPG">15+ MPG</option>
-            <option value="20+ MPG">20+ MPG</option>
-            <option value="25+ MPG">25+ MPG</option>
-            <option value="30+ MPG">30+ MPG</option>
-          </select>
-
-          <small id="fa-neg-minutes-note">Current offer</small>
-        </div>
-
-        <div class="fa-neg-offer-row" id="fa-offer-field-optional">
-          <label>Optional Promise</label>
-
-          <select id="fa-neg-optional-promise" onchange="updateFreeAgentNegotiationScreen()">
-            <option value="None">None</option>
-            <option value="Compete for playoffs">Compete for playoffs</option>
-            <option value="Development focus">Development focus</option>
-            <option value="Feature role in offense">Feature role in offense</option>
-            <option value="Veteran leadership role">Veteran leadership role</option>
-          </select>
-
-          <small id="fa-neg-optional-note">Current offer</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="fa-neg-card">
-      <h3>Offer Strength</h3>
-
-      <div class="fa-offer-meter-shell">
-        <div id="fa-offer-meter-fill" class="fa-offer-meter-fill"></div>
-      </div>
-
-      <div class="fa-offer-meter-labels">
-        <span>Weak Offer</span>
-        <span>Competitive</span>
-        <span>Strong</span>
-        <span>Likely Accepted</span>
-      </div>
-
-      <p id="fa-neg-offer-summary" class="fa-neg-offer-summary">
-        Build an offer to see how the player’s camp views it.
-      </p>
-    </div>
-
-    <div class="fa-neg-button-row">
-      <button type="button" id="fa-neg-submit-button" class="fa-neg-submit" onclick="submitFreeAgentNegotiationOffer()">
-        Submit Offer
-      </button>
-
-      <button type="button" class="fa-neg-suggest" onclick="suggestFreeAgentOffer()">
-        Suggest Offer
-      </button>
-
-      <button type="button" class="fa-neg-cancel" onclick="cancelFreeAgentNegotiation()">
-        Cancel Offer
-      </button>
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN -->
-  <div class="fa-neg-right-column">
-    <div class="fa-neg-card">
-      <h3>Financial Impact</h3>
-
-      <div class="fa-neg-finance-grid">
-        <div>
-          <h4>Before Offer</h4>
-          <div class="fa-neg-finance-list">
-            <span>Cap Space</span><strong id="fa-neg-before-cap">$0M</strong>
-            <span>Payroll</span><strong id="fa-neg-before-payroll">$0M</strong>
-            <span>Tax Room</span><strong id="fa-neg-before-tax-room">$0M</strong>
-            <span>First Apron Room</span><strong id="fa-neg-before-first-apron">$0M</strong>
-            <span>Second Apron Room</span><strong id="fa-neg-before-second-apron">$0M</strong>
+            <div>
+              <span>Negotiation Tone</span>
+              <strong id="fa-neg-tone">Calm</strong>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <h4>After Offer</h4>
-          <div class="fa-neg-finance-list">
-            <span>Cap Space</span><strong id="fa-neg-after-cap">$0M</strong>
-            <span>Payroll</span><strong id="fa-neg-after-payroll">$0M</strong>
-            <span>Tax Room</span><strong id="fa-neg-after-tax-room">$0M</strong>
-            <span>First Apron Room</span><strong id="fa-neg-after-first-apron">$0M</strong>
-            <span>Second Apron Room</span><strong id="fa-neg-after-second-apron">$0M</strong>
+          <div class="fa-contract-camp-quote">
+            <span>Message from camp</span>
+            <p id="fa-neg-camp-message">
+              “We’re looking for the right combination of money, role, and team direction.”
+            </p>
           </div>
-        </div>
-      </div>
-    </div>
+        </section>
 
-    <div class="fa-neg-card">
-      <h3>Asking Price</h3>
+        <section class="fa-contract-side-card">
+          <h3>Negotiation Summary</h3>
 
-      <div class="fa-neg-asking-grid">
-        <div>
-          <span>Expected Salary</span>
-          <strong id="fa-neg-expected-salary">$0M / year</strong>
-        </div>
+          <div class="fa-contract-summary-grid">
+            <div>
+              <span>Expected Salary</span>
+              <strong id="fa-neg-expected-salary">$0M / year</strong>
+            </div>
 
-        <div>
-          <span>Expected Years</span>
-          <strong id="fa-neg-expected-years">1</strong>
-        </div>
+            <div>
+              <span>Expected Years</span>
+              <strong id="fa-neg-expected-years">1 year</strong>
+            </div>
 
-        <div>
-          <span>Expected Role</span>
-          <strong id="fa-neg-expected-role">Rotation</strong>
-        </div>
+            <div>
+              <span>Expected Role</span>
+              <strong id="fa-neg-expected-role">Rotation</strong>
+            </div>
 
-        <div>
-          <span>Expected Minutes</span>
-          <strong id="fa-neg-expected-minutes">15+ MPG</strong>
-        </div>
+            <div>
+              <span>Market Status</span>
+              <strong id="fa-neg-market-status">Watching</strong>
+            </div>
+          </div>
 
-        <div>
-          <span>Current Interest</span>
-          <strong id="fa-neg-current-interest">Neutral</strong>
-        </div>
+          <div class="fa-contract-hidden-compat">
+            <strong id="fa-neg-expected-minutes">15+ MPG</strong>
+            <strong id="fa-neg-current-interest">Neutral</strong>
+            <strong id="fa-neg-position-need">Medium</strong>
+            <strong id="fa-neg-projected-role">Rotation</strong>
+            <strong id="fa-neg-gameplan-fit">Good</strong>
+            <strong id="fa-neg-other-teams">2</strong>
+            <strong id="fa-neg-market-heat">Active</strong>
+            <p id="fa-neg-fit-summary"></p>
+            <p id="fa-neg-rumor-line"></p>
+          </div>
+        </section>
 
-        <div>
-          <span>Market Status</span>
-          <strong id="fa-neg-market-status">Watching</strong>
-        </div>
-      </div>
-    </div>
+      </aside>
 
-    <div class="fa-neg-card">
-      <h3>Roster Fit</h3>
+      <!-- RIGHT: CONTRACT PAPER -->
+      <main class="fa-contract-document-shell">
 
-      <div class="fa-neg-info-list">
-        <div>
-          <span>Position Need</span>
-          <strong id="fa-neg-position-need">Medium</strong>
-        </div>
+        <div class="fa-contract-paper-stack">
+          <div class="fa-contract-paper">
 
-        <div>
-          <span>Projected Role</span>
-          <strong id="fa-neg-projected-role">Rotation</strong>
-        </div>
+            <header class="fa-contract-paper-header">
+              <div class="fa-contract-paper-header-top">
+                <span>Full Court Director Basketball</span>
+                <small id="fa-neg-subtitle">Contract discussion</small>
+              </div>
 
-        <div>
-          <span>Fit With Gameplan</span>
-          <strong id="fa-neg-gameplan-fit">Good</strong>
-        </div>
-      </div>
+              <h1>Standard Player Contract</h1>
+              <p>Free Agency Offer Sheet</p>
+            </header>
 
-      <div class="fa-neg-fit-summary">
-        <p id="fa-neg-fit-summary">
-          This player could fill a rotation need.
-        </p>
-      </div>
-    </div>
+            <div class="fa-contract-paper-grid">
 
-    <div class="fa-neg-card">
-      <h3>Market Competition</h3>
+              <!-- LEFT SIDE OF CONTRACT PAPER -->
+              <div class="fa-contract-left-stack">
 
-      <div class="fa-neg-info-list">
-        <div>
-          <span>Other Teams Interested</span>
-          <strong id="fa-neg-other-teams">2</strong>
-        </div>
+                <!-- 1 BASIC DEAL INFO -->
+                <section class="fa-contract-box fa-contract-basic">
+                  <div class="fa-contract-section-title">
+                    <b>1</b>
+                    <h3>Basic Deal Info</h3>
+                  </div>
 
-        <div>
-          <span>Market Heat</span>
-          <strong id="fa-neg-market-heat">Active</strong>
-        </div>
+                  <div class="fa-contract-basic-layout">
+                    <div class="fa-contract-field-grid two-col">
+                      <div>
+                        <span>Team</span>
+                        <strong id="fa-neg-contract-team">Your Team</strong>
+                      </div>
 
-        <div>
-          <span>Best Known Competing Offer</span>
-          <strong>Unknown</strong>
-        </div>
-      </div>
+                      <div>
+                        <span>Player</span>
+                        <strong id="fa-neg-contract-player">Player Name</strong>
+                      </div>
 
-      <div class="fa-neg-fit-summary">
-        <p id="fa-neg-rumor-line">
-          Several teams are monitoring this player’s asking price.
-        </p>
-      </div>
-    </div>
-  </div>
+                      <div>
+                        <span>Roster Spots</span>
+                        <strong id="fa-neg-roster-spots">0</strong>
+                      </div>
+
+                      <div>
+                        <span>Free Agent Type</span>
+                        <strong id="fa-neg-contract-fa-type">Unrestricted Free Agent</strong>
+                      </div>
+
+                      <strong id="fa-neg-date" class="fa-contract-hidden-compat">--</strong>
+                    </div>
+
+                    <div class="fa-contract-type-stack">
+                      <span>Contract Type</span>
+
+                      <button id="fa-neg-contract-type-standard" type="button" onclick="setFreeAgentContractType('Standard')">
+                        Standard
+                      </button>
+
+                      <button id="fa-neg-contract-type-two-way" type="button" onclick="setFreeAgentContractType('Two Way')">
+                        Two Way
+                      </button>
+
+                      <button id="fa-neg-contract-type-10-day" type="button" onclick="setFreeAgentContractType('10 Day')">
+                        10 Day
+                      </button>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 2 CORE TERMS -->
+                <section class="fa-contract-box fa-contract-core">
+                  <div class="fa-contract-section-title">
+                    <b>2</b>
+                    <h3>Core Terms</h3>
+                  </div>
+
+                  <div class="fa-contract-core-grid fa-contract-core-grid-simple">
+                    <div class="fa-contract-control-row" id="fa-offer-field-salary">
+                      <label>Salary Per Year</label>
+
+                      <div class="fa-contract-stepper fa-contract-salary-stepper">
+  <button type="button" onclick="adjustFreeAgentOfferSalary(-1)">−</button>
+
+  <input
+    id="fa-neg-offer-salary-input"
+    class="fa-contract-salary-input"
+    type="number"
+    min="1"
+    max="100"
+    step="0.1"
+    value="1"
+    onblur="setFreeAgentOfferSalaryFromInput()"
+    onkeydown="if (event.key === 'Enter') setFreeAgentOfferSalaryFromInput()"
+  />
+
+  <button type="button" onclick="adjustFreeAgentOfferSalary(1)">+</button>
 </div>
 
-  </div>
+                      <small id="fa-neg-salary-note">Meets asking price</small>
+                    </div>
 
-<div class="fa-neg-notes-strip">
-  <h3>Negotiation Notes</h3>
-  <div id="fa-neg-notes-list" class="fa-neg-notes-list"></div>
-</div>
+                    <div class="fa-contract-control-row" id="fa-offer-field-years">
+                      <label>Years</label>
+
+                      <div class="fa-neg-year-buttons fa-contract-year-buttons">
+                        <button type="button" onclick="setFreeAgentOfferYears(1)">1</button>
+                        <button type="button" onclick="setFreeAgentOfferYears(2)">2</button>
+                        <button type="button" onclick="setFreeAgentOfferYears(3)">3</button>
+                        <button type="button" onclick="setFreeAgentOfferYears(4)">4</button>
+                        <button type="button" onclick="setFreeAgentOfferYears(5)">5</button>
+                      </div>
+
+                      <small id="fa-neg-years-note">Meets expected years</small>
+                    </div>
+
+                    <div class="fa-contract-control-row">
+                      <label>Salary Distribution</label>
+
+                      <div class="fa-contract-distribution">
+                        <button id="fa-neg-dist-dec" type="button" onclick="setFreeAgentSalaryDistribution('Dec')">Dec</button>
+                        <button id="fa-neg-dist-flat" type="button" onclick="setFreeAgentSalaryDistribution('Flat')">Flat</button>
+                        <button id="fa-neg-dist-inc" type="button" onclick="setFreeAgentSalaryDistribution('Inc')">Inc</button>
+                      </div>
+
+                      <small id="fa-neg-distribution-note">
+                        Controls how the same total money is spread across the deal.
+                      </small>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 4 OPTIONS AND CLAUSES -->
+                <section class="fa-contract-box fa-contract-options">
+                  <div class="fa-contract-section-title">
+                    <b>4</b>
+                    <h3>Options and Clauses</h3>
+                  </div>
+
+                  <div class="fa-contract-field-grid two-col">
+                    <div>
+                      <span>Contract Option</span>
+                      <select id="fa-neg-contract-option" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="None">None</option>
+                        <option value="Team Option">Team Option</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <span>Player Option</span>
+                      <select id="fa-neg-player-option" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="None">None</option>
+                        <option value="Last Year">Last Year</option>
+                        <option value="Last 2 Years">Last 2 Years</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <span>Trade Bonus</span>
+                      <select id="fa-neg-trade-bonus" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="None">None</option>
+                        <option value="5%">5%</option>
+                        <option value="10%">10%</option>
+                        <option value="15%">15%</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <span>No Trade Clause</span>
+                      <select id="fa-neg-no-trade" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 5 INFORMAL PROMISES -->
+                <section class="fa-contract-box fa-contract-promises">
+                  <div class="fa-contract-section-title">
+                    <b>5</b>
+                    <h3>Informal Promises / Team Vision</h3>
+                  </div>
+
+                  <div class="fa-contract-field-grid two-col">
+                    <div id="fa-offer-field-role">
+                      <span>Role Promise</span>
+                      <select id="fa-neg-role-promise" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="No Promise">No Promise</option>
+                        <option value="Bench">Bench</option>
+                        <option value="Rotation">Rotation</option>
+                        <option value="Sixth Man">Sixth Man</option>
+                        <option value="Starter">Starter</option>
+                        <option value="Star Player">Star Player</option>
+                      </select>
+                      <small id="fa-neg-role-note">Current offer</small>
+                    </div>
+
+                    <div id="fa-offer-field-minutes">
+                      <span>Minutes Promise</span>
+                      <select id="fa-neg-minutes-promise" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="No Promise">No Promise</option>
+                        <option value="10+ MPG">10+ MPG</option>
+                        <option value="15+ MPG">15+ MPG</option>
+                        <option value="20+ MPG">20+ MPG</option>
+                        <option value="25+ MPG">25+ MPG</option>
+                        <option value="30+ MPG">30+ MPG</option>
+                      </select>
+                      <small id="fa-neg-minutes-note">Current offer</small>
+                    </div>
+
+                    <div>
+                      <span>Starting Opportunity</span>
+                      <select id="fa-neg-starting-opportunity" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="None">None</option>
+                        <option value="Compete for role">Compete for role</option>
+                        <option value="Immediate Starter">Immediate Starter</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <span>Development Plan</span>
+                      <select id="fa-neg-development-plan" onchange="updateFreeAgentNegotiationScreen()">
+                        <option value="Prospect">Prospect</option>
+                        <option value="Young Core Piece">Young Core Piece</option>
+                        <option value="Star">Star</option>
+                        <option value="Sixth Man">Sixth Man</option>
+                        <option value="Veteran">Veteran</option>
+                        <option value="Defensive Specialist">Defensive Specialist</option>
+                        <option value="Reclamation Project">Reclamation Project</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- RIGHT SIDE OF CONTRACT PAPER -->
+              <div class="fa-contract-right-stack">
+
+                <!-- 3 YEAR BY YEAR -->
+                <section class="fa-contract-box fa-contract-breakdown">
+                  <div class="fa-contract-section-title">
+                    <b>3</b>
+                    <h3>Year-by-Year Salary Breakdown</h3>
+                  </div>
+
+                  <table class="fa-contract-salary-table">
+                    <thead>
+                      <tr>
+                        <th>Year</th>
+                        <th>Season</th>
+                        <th>Salary</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="fa-neg-salary-breakdown-body"></tbody>
+
+                    <tfoot>
+                      <tr>
+                        <td colspan="2">Total</td>
+                        <td id="fa-neg-salary-breakdown-total">$0M</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+
+                  <div class="fa-contract-distribution-explain" id="fa-neg-distribution-explain">
+                    Salary distribution controls the yearly shape without changing total value.
+                  </div>
+                </section>
+
+                <!-- 6 FINANCIAL IMPACT -->
+                <section class="fa-contract-box fa-contract-financial">
+                  <div class="fa-contract-section-title">
+                    <b>6</b>
+                    <h3>Financial Impact <small>(Year 1)</small></h3>
+                  </div>
+
+                  <div class="fa-contract-finance-list">
+                    <span>Cap Space Before Offer</span>
+                    <strong id="fa-neg-before-cap">$0M</strong>
+
+                    <span>Offer Impact</span>
+                    <strong id="fa-neg-offer-impact">$0M</strong>
+
+                    <span>Cap Space After Offer</span>
+                    <strong id="fa-neg-after-cap">$0M</strong>
+
+                    <span>Payroll After Offer</span>
+                    <strong id="fa-neg-after-payroll">$0M</strong>
+                  </div>
+
+                  <div class="fa-contract-hidden-compat">
+                    <strong id="fa-neg-before-payroll">$0M</strong>
+                    <strong id="fa-neg-before-tax-room">$0M</strong>
+                    <strong id="fa-neg-before-first-apron">$0M</strong>
+                    <strong id="fa-neg-before-second-apron">$0M</strong>
+                    <strong id="fa-neg-after-tax-room">$0M</strong>
+                    <strong id="fa-neg-after-first-apron">$0M</strong>
+                    <strong id="fa-neg-after-second-apron">$0M</strong>
+                  </div>
+
+                  <small>All values are estimates.</small>
+                </section>
+
+                <!-- 7 NEGOTIATION NOTES -->
+                <section class="fa-contract-box fa-contract-notes">
+                  <div class="fa-contract-section-title">
+                    <b>7</b>
+                    <h3>Negotiation Notes</h3>
+                  </div>
+
+                  <blockquote>
+                    “We’re looking for the right combination of money, role, years, and team direction.”
+                  </blockquote>
+
+                  <div id="fa-neg-notes-list" class="fa-neg-notes-list"></div>
+                </section>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="fa-contract-action-bar">
+          <div class="fa-contract-action-note">
+            <span>☏</span>
+            <p>Discuss terms with the player’s camp to find common ground before sending an offer.</p>
+          </div>
+
+          <button type="button" onclick="showFreeAgencyDealsList()">View Market</button>
+          <button type="button" onclick="suggestFreeAgentOffer()">Discuss Terms</button>
+          <button type="button" class="send" id="fa-neg-submit-button" onclick="submitFreeAgentNegotiationOffer()">Send Offer</button>
+          <button type="button" onclick="updateFreeAgentNegotiationScreen()">Revise Offer</button>
+          <button type="button" class="danger" onclick="cancelFreeAgentNegotiation()">Walk Away</button>
+        </div>
+
+        <div class="fa-contract-offer-strength">
+          <div class="fa-offer-meter-shell">
+            <div id="fa-offer-meter-fill" class="fa-offer-meter-fill"></div>
+          </div>
+
+          <div class="fa-offer-meter-labels">
+            <span>Weak</span>
+            <span>Competitive</span>
+            <span>Strong</span>
+            <span>Likely Accepted</span>
+          </div>
+
+          <p id="fa-neg-offer-summary">Build an offer to see how the player’s camp views it.</p>
+        </div>
+
+      </main>
+    </div>
+  </div>
 </section>
 
       <!-- LEAGUE: TEAMS SCREEN -->
@@ -3830,7 +3894,7 @@
         <div class="player-page-number" id="profile-jersey-background">00</div>
 
         <div class="player-page-silhouette" id="profile-player-portrait">
-          <img id="profile-player-portrait-img" src="images/players/default-silhouette.png" alt="Player portrait" onerror="this.style.display='none'; this.parentElement.classList.add('missing-silhouette');">
+          <img id="profile-player-portrait-img" src="images/players/darkskin.png" alt="Player portrait" data-player-fallback="images/players/darkskin.png" onerror="handlePlayerImageError(this)">
         </div>
 
         <h1 id="profile-player-name">Player Name</h1>
@@ -4544,32 +4608,34 @@
 </div>
 
 
-      <script src="js/00-constants-state.js"></script>
+      <script src="js/00-constants-state.js?v=20260629-salary-cap"></script>
       <script src="js/01-teams-colors.js"></script>
       <script src="js/02-player-database.js"></script>
       <script src="js/03-player-generation-rosters.js"></script>
       <script src="js/22-staff-database.js"></script>
       <script src="js/04-staff.js"></script>
-      <script src="js/05-utils-messages-dates.js"></script>
-      <script src="js/06-schedule-season-flow.js"></script>
+      <script src="js/05-utils-messages-dates.js?v=20260629-player-images"></script>
+      <script src="js/06-schedule-season-flow.js?v=20260629-schedule-spacing-2"></script>
       <script src="js/07-competitions-cup-playoffs.js"></script>
       <script src="js/08-stats-boxscores-sim.js"></script>
       <script src="js/09-roster-contracts-finances.js"></script>
       <script src="js/10-free-agency-transactions.js"></script>
-      <script src="js/11-league-team-screens.js"></script>
+      <script src="js/25-contract-rules.js?v=20260701-contract-rules"></script>
+      <script src="js/26-free-agency-expanded.js?v=20260701-contract-builder"></script>
+      <script src="js/11-league-team-screens.js?v=20260629-salary-cap"></script>
       <script src="js/12-trade-center.js"></script>
       <script src="js/19-team-picks-database.js"></script>
       <script src="js/13-draft.js"></script>
-      <script src="js/14-dashboard-gmhub.js?v=20260627-dashboard-bottom-row-2"></script>
-      <script src="js/15-navigation.js"></script>
+      <script src="js/14-dashboard-gmhub.js?v=20260629-salary-cap"></script>
+      <script src="js/15-navigation.js?v=20260629-league-competitions"></script>
       <script src="js/15-phone-conversations.js"></script>
       <script src="js/16-gameplan-practices-injuries.js"></script>
       <script src="js/17-player-profile.js"></script>
-      <script src="js/18-roster-import-assets.js"></script>
+      <script src="js/18-roster-import-assets.js?v=20260629-player-images"></script>
       <script src="js/20-extra-trade-screens.js"></script>
-      <script src="js/21-news.js"></script>
+      <script src="js/21-news.js?v=20260629-news-hub"></script>
       <script src="js/23-awards-ceremony.js"></script>
-      <script src="js/99-main-save-refresh.js"></script>
+      <script src="js/99-main-save-refresh.js?v=20260629-salary-cap"></script>
       <script src="js/99-save-manager.js"></script>
       <script src="js/24-viewport-scale.js"></script>
 </body>

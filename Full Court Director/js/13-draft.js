@@ -4954,7 +4954,8 @@ function completeDraftPick(team, prospect) {
     prospectId: prospect.id,
     prospectName: prospect.name,
     position: prospect.primaryPosition,
-    school: prospect.collegeOrClub
+    school: prospect.collegeOrClub,
+    playerimage: prospect.playerimage || ""
   };
 
   gameState.draft.draftedPlayers.push(draftPick);
@@ -5200,6 +5201,7 @@ function ensureRookieSigningState() {
       salary: contract.salary,
       years: contract.years,
       playerId: null,
+      playerimage: prospect ? (prospect.playerimage || "") : (pick.playerimage || ""),
       currentAbility: prospect ? prospect.actualCurrentAbility : 450,
       potentialAbility: prospect ? prospect.actualPotentialAbility : 550
     });
@@ -5477,6 +5479,7 @@ function createPlayerFromDraftProspect(right, prospect) {
   const rookiePlayer = {
     id: nextPlayerId++,
     name: right.prospectName,
+    playerimage: (prospect && prospect.playerimage) || right.playerimage || "",
     age: prospect ? prospect.age : 20,
 
     position: primaryPosition,
@@ -5846,7 +5849,13 @@ function normalizeDraftedPickRecord(raw, explicitPickNumber = null) {
       raw.upside ||
       "-",
 
+    playerimage:
+      prospect?.playerimage ||
+      raw.playerimage ||
+      "",
+
     image:
+      prospect?.playerimage ||
       prospect?.image ||
       prospect?.imagePath ||
       prospect?.photo ||
@@ -5997,26 +6006,17 @@ function getDraftNightTeamLogoHtml(team) {
 }
 
 function getDraftNightProspectPortraitHtml(record) {
-  if (record && record.image) {
-    const imagePath = typeof normalizePlayerPortraitPath === "function"
-      ? normalizePlayerPortraitPath(record.image)
-      : record.image;
+  if (!record) return "";
 
-    return `
-      <img
-        class="draft-night-featured-portrait"
-        src="${escapeHtml(imagePath)}"
-        alt="${escapeHtml(record.fullName)}"
-      >
-    `;
-  }
-
-  return `
-    <div class="draft-night-featured-silhouette">
-      <div class="draft-night-featured-silhouette-head"></div>
-      <div class="draft-night-featured-silhouette-body"></div>
-    </div>
-  `;
+  return getPlayerImageHTML(
+    {
+      ...record,
+      name: record.fullName,
+      portrait: record.image
+    },
+    "draft-night-featured-portrait",
+    record.fullName
+  );
 }
 
 function formatDraftNightStat(value, suffix = "") {

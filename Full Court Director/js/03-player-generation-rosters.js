@@ -212,6 +212,7 @@ function createFixedPlayerFromTemplate(template, team) {
     referenceName: template.reference,
 
     name: template.name,
+    playerimage: template.playerimage || "",
     portrait: template.portrait || template.faceImage || template.image || template.imagePath || "",
     age,
     primaryPosition,
@@ -846,6 +847,7 @@ function cloneDatabasePlayer(databasePlayer) {
     : "Free Agent";
 
   clone.playerType = clone.playerType || "Player";
+  clone.playerimage = clone.playerimage || "";
   clone.portrait = clone.portrait || clone.faceImage || clone.image || clone.imagePath || "";
   clone.mediaDescription = clone.mediaDescription || "";
   clone.projectedCeiling = clone.projectedCeiling || "";

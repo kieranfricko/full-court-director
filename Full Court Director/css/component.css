@@ -223,6 +223,11 @@ th {
   object-fit: cover;
 }
 
+img[data-player-fallback] {
+  object-fit: cover;
+  object-position: center top;
+}
+
 .attribute-name {
   color: #dbeafe;
   font-size: 13px;
@@ -430,8 +435,7 @@ th {
   color: #ffffff;
 }
 
-.gm-form-card h2,
-.gm-face-card h2 {
+.gm-form-card h2 {
   margin-top: 0;
   color: #22d3ee;
   text-transform: uppercase;
@@ -456,11 +460,6 @@ th {
   background: #06122d;
   color: white;
   font-weight: bold;
-}
-
-.gm-preview-card p {
-  margin: 0;
-  color: #cbd5e1;
 }
 
 .head-coach-badge {
@@ -2550,14 +2549,6 @@ th {
   text-align: right;
 }
 
-.gm-preview-glasses::before {
-  left: 0;
-}
-
-.gm-preview-glasses::after {
-  right: 0;
-}
-
 @keyframes rosterBlockPopupIn {
   from {
     transform: scale(0.95);
@@ -2815,178 +2806,11 @@ table {
   display: block;
 }
 
-.gm-form-card,
-.gm-face-card {
+.gm-form-card {
   background: rgba(3, 18, 55, 0.65);
   border: 1px solid rgba(103, 232, 249, 0.18);
   border-radius: 16px;
   padding: 20px;
-}
-
-.gm-preview-card {
-  background: linear-gradient(180deg, #122b6b, #071735);
-  border: 1px solid rgba(103, 232, 249, 0.22);
-  border-radius: 16px;
-  padding: 22px;
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-.gm-preview-face {
-  width: 112px;
-  height: 112px;
-  border-radius: 999px;
-  background: #f1c27d;
-  margin: 0 auto 14px;
-  position: relative;
-  border: 5px solid rgba(103, 232, 249, 0.45);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
-}
-
-.gm-preview-face::before,
-.gm-preview-face::after {
-  content: "";
-  position: absolute;
-  top: 48px;
-  width: 9px;
-  height: 9px;
-  background: #06122d;
-  border-radius: 999px;
-}
-
-.gm-preview-face::before {
-  left: 34px;
-}
-
-.gm-preview-face::after {
-  right: 34px;
-}
-
-.gm-preview-hair {
-  position: absolute;
-  top: -6px;
-  left: 16px;
-  right: 16px;
-  height: 32px;
-  background: #4b2e1f;
-  border-radius: 999px 999px 40px 40px;
-}
-
-.gm-preview-glasses {
-  display: none;
-  position: absolute;
-  top: 43px;
-  left: 25px;
-  right: 25px;
-  height: 18px;
-  border-top: 3px solid #06122d;
-}
-
-.gm-preview-glasses::before,
-.gm-preview-glasses::after {
-  content: "";
-  position: absolute;
-  top: -8px;
-  width: 24px;
-  height: 18px;
-  border: 3px solid #06122d;
-  border-radius: 999px;
-}
-
-.gm-preview-beard {
-  display: none;
-  position: absolute;
-  left: 31px;
-  right: 31px;
-  bottom: 18px;
-  height: 20px;
-  background: #4b2e1f;
-  border-radius: 0 0 999px 999px;
-}
-
-.gm-preview-card h3 {
-  margin: 8px 0 5px;
-  font-size: 22px;
-}
-
-.gm-skin-light {
-  background: #f1c27d;
-}
-
-.gm-skin-medium {
-  background: #d39b63;
-}
-
-.gm-skin-tan {
-  background: #b77a4b;
-}
-
-.gm-skin-brown {
-  background: #8d5524;
-}
-
-.gm-skin-dark {
-  background: #5c351f;
-}
-
-.gm-hair-black {
-  background: #111827;
-}
-
-.gm-hair-brown {
-  background: #4b2e1f;
-}
-
-.gm-hair-blonde {
-  background: #d6a94a;
-}
-
-.gm-hair-gray {
-  background: #9ca3af;
-}
-
-.gm-hair-bald {
-  display: none;
-}
-
-.gm-hair-short {
-  height: 30px;
-}
-
-.gm-hair-fade {
-  left: 22px;
-  right: 22px;
-  height: 24px;
-}
-
-.gm-hair-curly {
-  height: 35px;
-  border-radius: 45% 45% 40px 40px;
-}
-
-.gm-glasses-yes {
-  display: block;
-}
-
-.gm-beard-beard {
-  display: block;
-  height: 22px;
-}
-
-.gm-beard-goatee {
-  display: block;
-  left: 44px;
-  right: 44px;
-  height: 18px;
-}
-
-.gm-beard-mustache {
-  display: block;
-  left: 34px;
-  right: 34px;
-  bottom: 36px;
-  height: 8px;
-  border-radius: 999px;
 }
 
 /* Make Director smaller on the simple start page */

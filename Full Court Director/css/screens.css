@@ -8039,7 +8039,7 @@ body.free-agency-main-active #main-content {
 .cup-group-column {
   display: grid;
   grid-template-rows: repeat(3, auto);
-  gap: 18px;
+  gap: 12px;
 }
 
 .cup-group-logo-row {
@@ -9108,95 +9108,6 @@ body.free-agency-main-active #main-content {
   margin: 12px 0 16px;
 }
 
-#player-profile-screen .player-page-right .profile-stats-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-}
-
-/* Main shell */
-#player-profile-screen .player-page-shell {
-  width: 100% !important;
-  max-width: 100% !important;
-  display: grid !important;
-  grid-template-columns: 210px minmax(0, 1fr) !important;
-  gap: 8px !important;
-  align-items: start;
-  box-sizing: border-box;
-  grid-template-areas:
-    "left main right" !important;
-  min-width: 0 !important;
-  overflow-x: hidden !important;
-}
-
-/* Left info grid compact */
-#player-profile-screen .player-page-basic-grid {
-  grid-template-columns: 1fr 1fr !important;
-  gap: 5px !important;
-}
-
-/* Top card row much smaller */
-#player-profile-screen .player-page-top-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-}
-
-/* Right/bottom stats row compact */
-#player-profile-screen .player-page-right {
-  grid-column: 2;
-  width: 260px !important;
-  max-width: 260px !important;
-  min-width: 0 !important;
-  display: flex !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  grid-area: right !important;
-  flex-direction: column !important;
-  overflow-x: hidden !important;
-}
-
-#player-profile-screen .profile-stats-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 5px !important;
-  display: grid !important;
-}
-
-/* PLAYER ATTRIBUTE BOX SHAPE FIX */
-#player-profile-screen .player-attribute-grid {
-  display: grid !important;
-  grid-template-columns: repeat(8, 82px) !important;
-  gap: 6px !important;
-  width: auto !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  overflow-x: hidden !important;
-  justify-content: start !important;
-  align-items: start !important;
-}
-
-/* Kill player profile bottom overflow bar */
-#player-profile-screen.active-screen {
-  position: fixed !important;
-  top: 0 !important;
-  left: var(--player-screen-left, 208px) !important;
-  width: auto !important;
-  bottom: 0 !important;
-  z-index: 1200 !important;
-  display: block !important;
-  padding: 10px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  box-sizing: border-box !important;
-  background: #06122d !important;
-  right: 0 !important;
-  max-width: none !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
-  padding-bottom: 24px !important;
-}
-
 .dashboard-schedule-timeline {
   display: grid !important;
   gap: 8px !important;
@@ -9402,6 +9313,135 @@ body.free-agency-main-active #main-content {
   .compact-roster-status-box .roster-status-grid,
   .compact-roster-status-box .info-grid {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* League salary cap */
+.league-salary-cap-page {
+  min-height: calc(100vh - 150px);
+  padding: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(7, 22, 52, 0.98), rgba(3, 13, 34, 0.99));
+}
+
+.league-salary-cap-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.2);
+}
+
+.league-salary-cap-header span,
+.league-salary-cap-season span {
+  color: #22d3ee;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.league-salary-cap-header h1 {
+  margin: 5px 0;
+  color: #f8fafc;
+  font-size: 34px;
+}
+
+.league-salary-cap-header p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.league-salary-cap-season {
+  min-width: 180px;
+  padding: 13px 16px;
+  border: 1px solid rgba(103, 232, 249, 0.28);
+  border-radius: 8px;
+  background: rgba(11, 31, 70, 0.88);
+  text-align: right;
+}
+
+.league-salary-cap-season strong {
+  display: block;
+  margin-top: 4px;
+  color: #f8fafc;
+  font-size: 20px;
+}
+
+.league-salary-cap-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.league-salary-cap-card {
+  min-width: 0;
+  min-height: 128px;
+  padding: 17px 14px;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(20, 54, 118, 0.92), rgba(11, 31, 70, 0.96));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.league-salary-cap-card span {
+  display: block;
+  min-height: 32px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 1000;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.league-salary-cap-card strong {
+  display: block;
+  margin-top: 17px;
+  color: #67e8f9;
+  font-size: clamp(15px, 1.25vw, 22px);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.league-salary-cap-card.tax {
+  border-color: rgba(248, 113, 113, 0.38);
+}
+
+.league-salary-cap-card.tax strong {
+  color: #fca5a5;
+}
+
+.league-salary-cap-card.apron {
+  border-color: rgba(250, 204, 21, 0.34);
+}
+
+.league-salary-cap-card.apron strong {
+  color: #fde047;
+}
+
+.league-salary-cap-card.exception {
+  border-color: rgba(45, 212, 191, 0.3);
+}
+
+.league-salary-cap-card.exception strong {
+  color: #5eead4;
+}
+
+.league-salary-cap-empty {
+  grid-column: 1 / -1;
+  padding: 28px;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  color: #cbd5e1;
+  text-align: center;
+}
+
+@media (max-width: 1300px) {
+  .league-salary-cap-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -13378,24 +13418,6 @@ body.free-agency-main-active #main-content {
   width: 100% !important;
   display: block !important;
   text-align: center !important;
-}
-
-#player-profile-screen {
-  padding: 16px;
-  height: calc(100vh - 90px);
-  overflow-y: auto;
-  box-sizing: border-box;
-  max-width: 100vw;
-  overflow-x: hidden !important;
-}
-
-#player-profile-screen .player-page-shell,
-#player-profile-screen .player-page-main,
-#player-profile-screen .player-page-left,
-#player-profile-screen .player-page-right,
-#player-profile-screen .player-profile-tab,
-#player-profile-screen .player-attribute-grid {
-  overflow-x: hidden !important;
 }
 
 .dashboard-schedule-items {
@@ -17844,6 +17866,496 @@ body.free-agency-main-active #main-content {
   justify-content: start;
   gap: 2px;
   padding-top: 2px;
+}
+
+/* ==================================================
+   LEAGUE NEWS HUB
+   ================================================== */
+.fcd-news-page {
+  min-height: calc(100vh - 112px);
+  padding: 24px;
+  color: #f4f9ff;
+  background:
+    radial-gradient(circle at 82% 8%, rgba(23, 196, 255, 0.12), transparent 28%),
+    linear-gradient(145deg, #061735 0%, #071d45 48%, #04132e 100%);
+}
+
+.fcd-news-header,
+.fcd-news-header nav,
+.fcd-news-latest > header,
+.fcd-news-top-stories > header,
+.fcd-news-bottom-panel > header,
+.fcd-news-feature-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fcd-news-header {
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.fcd-news-header span,
+.fcd-news-latest > header span,
+.fcd-news-top-stories > header span,
+.fcd-news-bottom-panel > header span {
+  color: #35d8ff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.fcd-news-header h1 {
+  margin: 3px 0 0;
+  font-size: clamp(1.55rem, 2vw, 2.35rem);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fcd-news-header nav {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.fcd-news-header nav button {
+  padding: 8px 14px;
+  color: #a9bddc;
+  border: 1px solid rgba(82, 151, 224, 0.28);
+  border-radius: 999px;
+  background: rgba(4, 18, 43, 0.75);
+  font-weight: 800;
+}
+
+.fcd-news-header nav button:hover,
+.fcd-news-header nav button.active {
+  color: #041329;
+  border-color: #38dcff;
+  background: #38dcff;
+  box-shadow: 0 0 18px rgba(56, 220, 255, 0.34);
+}
+
+.fcd-news-main-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 2.2fr);
+  gap: 18px;
+}
+
+.fcd-news-latest,
+.fcd-news-top-stories,
+.fcd-news-bottom-panel {
+  border: 1px solid rgba(64, 150, 232, 0.24);
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(9, 39, 83, 0.94), rgba(4, 22, 53, 0.96));
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.fcd-news-latest > header,
+.fcd-news-top-stories > header,
+.fcd-news-bottom-panel > header {
+  min-height: 52px;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(61, 145, 225, 0.2);
+}
+
+.fcd-news-latest > header strong {
+  color: #8ea8ca;
+  font-size: 0.72rem;
+}
+
+.fcd-news-latest-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 11px;
+  padding: 10px;
+  color: inherit;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid rgba(61, 145, 225, 0.12);
+  background: transparent;
+}
+
+.fcd-news-latest-item:hover,
+.fcd-news-latest-item.active {
+  background: rgba(34, 201, 255, 0.1);
+  box-shadow: inset 3px 0 #32d8ff;
+}
+
+.fcd-news-latest-copy {
+  min-width: 0;
+}
+
+.fcd-news-latest-copy strong,
+.fcd-news-top-card strong {
+  display: -webkit-box;
+  margin: 6px 0;
+  overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.fcd-news-latest-copy small,
+.fcd-news-top-card small {
+  color: #8199ba;
+  font-size: 0.68rem;
+}
+
+.fcd-news-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 3px 7px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fcd-news-badge-league { color: #35d8ff; background: rgba(53, 216, 255, 0.12); }
+.fcd-news-badge-awards { color: #f7c948; background: rgba(247, 201, 72, 0.12); }
+.fcd-news-badge-transactions { color: #ff8a50; background: rgba(255, 122, 69, 0.12); }
+.fcd-news-badge-injuries { color: #ff5b78; background: rgba(255, 77, 109, 0.12); }
+
+.fcd-news-feature {
+  position: relative;
+  min-height: 390px;
+  border: 1px solid rgba(69, 169, 255, 0.32);
+  border-radius: 16px;
+  background: #071b3e;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28);
+}
+
+.fcd-news-feature-overlay {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  padding: 80px 26px 24px;
+  background: linear-gradient(transparent, rgba(2, 12, 31, 0.9) 42%, #020c1f);
+}
+
+.fcd-news-feature h2 {
+  max-width: 760px;
+  margin: 10px 0 7px;
+  font-size: clamp(1.55rem, 2.5vw, 2.7rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.fcd-news-feature p {
+  max-width: 720px;
+  margin: 0;
+  color: #c0d0e8;
+}
+
+.fcd-news-feature-meta {
+  margin-top: 18px;
+  color: #8ea8ca;
+  font-size: 0.75rem;
+}
+
+.fcd-news-feature-meta button {
+  padding: 8px 13px;
+  color: #051630;
+  border: 0;
+  border-radius: 7px;
+  background: #37d9ff;
+  font-weight: 900;
+}
+
+.fcd-news-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(120deg, rgba(10, 51, 105, 0.92), rgba(9, 29, 67, 0.84)),
+    radial-gradient(circle, rgba(54, 218, 255, 0.24), transparent 62%);
+  overflow: hidden;
+}
+
+.fcd-news-visual.latest {
+  width: 76px;
+  height: 68px;
+  border-radius: 9px;
+}
+
+.fcd-news-visual.feature {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 18, 45, 0.28), rgba(3, 18, 45, 0.08)),
+    url("../images/main/newsbackground.png") center / cover no-repeat;
+}
+
+.fcd-news-visual.top-story {
+  height: 126px;
+}
+
+.fcd-news-player-visual > img,
+.fcd-news-trade-visual > div > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.36));
+}
+
+.fcd-news-player-visual.feature > img {
+  width: min(64%, 560px);
+  margin-left: auto;
+  margin-right: 7%;
+}
+
+.fcd-news-team-watermark {
+  position: absolute;
+  left: 7%;
+  width: 35%;
+  height: 70%;
+  opacity: 0.14;
+}
+
+.fcd-news-team-watermark img,
+.fcd-news-team-visual img,
+.fcd-news-trade-visual > div,
+.fcd-news-trade-visual > div > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fcd-news-team-visual {
+  gap: 12%;
+}
+
+.fcd-news-team-visual > img,
+.fcd-news-team-visual > strong {
+  width: 28%;
+  max-height: 65%;
+  object-fit: contain;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.fcd-news-trade-visual > div {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.fcd-news-trade-visual > div + div {
+  border-left: 2px solid rgba(255, 138, 80, 0.7);
+}
+
+.fcd-news-generic-visual span {
+  color: rgba(53, 216, 255, 0.22);
+  font-size: clamp(3rem, 8vw, 8rem);
+  font-weight: 1000;
+  letter-spacing: -0.08em;
+}
+
+.fcd-news-empty {
+  display: flex;
+  align-items: center;
+  padding: 30px;
+}
+
+.fcd-news-empty > div {
+  max-width: 600px;
+}
+
+.fcd-news-top-stories {
+  margin-top: 18px;
+}
+
+.fcd-news-top-stories > div {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(130px, 1fr));
+}
+
+.fcd-news-top-card {
+  min-width: 0;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  border: 0;
+  border-right: 1px solid rgba(61, 145, 225, 0.15);
+  background: transparent;
+  overflow: hidden;
+}
+
+.fcd-news-top-card:hover {
+  background: rgba(53, 216, 255, 0.08);
+}
+
+.fcd-news-top-card > span {
+  display: block;
+  padding: 11px;
+}
+
+.fcd-news-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1.05fr 1.2fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.fcd-news-bottom-panel {
+  min-height: 300px;
+}
+
+.fcd-news-bottom-panel h3 {
+  margin: 2px 0 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.fcd-news-panel-list {
+  padding: 4px 13px 12px;
+}
+
+.fcd-news-transaction-row,
+.fcd-news-injury-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 58px;
+  border-bottom: 1px solid rgba(61, 145, 225, 0.12);
+}
+
+.fcd-news-transaction-row > div:last-child,
+.fcd-news-injury-row > div:last-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fcd-news-transaction-row span,
+.fcd-news-injury-row .status {
+  color: #ff8a50;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.fcd-news-injury-row .status {
+  color: #ff5b78;
+}
+
+.fcd-news-transaction-row strong,
+.fcd-news-injury-row strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fcd-news-transaction-row small,
+.fcd-news-injury-row small,
+.fcd-news-injury-row em {
+  color: #829abc;
+  font-size: 0.64rem;
+  font-style: normal;
+}
+
+.fcd-news-mini-art {
+  width: 42px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(15, 61, 118, 0.55);
+  overflow: hidden;
+}
+
+.fcd-news-mini-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fcd-news-panel-empty {
+  margin: 20px;
+  color: #829abc;
+  line-height: 1.5;
+}
+
+.fcd-news-gotd-matchup {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 22px 14px 14px;
+  text-align: center;
+}
+
+.fcd-news-gotd-matchup > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fcd-news-gotd-matchup img,
+.fcd-news-gotd-matchup > div > strong:first-child {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.fcd-news-gotd-matchup > div > strong:not(:first-child) {
+  margin-top: 7px;
+  font-size: 0.75rem;
+}
+
+.fcd-news-gotd-matchup small,
+.fcd-news-gotd footer {
+  color: #829abc;
+  font-size: 0.68rem;
+}
+
+.fcd-news-gotd-matchup b {
+  color: #38dcff;
+  font-size: 1.1rem;
+}
+
+.fcd-news-gotd footer {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 18px 18px;
+  text-align: center;
+}
+
+.fcd-news-gotd footer strong {
+  color: #f4f9ff;
+}
+
+@media (max-width: 1180px) {
+  .fcd-news-main-grid { grid-template-columns: 1fr; }
+  .fcd-news-latest { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .fcd-news-latest > header { grid-column: 1 / -1; }
+  .fcd-news-top-stories > div { grid-template-columns: repeat(3, 1fr); }
+  .fcd-news-bottom-grid { grid-template-columns: 1fr 1fr; }
+  .fcd-news-gotd { grid-column: 1 / -1; }
+}
+
+@media (max-width: 760px) {
+  .fcd-news-page { padding: 14px; }
+  .fcd-news-header { align-items: flex-start; flex-direction: column; }
+  .fcd-news-header nav { justify-content: flex-start; }
+  .fcd-news-latest { display: block; }
+  .fcd-news-feature { min-height: 340px; }
+  .fcd-news-top-stories > div,
+  .fcd-news-bottom-grid { grid-template-columns: 1fr; }
+  .fcd-news-gotd { grid-column: auto; }
 }
 
 .awards-progress-bar {
@@ -22863,13 +23375,16 @@ body.gm-hub-phone-open {
   gap: 18px;
 }
 
-#gm-creation-panel .gm-form-card,
-#gm-creation-panel .gm-face-card {
+#gm-creation-panel .gm-creation-grid.gm-profile-only {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+}
+
+#gm-creation-panel .gm-form-card {
   padding: 18px 20px;
 }
 
-#gm-creation-panel .gm-form-card h2,
-#gm-creation-panel .gm-face-card h2 {
+#gm-creation-panel .gm-form-card h2 {
   margin-bottom: 12px;
 }
 
@@ -22886,25 +23401,6 @@ body.gm-hub-phone-open {
 #gm-creation-panel .gm-field select {
   height: 44px;
   padding: 0 14px;
-}
-
-#gm-creation-panel .gm-preview-card {
-  min-height: 150px;
-  padding: 16px;
-}
-
-#gm-creation-panel .gm-preview-face {
-  transform: scale(0.86);
-  margin-bottom: 4px;
-}
-
-#gm-creation-panel .gm-preview-card h3 {
-  margin-top: 0;
-  font-size: 22px;
-}
-
-#gm-creation-panel .gm-preview-card p {
-  font-size: 14px;
 }
 
 #gm-creation-panel .setup-action-row {
@@ -23592,6 +24088,17 @@ body.gm-hub-phone-open {
   height: 48px !important;
 }
 
+#dashboard-context-action-button.cup {
+  color: #071634 !important;
+  border-color: #facc15 !important;
+  background: linear-gradient(180deg, #fde047, #eab308) !important;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.34) !important;
+}
+
+#dashboard-context-action-button.cup:hover {
+  background: linear-gradient(180deg, #fef08a, #facc15) !important;
+}
+
 /* Dashboard bottom cards */
 .dashboard-bottom-secondary-cards {
   min-width: 0;
@@ -24182,4 +24689,3027 @@ body.gm-hub-phone-open {
 
 .start-simple-card .start-title-kicker {
   display: none;
+}
+
+/* Compact five-day dashboard schedule bar */
+.dashboard-five-day-schedule {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  height: 101px;
+  padding-bottom: 14px;
+}
+
+.dashboard-five-day-schedule::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: 5px;
+  left: 8%;
+  height: 1px;
+  background: rgba(103, 232, 249, 0.25);
+}
+
+.dashboard-schedule-day {
+  position: relative;
+  min-width: 0;
+  height: 86px;
+  padding: 6px 7px 7px;
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  border-radius: 8px;
+  background: rgba(2, 10, 31, 0.72);
+  overflow: visible;
+}
+
+.dashboard-schedule-day.current {
+  border-color: #22d3ee;
+  background: linear-gradient(180deg, rgba(20, 75, 146, 0.88), rgba(5, 25, 65, 0.94));
+  box-shadow: 0 0 13px rgba(34, 211, 238, 0.36);
+}
+
+.dashboard-schedule-day-date {
+  margin-bottom: 4px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 1000;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.dashboard-schedule-day.current .dashboard-schedule-day-date {
+  color: #67e8f9;
+}
+
+.dashboard-schedule-bar-game {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  min-width: 0;
+}
+
+.dashboard-schedule-bar-game > div {
+  min-width: 0;
+}
+
+.dashboard-schedule-bar-game strong,
+.dashboard-schedule-bar-primary strong {
+  display: block;
+  overflow: hidden;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 1000;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard-schedule-bar-game small {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: #22d3ee;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard-schedule-bar-logo,
+.dashboard-schedule-bar-logo img {
+  width: 26px !important;
+  height: 26px !important;
+  flex: 0 0 26px;
+  object-fit: contain;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.dashboard-schedule-bar-primary {
+  display: flex;
+  align-items: center;
+  min-height: 27px;
+}
+
+.dashboard-schedule-bar-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin-top: 5px;
+}
+
+.dashboard-schedule-bar-events span {
+  overflow: hidden;
+  color: #a7b5ca;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard-schedule-node {
+  position: absolute;
+  z-index: 1;
+  bottom: -12px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgba(103, 232, 249, 0.65);
+  border-radius: 50%;
+  background: #071634;
+  transform: translateX(-50%);
+}
+
+.dashboard-schedule-day.current .dashboard-schedule-node {
+  bottom: -13px;
+  width: 9px;
+  height: 9px;
+  border-color: #67e8f9;
+  background: #22d3ee;
+  box-shadow: 0 0 9px rgba(34, 211, 238, 0.8);
+}
+
+/* ======================================================
+   FREE AGENCY CONTRACT NEGOTIATION REDESIGN
+====================================================== */
+
+#free-agency-negotiation-screen {
+  padding: 0;
+}
+
+.fa-contract-page {
+  min-height: calc(100vh - 112px);
+  padding: 18px 22px 24px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 36%),
+    linear-gradient(180deg, #06142f, #020817);
+}
+
+.fa-contract-back {
+  width: fit-content;
+  margin: 0 0 12px;
+  background: transparent;
+  border: none;
+  color: #dbeafe;
+  font-weight: 900;
+  padding: 0;
+}
+
+.fa-contract-back:hover {
+  color: #67e8f9;
+}
+
+.fa-contract-layout {
+  display: grid;
+  grid-template-columns: minmax(310px, 31%) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.fa-contract-player-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fa-contract-side-card {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.08), transparent 36%),
+    linear-gradient(180deg, rgba(13, 44, 96, 0.92), rgba(8, 25, 60, 0.96));
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 15px;
+  padding: 14px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+}
+
+.fa-contract-side-card h3,
+.fa-contract-section-title h3 {
+  margin: 0;
+  color: #67e8f9;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.fa-contract-player-profile {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.fa-contract-player-face {
+  width: 86px;
+  height: 86px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #334155, #0f172a);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+}
+
+.fa-contract-player-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fa-contract-player-profile h2 {
+  margin: 0 0 5px;
+  color: white;
+  font-size: 25px;
+}
+
+.fa-contract-player-profile p {
+  margin: 3px 0;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.fa-contract-player-profile span {
+  display: inline-block;
+  margin-top: 6px;
+  color: #dbeafe;
+  font-size: 13px;
+}
+
+.fa-contract-side-list,
+.fa-contract-agent-grid {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.fa-contract-side-list div,
+.fa-contract-agent-grid div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+  padding-top: 8px;
+}
+
+.fa-contract-side-list span,
+.fa-contract-agent-grid span,
+.fa-contract-summary-grid span,
+.fa-contract-field-grid span,
+.fa-contract-finance-list span {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.fa-contract-side-list strong,
+.fa-contract-agent-grid strong,
+.fa-contract-summary-grid strong {
+  color: #f8fafc;
+  font-size: 13px;
+  text-align: right;
+}
+
+.fa-contract-agent-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.fa-contract-agent-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(148, 163, 184, 0.28);
+  color: #dbeafe;
+  font-weight: 1000;
+}
+
+.fa-contract-agent-row strong,
+.fa-contract-agent-row span {
+  display: block;
+}
+
+.fa-contract-agent-row strong {
+  color: white;
+}
+
+.fa-contract-agent-row span {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.fa-contract-camp-quote {
+  margin-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+  padding-top: 10px;
+}
+
+.fa-contract-camp-quote span {
+  color: #94a3b8;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 1000;
+}
+
+.fa-contract-camp-quote p {
+  margin: 6px 0 0;
+  color: #f8fafc;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.fa-contract-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.fa-contract-summary-grid div {
+  background: rgba(2, 8, 23, 0.32);
+  border: 1px solid rgba(103, 232, 249, 0.12);
+  border-radius: 11px;
+  padding: 10px;
+}
+
+.fa-contract-document-shell {
+  min-width: 0;
+}
+
+.fa-contract-paper-stack {
+  position: relative;
+  background: rgba(2, 8, 23, 0.72);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  border-radius: 22px;
+  padding: 12px 14px 14px;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+}
+
+.fa-contract-paper-stack::before,
+.fa-contract-paper-stack::after {
+  content: "";
+  position: absolute;
+  right: 13px;
+  top: 20px;
+  bottom: 26px;
+  width: 22px;
+  border-radius: 8px;
+  background: #a47b45;
+  opacity: 0.65;
+  transform: translateX(15px);
+}
+
+.fa-contract-paper-stack::after {
+  right: 30px;
+  opacity: 0.28;
+}
+
+.fa-contract-paper {
+  position: relative;
+  z-index: 2;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 25%),
+    linear-gradient(180deg, #f5efe3, #eee4d5);
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  border-radius: 8px;
+  color: #14213a;
+  padding: 18px 20px 14px;
+  box-shadow: inset 0 0 32px rgba(15, 23, 42, 0.05);
+}
+
+.fa-contract-paper-header {
+  text-align: center;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.28);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.fa-contract-paper-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.fa-contract-paper-header span {
+  display: block;
+  color: #1e3a5f;
+  font-size: 11px;
+  font-weight: 1000;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.fa-contract-paper-header h1 {
+  margin: 2px 0 4px;
+  color: #111827;
+  font-family: Georgia, serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(20px, 2.8vw, 34px);
+  line-height: 1.02;
+}
+
+.fa-contract-paper-header p {
+  margin: 0;
+  color: #17408b;
+  text-transform: uppercase;
+  font-weight: 1000;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+}
+
+.fa-contract-paper-header small {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.fa-contract-box {
+  border: 1px solid rgba(15, 23, 42, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.fa-contract-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.fa-contract-section-title b {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #17335f;
+  color: white;
+  font-size: 12px;
+}
+
+.fa-contract-section-title h3 {
+  color: #17335f;
+  letter-spacing: 0.04em;
+}
+
+.fa-contract-section-title small {
+  color: #64748b;
+}
+
+.fa-contract-field-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.fa-contract-field-grid.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.fa-contract-field-grid div {
+  min-width: 0;
+}
+
+.fa-contract-field-grid strong {
+  display: block;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.fa-contract-field-grid select,
+.fa-contract-control-row select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(15, 23, 42, 0.22);
+  color: #0f172a;
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-weight: 800;
+}
+
+.fa-contract-field-grid small {
+  display: block;
+  color: #64748b;
+  font-size: 10px;
+}
+
+
+.fa-contract-core-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.72fr 0.72fr;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.fa-contract-control-row {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.fa-contract-control-row label {
+  display: block;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 1000;
+  margin-bottom: 5px;
+}
+
+.fa-contract-control-row small {
+  display: block;
+  color: #64748b;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.fa-contract-stepper,
+.fa-contract-year-buttons,
+.fa-contract-distribution {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 8px;
+}
+
+.fa-contract-stepper button,
+.fa-contract-year-buttons button,
+.fa-contract-distribution button {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.22);
+  color: #17335f;
+  min-height: 32px;
+  font-weight: 1000;
+}
+
+.fa-contract-stepper strong {
+  display: grid;
+  place-items: center;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.fa-contract-year-buttons {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.fa-contract-distribution {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.fa-contract-year-buttons button.active,
+.fa-contract-distribution button.active {
+  background: #17335f;
+  color: white;
+}
+
+.fa-contract-total-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(23, 64, 139, 0.08);
+  border: 1px solid rgba(23, 64, 139, 0.22);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.fa-contract-total-card span {
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 1000;
+}
+
+.fa-contract-total-card strong {
+  color: #17408b;
+  font-size: 18px;
+}
+
+.fa-contract-salary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.fa-contract-salary-table th,
+.fa-contract-salary-table td {
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  padding: 6px 7px;
+  text-align: left;
+}
+
+.fa-contract-salary-table th {
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.fa-contract-salary-table td:last-child,
+.fa-contract-salary-table tfoot td:last-child {
+  text-align: right;
+  font-weight: 1000;
+  color: #17408b;
+}
+
+.fa-contract-distribution-explain {
+  margin-top: 8px;
+  background: rgba(23, 64, 139, 0.08);
+  border: 1px solid rgba(23, 64, 139, 0.18);
+  border-radius: 8px;
+  padding: 8px;
+  color: #334155;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.fa-contract-vision-quote {
+  margin-top: 9px;
+  background: rgba(23, 64, 139, 0.08);
+  border-left: 4px solid #17408b;
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: #17335f;
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.fa-contract-finance-list {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 10px;
+  align-items: center;
+}
+
+.fa-contract-finance-list strong {
+  color: #dc2626;
+  font-size: 13px;
+  text-align: right;
+}
+
+.fa-contract-financial small {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.fa-contract-notes blockquote {
+  margin: 6px 0 12px;
+  color: #1e293b;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.fa-neg-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 150px;
+  overflow: auto;
+}
+
+.fa-neg-note {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 7px;
+  align-items: start;
+  background: rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  padding: 7px;
+}
+
+.fa-neg-note span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #17335f;
+  color: white;
+  font-size: 10px;
+  font-weight: 1000;
+}
+
+.fa-neg-note.good span {
+  background: #16a34a;
+}
+
+.fa-neg-note.warning span {
+  background: #dc2626;
+}
+
+.fa-neg-note p {
+  margin: 0;
+  color: #334155;
+  font-size: 11px;
+  line-height: 1.28;
+}
+
+.fa-contract-signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 74px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.fa-contract-signature-grid span {
+  display: block;
+  color: #475569;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 1000;
+  margin-bottom: 13px;
+}
+
+.fa-contract-signature-grid i {
+  display: block;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.35);
+  height: 18px;
+}
+
+.fa-contract-signature-grid small {
+  color: #64748b;
+  font-size: 10px;
+}
+
+.fa-contract-stamp {
+  justify-self: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  opacity: 0.78;
+}
+
+.fa-contract-signatures p {
+  margin: 8px 0 0;
+  color: #64748b;
+  text-align: center;
+  font-size: 10px;
+}
+
+.fa-contract-action-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) repeat(5, minmax(115px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  background: rgba(3, 18, 55, 0.78);
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  border-radius: 13px;
+  padding: 10px;
+}
+
+.fa-contract-action-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.fa-contract-action-note p {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.fa-contract-action-bar button {
+  margin: 0;
+  border-radius: 10px;
+  min-height: 42px;
+  background: rgba(15, 45, 90, 0.88);
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  color: #e0f2fe;
+  font-weight: 1000;
+}
+
+.fa-contract-action-bar button.send {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.88), rgba(8, 145, 178, 0.88));
+  color: white;
+}
+
+.fa-contract-action-bar button.danger {
+  background: rgba(127, 29, 29, 0.55);
+  border-color: rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+}
+
+.fa-contract-offer-strength {
+  margin-top: 10px;
+  background: rgba(3, 18, 55, 0.72);
+  border: 1px solid rgba(103, 232, 249, 0.14);
+  border-radius: 13px;
+  padding: 10px;
+}
+
+.fa-offer-meter-shell {
+  height: 14px;
+  background: rgba(148, 163, 184, 0.24);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fa-offer-meter-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f97316, #facc15, #22c55e);
+  transition: width 0.2s ease;
+}
+
+.fa-offer-meter-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 7px;
+  color: #94a3b8;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 1000;
+}
+
+.fa-contract-offer-strength p {
+  margin: 8px 0 0;
+  color: #dbeafe;
+  font-size: 12px;
+}
+
+.fa-contract-hidden-compat {
+  display: none !important;
+}
+
+.fa-neg-priorities {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.fa-priority-row {
+  display: grid;
+  grid-template-columns: 95px 1fr 32px;
+  gap: 8px;
+  align-items: center;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
+.fa-priority-bar {
+  height: 7px;
+  background: rgba(148, 163, 184, 0.24);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fa-priority-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f97316, #facc15, #22c55e);
+}
+
+.fa-priority-grade {
+  color: #67e8f9;
+  font-weight: 1000;
+  text-align: right;
+}
+
+@media (max-width: 1350px) {
+  .fa-contract-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fa-contract-player-rail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fa-contract-action-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .fa-contract-action-note {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .fa-contract-player-rail,
+  .fa-contract-paper-grid,
+  .fa-contract-core-grid,
+  .fa-contract-field-grid.two-col,
+  .fa-contract-signature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fa-contract-basic,
+  .fa-contract-core,
+  .fa-contract-breakdown,
+  .fa-contract-options,
+  .fa-contract-promises,
+  .fa-contract-notes,
+  .fa-contract-signatures {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .fa-contract-action-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================================
+   FREE AGENCY NEGOTIATION: FINAL TWO-STACK FIT
+   The paper grid only separates the independent stacks.
+====================================================== */
+
+#free-agency-negotiation-screen {
+  height: calc(100vh - 78px);
+  padding: 0;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 10px 12px 6px;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-back {
+  flex: 0 0 22px;
+  margin: 0 0 5px;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+#free-agency-negotiation-screen .fa-contract-layout {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(280px, 30%) minmax(0, 70%);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  height: 0;
+  min-height: 0;
+}
+
+#free-agency-negotiation-screen .fa-contract-player-rail,
+#free-agency-negotiation-screen .fa-contract-document-shell {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-player-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#free-agency-negotiation-screen .fa-contract-side-card {
+  padding: 10px 12px;
+}
+
+#free-agency-negotiation-screen .fa-contract-player-profile {
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-player-face {
+  width: 66px;
+  height: 66px;
+}
+
+#free-agency-negotiation-screen .fa-contract-player-profile h2 {
+  font-size: 19px;
+}
+
+#free-agency-negotiation-screen .fa-contract-side-list,
+#free-agency-negotiation-screen .fa-contract-agent-grid {
+  gap: 5px;
+  margin-top: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-side-list div,
+#free-agency-negotiation-screen .fa-contract-agent-grid div {
+  padding-top: 5px;
+}
+
+#free-agency-negotiation-screen .fa-neg-priorities {
+  gap: 5px;
+  margin-top: 8px;
+}
+
+#free-agency-negotiation-screen .fa-contract-agent-row {
+  margin-top: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-agent-avatar {
+  width: 36px;
+  height: 36px;
+}
+
+#free-agency-negotiation-screen .fa-contract-camp-quote {
+  margin-top: 7px;
+  padding-top: 6px;
+}
+
+#free-agency-negotiation-screen .fa-contract-summary-grid {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-summary-grid div {
+  padding: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-document-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-stack {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px 10px;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-header {
+  flex: 0 0 48px;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-header-top {
+  margin-bottom: 2px;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-header h1 {
+  margin: 0 0 2px;
+  font-size: 22px;
+  line-height: 1;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-header p,
+#free-agency-negotiation-screen .fa-contract-paper-header span,
+#free-agency-negotiation-screen .fa-contract-paper-header small {
+  font-size: 8px;
+}
+
+#free-agency-negotiation-screen .fa-contract-paper-grid {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(0, 2.55fr) minmax(295px, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 8px;
+  height: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-left-stack,
+#free-agency-negotiation-screen .fa-contract-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-basic,
+#free-agency-negotiation-screen .fa-contract-core,
+#free-agency-negotiation-screen .fa-contract-options,
+#free-agency-negotiation-screen .fa-contract-promises,
+#free-agency-negotiation-screen .fa-contract-breakdown,
+#free-agency-negotiation-screen .fa-contract-financial,
+#free-agency-negotiation-screen .fa-contract-notes {
+  box-sizing: border-box;
+  grid-area: auto;
+  grid-column: auto;
+  grid-row: auto;
+  min-height: 0;
+  padding: 6px 8px;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-contract-basic {
+  flex: 0 0 104px;
+}
+
+#free-agency-negotiation-screen .fa-contract-core {
+  flex: 0 0 88px;
+}
+
+#free-agency-negotiation-screen .fa-contract-options {
+  flex: 0 0 120px;
+}
+
+#free-agency-negotiation-screen .fa-contract-promises {
+  flex: 1 1 auto;
+}
+
+#free-agency-negotiation-screen .fa-contract-breakdown {
+  flex: 0 0 245px;
+}
+
+#free-agency-negotiation-screen .fa-contract-financial {
+  flex: 0 0 102px;
+}
+
+#free-agency-negotiation-screen .fa-contract-notes {
+  flex: 1 1 auto;
+}
+
+#free-agency-negotiation-screen .fa-contract-section-title {
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+#free-agency-negotiation-screen .fa-contract-section-title b {
+  width: 16px;
+  height: 16px;
+  font-size: 8px;
+}
+
+#free-agency-negotiation-screen .fa-contract-section-title h3 {
+  font-size: 9.5px;
+  line-height: 1;
+}
+
+#free-agency-negotiation-screen .fa-contract-basic-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  gap: 7px;
+  align-items: start;
+}
+
+#free-agency-negotiation-screen .fa-contract-basic .fa-contract-field-grid {
+  gap: 5px 8px;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack {
+  gap: 3px;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack span,
+#free-agency-negotiation-screen .fa-contract-field-grid span,
+#free-agency-negotiation-screen .fa-contract-control-row label,
+#free-agency-negotiation-screen .fa-contract-finance-list span {
+  font-size: 8px;
+  line-height: 1;
+}
+
+#free-agency-negotiation-screen .fa-contract-field-grid strong,
+#free-agency-negotiation-screen .fa-contract-finance-list strong {
+  font-size: 9.5px;
+  line-height: 1.1;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack button {
+  height: 21px;
+  min-height: 21px;
+  margin: 0;
+  border-radius: 5px;
+  font-size: 9.5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-core-grid-simple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.05fr;
+  gap: 6px;
+}
+
+#free-agency-negotiation-screen .fa-contract-control-row {
+  padding: 4px 5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-control-row label {
+  margin-bottom: 3px;
+}
+
+#free-agency-negotiation-screen .fa-contract-control-row small,
+#free-agency-negotiation-screen .fa-contract-field-grid small {
+  margin-top: 2px;
+  font-size: 7.5px;
+  line-height: 1;
+}
+
+#free-agency-negotiation-screen .fa-contract-stepper button,
+#free-agency-negotiation-screen .fa-contract-year-buttons button,
+#free-agency-negotiation-screen .fa-contract-distribution button {
+  height: 20px;
+  min-height: 20px;
+  padding: 0 4px;
+  font-size: 9px;
+}
+
+#free-agency-negotiation-screen .fa-contract-stepper strong {
+  font-size: 9.5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-options .fa-contract-field-grid,
+#free-agency-negotiation-screen .fa-contract-promises .fa-contract-field-grid {
+  gap: 4px 7px;
+}
+
+#free-agency-negotiation-screen .fa-contract-options select,
+#free-agency-negotiation-screen .fa-contract-promises select {
+  height: 21px;
+  min-height: 21px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 9px;
+}
+
+#free-agency-negotiation-screen .fa-contract-vision-quote,
+#free-agency-negotiation-screen .fa-contract-signatures {
+  display: none;
+}
+
+#free-agency-negotiation-screen .fa-contract-hidden-compat {
+  display: none;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table {
+  font-size: 9px;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table th,
+#free-agency-negotiation-screen .fa-contract-salary-table td {
+  padding: 2px 4px;
+  font-size: 8.5px;
+  line-height: 1.1;
+}
+
+#free-agency-negotiation-screen .fa-contract-distribution-explain {
+  margin-top: 5px;
+  padding: 5px 6px;
+  font-size: 8px;
+  line-height: 1.15;
+}
+
+#free-agency-negotiation-screen .fa-contract-finance-list {
+  gap: 3px 6px;
+}
+
+#free-agency-negotiation-screen .fa-contract-financial small {
+  margin-top: 4px;
+  font-size: 7.5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-notes blockquote {
+  margin: 0 0 4px;
+  font-size: 8.5px;
+  line-height: 1.1;
+}
+
+#free-agency-negotiation-screen .fa-neg-notes-list {
+  gap: 3px;
+  max-height: none;
+  overflow: hidden;
+}
+
+#free-agency-negotiation-screen .fa-neg-note {
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 4px;
+  padding: 3px 4px;
+}
+
+#free-agency-negotiation-screen .fa-neg-note span {
+  width: 12px;
+  height: 12px;
+  font-size: 7px;
+}
+
+#free-agency-negotiation-screen .fa-neg-note p {
+  font-size: 7.5px;
+  line-height: 1.08;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-bar {
+  display: grid;
+  flex: 0 0 47px;
+  grid-template-columns: minmax(170px, 1.15fr) repeat(5, minmax(86px, 1fr));
+  gap: 7px;
+  margin-top: 0;
+  padding: 6px;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-note {
+  font-size: 9px;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-bar button {
+  min-height: 34px;
+  padding: 0 8px;
+  font-size: 10px;
+}
+
+#free-agency-negotiation-screen .fa-contract-offer-strength {
+  flex: 0 0 52px;
+  margin-top: 0;
+  padding: 6px 9px;
+}
+
+#free-agency-negotiation-screen .fa-offer-meter-shell {
+  height: 9px;
+}
+
+#free-agency-negotiation-screen .fa-offer-meter-labels {
+  margin-top: 4px;
+  font-size: 7.5px;
+}
+
+#free-agency-negotiation-screen .fa-contract-offer-strength p {
+  margin: 4px 0 0;
+  font-size: 8px;
+  line-height: 1.1;
+}
+
+@media (max-width: 1100px) {
+  #free-agency-negotiation-screen .fa-contract-layout {
+    grid-template-columns: minmax(240px, 28%) minmax(0, 72%);
+  }
+
+  #free-agency-negotiation-screen .fa-contract-paper-grid {
+    grid-template-columns: minmax(0, 2.2fr) minmax(250px, 1fr);
+  }
+
+  #free-agency-negotiation-screen .fa-contract-action-note {
+    display: none;
+  }
+
+  #free-agency-negotiation-screen .fa-contract-action-bar {
+    grid-template-columns: repeat(5, minmax(76px, 1fr));
+  }
+}
+
+/* Fix Year-by-Year Salary Breakdown text color */
+#free-agency-negotiation-screen .fa-contract-breakdown {
+  color: #0f172a !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table {
+  color: #0f172a !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table th {
+  color: #475569 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table td {
+  color: #0f172a !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table td:last-child,
+#free-agency-negotiation-screen .fa-contract-salary-table tfoot td:last-child {
+  color: #17408b !important;
+  font-weight: 1000 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-table tfoot td {
+  color: #0f172a !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-distribution-explain {
+  color: #334155 !important;
+}
+
+/* Make bottom offer section taller, higher, and easier to read */
+#free-agency-negotiation-screen .fa-contract-action-bar {
+  flex: 0 0 54px !important;
+  margin-top: -4px !important;
+  padding: 7px 10px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-note {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-note p {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-action-bar button {
+  min-height: 38px !important;
+  font-size: 12px !important;
+}
+
+/* Bigger offer strength section */
+#free-agency-negotiation-screen .fa-contract-offer-strength {
+  flex: 0 0 76px !important;
+  margin-top: -2px !important;
+  padding: 10px 14px !important;
+}
+
+#free-agency-negotiation-screen .fa-offer-meter-shell {
+  height: 12px !important;
+}
+
+#free-agency-negotiation-screen .fa-offer-meter-labels {
+  margin-top: 8px !important;
+  font-size: 11px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-offer-strength p {
+  margin-top: 7px !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+/* Contract Type buttons: stacked and transparent */
+#free-agency-negotiation-screen .fa-contract-type-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: 165px !important;
+  gap: 5px !important;
+  margin-top: -4px !important;
+  margin-left: 0 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack span {
+  display: block !important;
+  color: #0f172a !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  text-transform: none !important;
+  margin-bottom: 1px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack button {
+  width: 100% !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  margin: 0 !important;
+  border-radius: 7px !important;
+
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(15, 23, 42, 0.28) !important;
+  color: #17335f !important;
+
+  font-size: 10px !important;
+  font-weight: 1000 !important;
+  box-shadow: none !important;
+}
+
+/* Selected contract type should still be obvious, but not filled teal */
+#free-agency-negotiation-screen .fa-contract-type-stack button.active {
+  background: rgba(23, 64, 139, 0.12) !important;
+  border: 2px solid #17335f !important;
+  color: #17335f !important;
+}
+
+/* Smaller stacked contract type buttons */
+#free-agency-negotiation-screen .fa-contract-basic {
+  flex: 0 0 112px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-basic-layout {
+  grid-template-columns: minmax(0, 1fr) 145px !important;
+  gap: 8px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack {
+  width: 145px !important;
+  gap: 3px !important;
+  margin-top: -2px !important;
+  margin-left: 0 !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack span {
+  font-size: 8px !important;
+  line-height: 1 !important;
+  margin-bottom: 1px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack button {
+  width: 100% !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 !important;
+  font-size: 8.5px !important;
+  line-height: 18px !important;
+  border-radius: 5px !important;
+
+  background: rgba(255, 255, 255, 0.18) !important;
+  border: 1px solid rgba(15, 23, 42, 0.25) !important;
+  color: #17335f !important;
+  box-shadow: none !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-type-stack button.active {
+  background: rgba(23, 64, 139, 0.12) !important;
+  border: 2px solid #17335f !important;
+  color: #17335f !important;
+}
+
+/* Make Year-by-Year Salary Breakdown shorter */
+#free-agency-negotiation-screen .fa-contract-breakdown {
+  flex: 0 0 185px !important;
+}
+
+/* Tighten the table inside it */
+#free-agency-negotiation-screen .fa-contract-salary-table th,
+#free-agency-negotiation-screen .fa-contract-salary-table td {
+  padding: 2px 4px !important;
+  font-size: 8.5px !important;
+  line-height: 1.05 !important;
+}
+
+/* Tighten the explanation box */
+#free-agency-negotiation-screen .fa-contract-distribution-explain {
+  margin-top: 4px !important;
+  padding: 4px 6px !important;
+  font-size: 7.8px !important;
+  line-height: 1.1 !important;
+}
+
+/* Salary exact amount input */
+#free-agency-negotiation-screen .fa-contract-salary-stepper {
+  grid-template-columns: 34px 1fr 34px !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-input {
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  border-left: 1px solid rgba(15, 23, 42, 0.18) !important;
+  border-right: 1px solid rgba(15, 23, 42, 0.18) !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #0f172a !important;
+  text-align: center !important;
+  font-weight: 1000 !important;
+  font-size: 9.5px !important;
+  outline: none !important;
+}
+
+#free-agency-negotiation-screen .fa-contract-salary-input:focus {
+  background: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: inset 0 0 0 2px rgba(23, 64, 139, 0.35) !important;
+}
+
+/* ======================================================
+   PLAYER + TEAM PROFILE LAYOUT
+   Uses the actual profile markup below the fixed top nav
+====================================================== */
+
+/* ======================================================
+   TEAM PROFILE OVERLAY
+====================================================== */
+
+/* The overlay fills main-content, which already begins below the fixed nav. */
+#team-profile-overlay {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 10px 14px !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: rgba(2, 8, 23, 0.96) !important;
+}
+
+/* Keep hidden state working */
+#team-profile-overlay.hidden {
+  display: none !important;
+}
+
+/* Main team modal should stretch full screen */
+#team-profile-overlay .team-profile-modal,
+#team-profile-overlay .team-profile-modal-redesign {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+/* Make the action buttons row visible */
+#team-profile-overlay .team-profile-action-bar {
+  position: relative !important;
+  z-index: 30 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  margin: 0 0 8px !important;
+  padding: 5px 8px !important;
+  background: rgba(3, 18, 55, 0.9) !important;
+  border: 1px solid rgba(103, 232, 249, 0.18) !important;
+  border-radius: 10px !important;
+}
+
+#team-profile-overlay .team-profile-action-bar button,
+#team-profile-overlay .team-profile-back-button,
+#team-profile-overlay .team-profile-nav-button {
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  font-size: 10px !important;
+}
+
+/* Team layout should fill the whole modal */
+#team-profile-overlay .team-profile-redesign-grid {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  display: grid !important;
+  grid-template-columns: 360px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  overflow: hidden !important;
+}
+
+/* Left roster panel should go full height */
+#team-profile-overlay .team-profile-roster-panel {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Roster list scrolls inside the panel */
+#team-profile-overlay .team-profile-full-roster-list {
+  height: calc(100% - 55px) !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Main team panel stretches right */
+#team-profile-overlay .team-profile-main-panel {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  max-width: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Inner team tab area remains in normal flow inside the scrolling main panel. */
+#team-profile-overlay .team-profile-tab-panel {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+
+/* ======================================================
+   PLAYER PROFILE SCREEN
+====================================================== */
+
+/* This is a regular screen inside main-content, not a viewport overlay. */
+#player-profile-screen.active-screen {
+  position: relative !important;
+  inset: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  background: #06122d !important;
+}
+
+/* Back / Prev / Next row */
+#player-profile-screen .player-page-topbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  margin: 0 0 8px !important;
+  padding: 5px 8px !important;
+  background: rgba(3, 18, 55, 0.9) !important;
+  border: 1px solid rgba(103, 232, 249, 0.18) !important;
+  border-radius: 10px !important;
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+#player-profile-screen .player-page-topbar-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-left: auto !important;
+}
+
+#player-profile-screen .player-page-topbar button {
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 0 10px !important;
+  margin: 0 !important;
+  font-size: 10px !important;
+}
+
+/* Restore the actual three-column shell from the HTML. */
+#player-profile-screen .player-page-shell {
+  display: grid !important;
+  grid-template-columns: 220px minmax(0, 1fr) 260px !important;
+  grid-template-areas: "left main right" !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: calc(100% - 46px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#player-profile-screen .player-page-left,
+#player-profile-screen .player-page-main,
+#player-profile-screen .player-page-right {
+  width: auto !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+#player-profile-screen .player-page-left {
+  grid-area: left !important;
+}
+
+#player-profile-screen .player-page-main {
+  grid-area: main !important;
+}
+
+#player-profile-screen .player-page-right {
+  grid-area: right !important;
+  display: block !important;
+}
+
+#player-profile-screen .player-page-right .profile-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 5px !important;
+}
+
+#player-profile-screen .player-page-top-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 1100px) {
+  #player-profile-screen .player-page-shell {
+    grid-template-columns: 210px minmax(0, 1fr) !important;
+    grid-template-areas:
+      "left main"
+      "right right" !important;
+    overflow-y: auto !important;
+  }
+
+  #player-profile-screen .player-page-left,
+  #player-profile-screen .player-page-main,
+  #player-profile-screen .player-page-right {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+
+.dashboard-finance-lines {
+  display: grid;
+  gap: 8px;
+}
+
+.dashboard-finance-lines > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dashboard-finance-payroll-line {
+  padding-bottom: 2px;
+}
+
+.dashboard-finance-payroll-line strong {
+  color: #ffffff;
+}
+
+.dashboard-finance-divider {
+  height: 1px;
+  min-height: 1px;
+  background: rgba(148, 163, 184, 0.28);
+  margin: 2px 0;
+}
+
+.dashboard-cap-space-ring.over-cap strong {
+  color: #fb7185;
+}
+
+.dashboard-cap-space-ring.under-cap strong {
+  color: #22c55e;
+}
+
+.dashboard-key-dates-list {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+}
+
+.dashboard-key-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 14px;
+  background: rgba(5, 20, 52, 0.62);
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.dashboard-key-date-row:hover {
+  border-color: rgba(34, 211, 238, 0.45);
+  background: rgba(15, 45, 90, 0.72);
+  transform: translateY(-1px);
+}
+
+.dashboard-key-date-main {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.dashboard-key-date-main span {
+  color: #22d3ee;
+  font-size: 10px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.dashboard-key-date-main strong {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 1000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-key-date-main em {
+  color: #94a3b8;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.dashboard-key-date-countdown {
+  flex: 0 0 auto;
+  min-width: 74px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 1000;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.dashboard-roster-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 14px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(3, 18, 55, 0.72);
+  border: 1px solid rgba(34, 211, 238, 0.18);
+}
+
+.dashboard-roster-metric {
+  min-width: 0;
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: rgba(8, 31, 72, 0.72);
+  border: 1px solid rgba(103, 232, 249, 0.13);
+  text-align: center;
+}
+
+.dashboard-roster-metric span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  white-space: nowrap;
+}
+
+.dashboard-roster-metric strong {
+  display: block;
+  color: #22d3ee;
+  font-size: 18px;
+  font-weight: 1000;
+  line-height: 1;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-roster-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ======================================================
+   DASHBOARD COUNTDOWN CARD DESIGN
+====================================================== */
+
+.dashboard-countdown-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 210px;
+  padding: 26px 30px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 85% 15%, rgba(34, 211, 238, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(20, 55, 105, 0.92), rgba(5, 18, 48, 0.96));
+  border: 1px solid rgba(34, 211, 238, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 38px rgba(0, 0, 0, 0.24);
+}
+
+.dashboard-countdown-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(34, 211, 238, 0.12), transparent 42%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
+      transparent 1px,
+      transparent 34px
+    );
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.dashboard-countdown-card::after {
+  content: "";
+  position: absolute;
+  right: -42px;
+  bottom: -54px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  border: 28px solid rgba(34, 211, 238, 0.11);
+  box-shadow: 0 0 40px rgba(34, 211, 238, 0.13);
+  pointer-events: none;
+}
+
+.dashboard-countdown-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.dashboard-countdown-card span,
+.dashboard-countdown-card > span {
+  display: block;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+#dashboard-countdown-event-name {
+  margin: 0 0 16px;
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1.05;
+  font-weight: 1000;
+  letter-spacing: -0.7px;
+  text-transform: uppercase;
+}
+
+.dashboard-countdown-number-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+#dashboard-countdown-days {
+  color: #ffffff;
+  font-size: 78px;
+  line-height: 0.9;
+  font-weight: 1000;
+  letter-spacing: -4px;
+  text-shadow: 0 0 28px rgba(34, 211, 238, 0.24);
+}
+
+#dashboard-countdown-days-label {
+  margin-bottom: 8px;
+  color: #ffffff;
+  font-size: 26px;
+  line-height: 1;
+  font-style: normal;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+/* Small cyan accent line */
+.dashboard-countdown-number-row::after {
+  content: "";
+  align-self: center;
+  flex: 1;
+  height: 3px;
+  margin-left: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.85), transparent);
+  opacity: 0.75;
+}
+
+/* ======================================================
+   COMPACT COUNTDOWN CARD — MATCH SCHEDULE BAR HEIGHT
+====================================================== */
+
+.dashboard-countdown-card {
+  height: 145px !important;
+  min-height: 145px !important;
+  max-height: 1450px !important;
+  padding: 26px 34px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  border-radius: 22px !important;
+  box-sizing: border-box !important;
+}
+
+.dashboard-countdown-card > span,
+.dashboard-countdown-card span {
+  margin-bottom: 10px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  letter-spacing: 1.6px !important;
+}
+
+#dashboard-countdown-event-name {
+  margin: 0 0 22px !important;
+  font-size: 42px !important;
+  line-height: 1.04 !important;
+  max-width: 300px !important;
+}
+
+.dashboard-countdown-number-row {
+  align-items: flex-end !important;
+  gap: 12px !important;
+}
+
+#dashboard-countdown-days {
+  font-size: 86px !important;
+  line-height: 0.82 !important;
+  letter-spacing: -5px !important;
+}
+
+#dashboard-countdown-days-label {
+  margin-bottom: 7px !important;
+  font-size: 31px !important;
+  line-height: 1 !important;
+}
+
+/* Keep the cyan line from making the layout weird */
+.dashboard-countdown-number-row::after {
+  max-width: 90px !important;
+  height: 4px !important;
+  margin-left: 18px !important;
+}
+
+/* ======================================================
+   SMALL COUNTDOWN CARD TEXT FIX
+   For 150px tall countdown card
+====================================================== */
+
+.dashboard-countdown-card {
+  height: 145px !important;
+  min-height: 145px !important;
+  max-height: 145px !important;
+  padding: 18px 24px !important;
+  justify-content: center !important;
+}
+
+.dashboard-countdown-card > span,
+.dashboard-countdown-card span {
+  margin-bottom: 5px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  letter-spacing: 1.2px !important;
+}
+
+#dashboard-countdown-event-name {
+  margin: 0 0 10px !important;
+  font-size: 27px !important;
+  line-height: 0.98 !important;
+  letter-spacing: -0.6px !important;
+  max-width: 220px !important;
+}
+
+.dashboard-countdown-number-row {
+  align-items: flex-end !important;
+  gap: 8px !important;
+}
+
+#dashboard-countdown-days {
+  font-size: 48px !important;
+  line-height: 0.8 !important;
+  letter-spacing: -2.5px !important;
+}
+
+#dashboard-countdown-days-label {
+  margin-bottom: 2px !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
+.dashboard-countdown-number-row::after {
+  max-width: 54px !important;
+  height: 3px !important;
+  margin-left: 10px !important;
+}
+
+/* ======================================================
+   DASHBOARD SCHEDULE BAR EVENT PILLS
+====================================================== */
+
+.dashboard-schedule-event-primary {
+  align-items: flex-start !important;
+  min-height: 28px !important;
+}
+
+.dashboard-schedule-bar-events {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+  margin-top: 5px !important;
+}
+
+.dashboard-schedule-event-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  padding: 3px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(239, 68, 68, 0.22) !important;
+  border: 1px solid rgba(248, 113, 113, 0.72) !important;
+  color: #fecaca !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.18) !important;
+  font-size: 8px !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.35px !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.dashboard-schedule-day.current .dashboard-schedule-event-pill {
+  background: rgba(239, 68, 68, 0.28) !important;
+  border-color: rgba(248, 113, 113, 0.9) !important;
+  color: #fff1f2 !important;
+}
+
+/* ======================================================
+   CONTRACT STATUS GRAPH CAP LINES
+====================================================== */
+
+#contracts-screen .contracts-cap-marker {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 0 !important;
+  border-top: 2px dotted rgba(255, 255, 255, 0.82) !important;
+  background: none !important;
+  z-index: 12 !important;
+  pointer-events: none !important;
+}
+
+#contracts-screen .contracts-cap-marker::before,
+#contracts-screen .contracts-cap-marker::after {
+  display: none !important;
+  content: none !important;
+}
+
+#contracts-screen .contracts-cap-marker span {
+  position: absolute !important;
+  right: 8px !important;
+  top: -10px !important;
+  padding: 2px 6px !important;
+  border-radius: 999px !important;
+  background: rgba(3, 18, 55, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.25px !important;
+  white-space: nowrap !important;
+}
+
+#contracts-screen #contracts-cap-space.negative-cap-space {
+  color: #fb7185 !important;
+}
+
+#contracts-screen #contracts-cap-space.positive-cap-space {
+  color: #22c55e !important;
+}
+
+/* ======================================================
+   TRADE BUILDER — FORCE 4 TEAMS ON ONE ROW
+====================================================== */
+
+#trade-room-grid.trade-room-grid {
+  width: 100% !important;
+  max-width: none !important;
+  display: grid !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+/* 1 team + add card */
+#trade-room-grid.trade-room-grid.teams-1 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* 2 teams + add card */
+#trade-room-grid.trade-room-grid.teams-2 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+/* 3 teams + add card = 4 columns */
+#trade-room-grid.trade-room-grid.teams-3 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+/* 4 teams = 4 columns, never 2x2 */
+#trade-room-grid.trade-room-grid.teams-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+/* Make the team cards narrow enough to survive 4 across */
+#trade-room-grid .trade-room-team-card {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* Keep headers from blowing out the column */
+#trade-room-grid .trade-room-team-header,
+#trade-room-grid .real-team-header {
+  min-width: 0 !important;
+}
+
+#trade-room-grid .trade-team-header-info {
+  min-width: 0 !important;
+}
+
+#trade-room-grid .trade-team-header-info h3 {
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Shrink tabs slightly so Roster / Picks / Exceptions fit */
+#trade-room-grid .trade-team-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+
+#trade-room-grid .trade-team-tabs button {
+  min-width: 0 !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  font-size: 10px !important;
+}
+
+/* Make player rows more compact for 4-team view */
+#trade-room-grid.teams-4 .trade-room-player {
+  padding: 8px 7px !important;
+  gap: 6px !important;
+}
+
+#trade-room-grid.teams-4 .trade-player-img {
+  width: 34px !important;
+  height: 34px !important;
+  flex: 0 0 34px !important;
+}
+
+#trade-room-grid.teams-4 .trade-player-main {
+  min-width: 0 !important;
+}
+
+#trade-room-grid.teams-4 .trade-player-main strong {
+  max-width: 120px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#trade-room-grid.teams-4 .trade-player-main small {
+  font-size: 9px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#trade-room-grid.teams-4 .trade-room-player-right {
+  min-width: 44px !important;
+}
+
+/* Add-team card should fit as the 4th item when there are 3 teams */
+#trade-room-grid .trade-room-add-card {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* Only collapse on genuinely smaller screens */
+@media (max-width: 1200px) {
+  #trade-room-grid.trade-room-grid.teams-3,
+  #trade-room-grid.trade-room-grid.teams-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* ======================================================
+   GM INTEL — TRUE COMPACT REPUTATION ONLY
+====================================================== */
+
+/* Target the actual GM Intel root directly */
+#gm-intel-root .gm-intel-page {
+  gap: 10px !important;
+  padding-bottom: 16px !important;
+}
+
+/* Shrink top hero */
+#gm-intel-root .gm-intel-header {
+  padding: 14px 18px !important;
+  border-radius: 14px !important;
+}
+
+#gm-intel-root .gm-intel-header span {
+  font-size: 9px !important;
+}
+
+#gm-intel-root .gm-intel-header h2 {
+  font-size: 28px !important;
+  margin: 2px 0 4px !important;
+}
+
+#gm-intel-root .gm-intel-header p {
+  font-size: 12px !important;
+}
+
+/* More compact grid */
+#gm-intel-root .gm-intel-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+/* Smaller cards */
+#gm-intel-root .gm-intel-card {
+  border-radius: 12px !important;
+  min-height: 0 !important;
+}
+
+#gm-intel-root .gm-intel-team-header {
+  min-height: 38px !important;
+  padding: 7px 8px !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  border-bottom-width: 2px !important;
+}
+
+#gm-intel-root .gm-intel-card-body {
+  padding: 8px !important;
+}
+
+/* Kill the giant empty GM name area */
+#gm-intel-root .gm-intel-name-block {
+  min-height: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+#gm-intel-root .gm-intel-name-block span {
+  font-size: 7px !important;
+  letter-spacing: 0.08em !important;
+}
+
+#gm-intel-root .gm-intel-name-block h3 {
+  margin: 2px 0 !important;
+  font-size: 15px !important;
+  line-height: 1.02 !important;
+}
+
+#gm-intel-root .gm-intel-name-block p {
+  font-size: 9px !important;
+}
+
+/* Keep reputation visible */
+#gm-intel-root .gm-intel-reputation {
+  margin: 6px 0 0 !important;
+  padding: 7px 8px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 38px !important;
+  gap: 6px !important;
+  border-radius: 9px !important;
+}
+
+#gm-intel-root .gm-intel-reputation span {
+  font-size: 8px !important;
+}
+
+#gm-intel-root .gm-intel-reputation strong {
+  min-height: 30px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+}
+
+/* Hide every lower grade no matter if it is wrapped or not */
+#gm-intel-root .gm-intel-grade-list,
+#gm-intel-root .gm-intel-grade-row {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* If 6 across feels too tight, use 5 */
+@media (max-width: 1500px) {
+  #gm-intel-root .gm-intel-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+#pre-free-agency-screen {
+  color: #e5edf9;
+}
+
+.pre-fa-shell,
+.pre-fa-content,
+.pre-fa-card-list {
+  display: grid;
+  gap: 16px;
+}
+
+.pre-fa-header,
+.pre-fa-player-card,
+.pre-fa-rule-note,
+.pre-fa-empty {
+  border: 1px solid rgba(73, 125, 202, 0.28);
+  background: linear-gradient(145deg, rgba(10, 32, 70, 0.96), rgba(4, 17, 42, 0.96));
+  border-radius: 16px;
+}
+
+.pre-fa-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 28px;
+  border-top: 3px solid #dc2626;
+}
+
+.pre-fa-header h1 {
+  margin: 3px 0 5px;
+  color: #fff;
+  font-size: 30px;
+}
+
+.pre-fa-header p,
+.pre-fa-section-heading p,
+.pre-fa-player-main p,
+.pre-fa-empty p {
+  margin: 0;
+  color: #9fb1ca;
+}
+
+.pre-fa-kicker,
+.pre-fa-date {
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.3px;
+}
+
+.pre-fa-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(5, 20, 48, 0.9);
+  border: 1px solid rgba(73, 125, 202, 0.22);
+  border-radius: 12px;
+}
+
+.pre-fa-tabs button,
+.pre-fa-actions button {
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  background: rgba(20, 48, 94, 0.78);
+  color: #dbeafe;
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.pre-fa-tabs button.active {
+  color: #fff;
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.pre-fa-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.pre-fa-section-heading h2 {
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.pre-fa-player-card {
+  padding: 18px 20px;
+}
+
+.pre-fa-player-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.pre-fa-player-main h3 {
+  margin: 7px 0 3px;
+  color: #fff;
+  font-size: 19px;
+}
+
+.pre-fa-player-main > strong {
+  color: #67e8f9;
+}
+
+.pre-fa-status {
+  display: inline-flex;
+  padding: 4px 8px;
+  border: 1px solid rgba(103, 232, 249, 0.4);
+  border-radius: 999px;
+  color: #67e8f9;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.pre-fa-status.exercised {
+  color: #86efac;
+  border-color: rgba(134, 239, 172, 0.45);
+}
+
+.pre-fa-status.declined {
+  color: #fca5a5;
+  border-color: rgba(252, 165, 165, 0.45);
+}
+
+.pre-fa-detail-grid,
+.pre-fa-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 15px;
+}
+
+.pre-fa-detail-grid > div,
+.pre-fa-summary-grid > div {
+  padding: 11px 12px;
+  background: rgba(3, 14, 37, 0.68);
+  border: 1px solid rgba(90, 128, 180, 0.18);
+  border-radius: 10px;
+}
+
+.pre-fa-detail-grid span,
+.pre-fa-summary-grid span {
+  display: block;
+  margin-bottom: 5px;
+  color: #8094b2;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pre-fa-detail-grid strong,
+.pre-fa-summary-grid strong {
+  color: #f8fafc;
+  font-size: 13px;
+}
+
+.pre-fa-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pre-fa-actions button.primary {
+  background: #0f766e;
+  border-color: #2dd4bf;
+}
+
+.pre-fa-actions button.danger {
+  background: #7f1d1d;
+  border-color: #ef4444;
+}
+
+.pre-fa-helper {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.pre-fa-rule-note {
+  padding: 14px 18px;
+  color: #bae6fd;
+  border-left: 4px solid #22d3ee;
+}
+
+.pre-fa-message {
+  margin-top: 12px;
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pre-fa-validation {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 10px;
+  background: rgba(69, 10, 10, 0.3);
+}
+
+.pre-fa-validation.legal {
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(5, 46, 22, 0.35);
+}
+
+.pre-fa-validation ul {
+  margin: 9px 0 0;
+  padding-left: 18px;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.pre-fa-validation li.problem {
+  color: #fca5a5;
+}
+
+.pre-fa-validation li.warning {
+  color: #fde68a;
+}
+
+.pre-fa-empty {
+  padding: 34px;
+  text-align: center;
+}
+
+.pre-fa-empty h2 {
+  margin: 0 0 7px;
+  color: #fff;
+}
+
+@media (max-width: 980px) {
+  .pre-fa-detail-grid,
+  .pre-fa-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pre-fa-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.contract-builder-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(1, 7, 20, 0.88);
+  backdrop-filter: blur(5px);
+}
+
+.contract-builder-modal {
+  width: min(1180px, 96vw);
+  max-height: 92vh;
+  overflow: auto;
+  border: 1px solid rgba(103, 232, 249, 0.3);
+  border-top: 3px solid #dc2626;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #0a2148, #041126 62%);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.58);
+}
+
+.contract-builder-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 21px 24px 17px;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.14);
+}
+
+.contract-builder-header span {
+  color: #67e8f9;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 1.2px;
+}
+
+.contract-builder-header h2 {
+  margin: 4px 0;
+  color: #fff;
+  font-size: 25px;
+}
+
+.contract-builder-header p {
+  margin: 0;
+  color: #9fb1ca;
+}
+
+.contract-builder-close {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 9px;
+  background: rgba(127, 29, 29, 0.55);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.contract-builder-quick-fill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(2, 12, 32, 0.5);
+}
+
+.contract-builder-quick-fill button {
+  padding: 8px 13px;
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  border-radius: 8px;
+  background: #153765;
+  color: #e0f2fe;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.contract-builder-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.8fr);
+  gap: 18px;
+  padding: 20px 24px 25px;
+}
+
+.contract-builder-form,
+.contract-builder-summary {
+  min-width: 0;
+}
+
+.contract-builder-form h3,
+.contract-builder-summary h3 {
+  margin: 0 0 11px;
+  color: #fff;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contract-builder-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 13px;
+}
+
+.contract-builder-fields label,
+.contract-builder-year-row label {
+  display: grid;
+  gap: 6px;
+  color: #91a5c2;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.contract-builder-fields input,
+.contract-builder-fields select,
+.contract-builder-year-row input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 41px;
+  padding: 8px 10px;
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  border-radius: 8px;
+  background: #071a38;
+  color: #fff;
+}
+
+.contract-builder-option-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 3px 0 15px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.contract-builder-year-list {
+  display: grid;
+  gap: 8px;
+}
+
+.contract-builder-year-row {
+  display: grid;
+  grid-template-columns: 1.05fr 0.8fr 1fr 0.8fr 1.15fr;
+  align-items: end;
+  gap: 9px;
+  padding: 10px;
+  border: 1px solid rgba(90, 128, 180, 0.2);
+  border-radius: 10px;
+  background: rgba(2, 13, 34, 0.62);
+}
+
+.contract-builder-year-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.contract-builder-year-row span,
+.contract-builder-year-row small {
+  color: #8094b2;
+  font-size: 10px;
+}
+
+.contract-builder-year-row strong {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.contract-builder-summary {
+  padding: 15px;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 13px;
+  background: rgba(2, 13, 34, 0.66);
+}
+
+.contract-builder-rule-callout {
+  padding: 12px;
+  border-left: 3px solid #22d3ee;
+  background: rgba(8, 47, 73, 0.42);
+}
+
+.contract-builder-rule-callout strong {
+  color: #cffafe;
+}
+
+.contract-builder-rule-callout p,
+.contract-builder-rule-explanation p {
+  margin: 5px 0 0;
+  color: #a9bad1;
+  font-size: 12px;
+}
+
+.contract-builder-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.contract-builder-metrics > div {
+  padding: 9px;
+  border-radius: 8px;
+  background: rgba(11, 34, 71, 0.72);
+}
+
+.contract-builder-rule-explanation {
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid rgba(90, 128, 180, 0.2);
+  border-radius: 9px;
+}
+
+.contract-builder-rule-explanation strong {
+  color: #e2e8f0;
+}
+
+.contract-builder-submit {
+  width: 100%;
+  margin-top: 13px;
+  padding: 12px;
+  border: 1px solid #2dd4bf;
+  border-radius: 9px;
+  background: #0f766e;
+  color: #fff;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.contract-builder-submit:disabled {
+  border-color: rgba(148, 163, 184, 0.24);
+  background: #29364c;
+  color: #8090a8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 980px) {
+  .contract-builder-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contract-builder-year-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

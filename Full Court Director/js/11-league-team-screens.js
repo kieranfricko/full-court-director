@@ -103,6 +103,51 @@ function displayLeague() {
   }
 }
 
+function formatSalaryCapDollars(value) {
+  const millions = Number(value || 0) / 1000000;
+  const decimals = Number.isInteger(millions) ? 0 : millions < 10 ? 2 : 1;
+  return `$${millions.toFixed(decimals).replace(/\.?0+$/, "")}M`;
+}
+
+function displaySalaryCapScreen() {
+  const container = document.getElementById("salary-cap-cards");
+  const seasonLabel = document.getElementById("salary-cap-season-label");
+
+  if (!container || !seasonLabel || !gameState?.currentDate) return;
+
+  const currentSeason = getSeasonLabelFromGameDate(gameState.currentDate);
+  const capInfo = getSalaryCapInfoForSeason(currentSeason);
+
+  seasonLabel.textContent = currentSeason || "Unavailable";
+
+  if (!capInfo) {
+    container.innerHTML = `
+      <div class="league-salary-cap-empty">
+        Salary cap figures are not available for ${currentSeason || "this season"}.
+      </div>
+    `;
+    return;
+  }
+
+  const cards = [
+    ["Salary Cap", capInfo.salaryCap, "cap"],
+    ["Luxury Tax", capInfo.luxuryTax, "tax"],
+    ["1st Apron", capInfo.firstApron, "apron"],
+    ["2nd Apron", capInfo.secondApron, "apron"],
+    ["BAE", capInfo.bae, "exception"],
+    ["Non-Taxpayer MLE", capInfo.nonTaxpayerMLE, "exception"],
+    ["Taxpayer MLE", capInfo.taxpayerMLE, "exception"],
+    ["Team Room MLE", capInfo.teamRoomMLE, "exception"]
+  ];
+
+  container.innerHTML = cards.map(([label, value, type]) => `
+    <article class="league-salary-cap-card ${type}">
+      <span>${label}</span>
+      <strong>${formatSalaryCapDollars(value)}</strong>
+    </article>
+  `).join("");
+}
+
 
 function openTeamProfile(teamId) {
   currentViewedTeamId = Number(teamId);

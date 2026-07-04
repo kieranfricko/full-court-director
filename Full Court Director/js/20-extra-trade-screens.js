@@ -1944,11 +1944,21 @@ function addCompletedTradeToHistory() {
     };
   });
 
-  gameState.tradeHistory.unshift({
+  const completedTrade = {
     id: `trade_${Date.now()}`,
     date: formatDate(gameState.currentDate),
-    teams: summary
-  });
+    type: "Trade",
+    headline: `${teamsInTrade.map(team => team.name).join(" / ")} Complete Trade`,
+    description: summary.map(team => `${team.teamName} receive ${team.incoming.join(", ") || "draft assets"}`).join(". "),
+    teams: summary,
+    assets: tradeRoom.assets.map(asset => ({ ...asset }))
+  };
+
+  gameState.tradeHistory.unshift(completedTrade);
+
+  if (typeof addTransactionNews === "function") {
+    addTransactionNews(completedTrade);
+  }
 }
 
 function getCompletedTradeAssetLabel(asset) {

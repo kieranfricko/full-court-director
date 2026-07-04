@@ -98,6 +98,114 @@ function getPercentage(made, attempted) {
   return (made / attempted).toFixed(3).replace("0", "");
 }
 
+const PLAYER_IMAGE_FALLBACKS = [
+  "images/players/darkskin.png",
+  "images/players/lightskin.png",
+  "images/players/white.png"
+];
+
+function normalizePlayerImagePath(imagePath) {
+  const cleanPath = String(imagePath || "").trim();
+
+  if (!cleanPath) return "";
+  if (/^(https?:|data:|blob:|\/)/i.test(cleanPath)) return cleanPath;
+  if (cleanPath.includes("/")) return cleanPath;
+
+  return `images/players/${cleanPath}`;
+}
+
+function isValidExternalPlayerImageUrl(imagePath) {
+  const cleanPath = String(imagePath || "").trim();
+  return /^https?:\/\/[^\s]+$/i.test(cleanPath);
+}
+
+function getPlayerDefaultPortraitSrc(player) {
+  const explicitSkinImage = normalizePlayerImagePath(
+    player?.nbaImageUrl ||
+    player?.NBAImageURL ||
+    player?.nbaImageURL ||
+    player?.portrait ||
+    player?.faceImage ||
+    player?.image ||
+    player?.imagePath ||
+    player?.imageUrl ||
+    player?.photo ||
+    player?.photoPath ||
+    player?.headshot ||
+    player?.sourceImageUrl ||
+    ""
+  );
+
+  if (explicitSkinImage) return explicitSkinImage;
+
+  const identity = String(
+    player?.playerId ||
+    player?.id ||
+    player?.name ||
+    ""
+  );
+  let hash = 0;
+
+  for (let index = 0; index < identity.length; index++) {
+    hash = ((hash << 5) - hash + identity.charCodeAt(index)) | 0;
+  }
+
+  return PLAYER_IMAGE_FALLBACKS[Math.abs(hash) % PLAYER_IMAGE_FALLBACKS.length];
+}
+
+function getPlayerImageSrc(player) {
+  if (!player) return PLAYER_IMAGE_FALLBACKS[0];
+
+  if (isValidExternalPlayerImageUrl(player.playerimage)) {
+    return String(player.playerimage).trim();
+  }
+
+  return getPlayerDefaultPortraitSrc(player);
+}
+
+function getPlayerImageFallbackSrc(player) {
+  return getPlayerDefaultPortraitSrc(player) || PLAYER_IMAGE_FALLBACKS[0];
+}
+
+function handlePlayerImageError(imageElement) {
+  if (!imageElement) return;
+
+  const fallback = normalizePlayerImagePath(
+    imageElement.dataset?.playerFallback || PLAYER_IMAGE_FALLBACKS[0]
+  ) || PLAYER_IMAGE_FALLBACKS[0];
+
+  if (imageElement.dataset.playerFallbackApplied === "true") {
+    imageElement.onerror = null;
+    imageElement.src = PLAYER_IMAGE_FALLBACKS[0];
+    return;
+  }
+
+  imageElement.dataset.playerFallbackApplied = "true";
+  imageElement.src = fallback;
+}
+
+function escapePlayerImageAttribute(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;")
+    .replaceAll("`", "&#096;");
+}
+
+function getPlayerImageErrorAttributes(player) {
+  return `data-player-fallback="${escapePlayerImageAttribute(getPlayerImageFallbackSrc(player))}" onerror="handlePlayerImageError(this)"`;
+}
+
+function getPlayerImageHTML(player, className = "", altText = null) {
+  const classAttribute = className
+    ? ` class="${escapePlayerImageAttribute(className)}"`
+    : "";
+
+  return `<img${classAttribute} src="${escapePlayerImageAttribute(getPlayerImageSrc(player))}" alt="${escapePlayerImageAttribute(altText || player?.name || "Player")}" ${getPlayerImageErrorAttributes(player)}>`;
+}
+
 function showModal(title, message) {
   const overlay = document.getElementById("modal-overlay");
   const titleElement = document.getElementById("modal-title");

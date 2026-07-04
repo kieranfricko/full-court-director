@@ -258,7 +258,7 @@ function renderTradeRoomPlayerRow(player, teamId) {
           src="${getTradePlayerImage(player)}"
           alt="${player.name}"
           class="trade-player-img"
-          onerror="this.src='images/players/default-silhouette.png'"
+          ${getPlayerImageErrorAttributes(player)}
         >
 
         <div class="trade-player-main">
@@ -417,15 +417,7 @@ function getTradeTeamLogoText(team) {
 }
 
 function getTradePlayerImage(player) {
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : (player?.portrait || player?.faceImage || player?.image || player?.imagePath || player?.imageUrl || player?.photo || player?.photoPath || player?.headshot || "");
-
-  if (imagePath && typeof normalizePlayerPortraitPath === "function") {
-    return normalizePlayerPortraitPath(imagePath);
-  }
-
-  return imagePath || "images/players/default-silhouette.png";
+  return getPlayerImageSrc(player);
 }
 
 function getTradePlayerStatsLine(player) {
@@ -6380,7 +6372,7 @@ function recordCompletedTradeTransaction(deal) {
     .map(asset => getTradeBoardAssetName(asset))
     .join(", ");
 
-  gameState.transactions.unshift({
+  const transaction = {
     id: `transaction-trade-${Date.now()}`,
     date: getTradeBoardDateText(),
     type: "Trade",
@@ -6389,5 +6381,11 @@ function recordCompletedTradeTransaction(deal) {
     description: `${teamsText} completed a trade involving ${assetText}.`,
     headline: deal.title || "Trade Completed",
     assets: deal.assets.map(asset => ({ ...asset }))
-  });
+  };
+
+  gameState.transactions.unshift(transaction);
+
+  if (typeof addTransactionNews === "function") {
+    addTransactionNews(transaction);
+  }
 }

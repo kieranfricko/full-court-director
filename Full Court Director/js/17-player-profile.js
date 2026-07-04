@@ -341,27 +341,31 @@ function renderPlayerProfileSeasonStatsTable(player, team, freeAgent = false) {
 function renderPlayerProfilePortrait(player) {
   const portraitWrap = document.getElementById("profile-player-portrait");
   const portraitImg = document.getElementById("profile-player-portrait-img");
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : "";
-  const finalPath = imagePath || "images/players/default-silhouette.png";
+  const finalPath = getPlayerImageSrc(player);
 
   if (portraitWrap) {
-    portraitWrap.classList.toggle("missing-silhouette", !imagePath);
+    portraitWrap.classList.remove("missing-silhouette");
   }
 
   if (portraitImg) {
     portraitImg.style.display = "";
     portraitImg.src = finalPath;
     portraitImg.alt = `${player?.name || "Player"} portrait`;
+    portraitImg.dataset.playerFallback = getPlayerImageFallbackSrc(player);
+    portraitImg.dataset.playerFallbackApplied = "false";
+    portraitImg.onerror = function() {
+      handlePlayerImageError(this);
+    };
   }
 
   const overlayPortrait = document.getElementById("profile-player-initials");
 
   if (overlayPortrait) {
-    overlayPortrait.innerHTML = imagePath
-      ? `<img src="${escapePlayerProfileHtml(finalPath)}" alt="${escapePlayerProfileHtml(player?.name || "Player")} portrait" onerror="this.remove();">`
-      : "";
+    overlayPortrait.innerHTML = getPlayerImageHTML(
+      player,
+      "",
+      `${player?.name || "Player"} portrait`
+    );
   }
 }
 

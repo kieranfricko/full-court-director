@@ -877,8 +877,13 @@ function skipAwardsCeremony() {
 
 function completeAwardsCeremony() {
   const ceremony = ensureAwardsCeremonyState();
+  const results = prepareAwardsCeremonyResults();
 
   ceremony.complete = true;
+
+  if (typeof addYearlyAwardsNews === "function") {
+    addYearlyAwardsNews(results);
+  }
 
   addInboxMessage(
     "Awards Ceremony Complete",
@@ -1164,15 +1169,7 @@ function getAwardWatchTeamLogo(team) {
 }
 
 function getAwardWatchPlayerImage(player) {
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : (player?.portrait || player?.image || player?.imagePath || player?.photo || "");
-
-  if (imagePath && typeof normalizePlayerPortraitPath === "function") {
-    return normalizePlayerPortraitPath(imagePath);
-  }
-
-  return imagePath || "images/players/default-silhouette.png";
+  return getPlayerImageSrc(player);
 }
 
 function getAwardWatchTeamWinPct(team) {

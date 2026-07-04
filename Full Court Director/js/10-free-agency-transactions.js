@@ -1454,17 +1454,8 @@ function displayFreeAgencySelectedPlayerPanel() {
 }
 
 function getFreeAgencyPlayerImagePath(player, useDefault = true) {
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : (player?.portrait || player?.faceImage || player?.image || player?.imagePath || player?.imageUrl || player?.photo || player?.photoPath || player?.headshot || "");
-
-  if (imagePath) {
-    return typeof normalizePlayerPortraitPath === "function"
-      ? normalizePlayerPortraitPath(imagePath)
-      : imagePath;
-  }
-
-  return useDefault ? "images/players/default-silhouette.png" : "";
+  if (!player && !useDefault) return "";
+  return getPlayerImageSrc(player);
 }
 
 function escapeFreeAgencyImageAttr(value) {
@@ -1490,7 +1481,7 @@ function renderFreeAgencyPlayerFaceHTML(player, className) {
 
   return `
     <div class="${className}">
-      <img src="${escapeFreeAgencyImageAttr(imagePath)}" alt="${escapeFreeAgencyImageAttr(player?.name || "Player")}" onerror="this.parentElement.classList.add('player-silhouette'); this.remove();">
+      <img src="${escapeFreeAgencyImageAttr(imagePath)}" alt="${escapeFreeAgencyImageAttr(player?.name || "Player")}" ${getPlayerImageErrorAttributes(player)}>
     </div>
   `;
 }
@@ -1887,7 +1878,7 @@ function renderFreeAgentNegotiationPlayerFace(player) {
     <img
       src="${escapeFreeAgencyImageAttr(imagePath)}"
       alt="${escapeFreeAgencyImageAttr(player?.name || "Player")} portrait"
-      onerror="this.parentElement.classList.add('player-silhouette'); this.remove();"
+      ${getPlayerImageErrorAttributes(player)}
     >
   `;
 }
@@ -2312,7 +2303,17 @@ function createPendingFreeAgencyAgreement(player, selectedTeam, salary, years) {
     status: "pending",
     rolePromise: currentFreeAgentNegotiation.rolePromise,
     minutesPromise: currentFreeAgentNegotiation.minutesPromise,
-    optionalPromise: currentFreeAgentNegotiation.optionalPromise
+    optionalPromise: currentFreeAgentNegotiation.optionalPromise,
+    contractGuarantee: currentFreeAgentNegotiation.contractGuarantee,
+    salaryDistribution: currentFreeAgentNegotiation.salaryDistribution,
+    contractOption: currentFreeAgentNegotiation.contractOption,
+    playerOption: currentFreeAgentNegotiation.playerOption,
+    earlyTerminationOption: currentFreeAgentNegotiation.earlyTerminationOption,
+    noTradeClause: currentFreeAgentNegotiation.noTradeClause,
+    tradeBonus: currentFreeAgentNegotiation.tradeBonus,
+    startingOpportunity: currentFreeAgentNegotiation.startingOpportunity,
+    developmentPlan: currentFreeAgentNegotiation.developmentPlan,
+    coachFit: currentFreeAgentNegotiation.coachFit
   };
 
   gameState.pendingFreeAgencyAgreements.push(agreement);
@@ -2928,6 +2929,18 @@ function openExtensionOfferForCurrentProfilePlayer() {
     `${player.name} signed an extension worth ${formatMoney(player.salary)} per year for ${player.contractYears} year(s).`,
     "event"
   );
+
+  addLeagueTransaction({
+    type: "EXTENSION",
+    teamId: selectedTeam.id,
+    teamName: selectedTeam.name,
+    playerId: player.id || player.playerId,
+    playerName: player.name,
+    playerCA: getPlayerTransactionCA(player),
+    playerImage: getPlayerImageSrc(player),
+    playerImageFallback: getPlayerImageFallbackSrc(player),
+    text: `${player.name} signed a ${player.contractYears}-year extension worth ${formatMoney(player.salary)} per season.`
+  });
 
   closePlayerProfile();
   refreshAll();
@@ -3961,7 +3974,10 @@ function renderLeagueTransactionPlayerImage(transaction) {
   const imagePath = typeof normalizePlayerPortraitPath === "function"
     ? normalizePlayerPortraitPath(transaction.playerImage || transaction.image || "")
     : (transaction.playerImage || transaction.image || "");
-  const finalPath = imagePath || "images/players/default-silhouette.png";
+  const finalPath = imagePath || PLAYER_IMAGE_FALLBACKS[0];
+  const fallbackPath = normalizePlayerImagePath(
+    transaction.playerImageFallback || PLAYER_IMAGE_FALLBACKS[0]
+  );
 
   return `
     <div class="league-transaction-player-headshot-wrap">
@@ -3969,7 +3985,8 @@ function renderLeagueTransactionPlayerImage(transaction) {
         class="league-transaction-player-headshot"
         src="${escapeFreeAgencyImageAttr(finalPath)}"
         alt="${escapeFreeAgencyImageAttr(transaction.playerName || "Player")}"
-        onerror="this.src='images/players/default-silhouette.png'"
+        data-player-fallback="${escapeFreeAgencyImageAttr(fallbackPath)}"
+        onerror="handlePlayerImageError(this)"
       >
     </div>
   `;
@@ -4047,7 +4064,10 @@ function addLeagueTransaction(transaction) {
     playerCA: Number(transaction.playerCA || 0),
     playerImage: typeof normalizePlayerPortraitPath === "function"
       ? normalizePlayerPortraitPath(transaction.playerImage || "")
-      : (transaction.playerImage || "images/players/default-silhouette.png"),
+      : (transaction.playerImage || PLAYER_IMAGE_FALLBACKS[0]),
+    playerImageFallback: normalizePlayerImagePath(
+      transaction.playerImageFallback || PLAYER_IMAGE_FALLBACKS[0]
+    ),
     text: transaction.text || "Transaction recorded."
   };
 
@@ -4062,6 +4082,10 @@ function addLeagueTransaction(transaction) {
   if (alreadyExists) return;
 
   gameState.leagueTransactions.push(normalizedTransaction);
+
+  if (typeof addTransactionNews === "function") {
+    addTransactionNews(normalizedTransaction);
+  }
 
   if (gameState.leagueTransactions.length > 500) {
     gameState.leagueTransactions = gameState.leagueTransactions.slice(-500);
@@ -4083,6 +4107,7 @@ function recordFreeAgentSigningTransaction(player, team, salary, years) {
     playerName: player.name,
     playerCA: getPlayerTransactionCA(player),
     playerImage: getFreeAgencyPlayerImagePath(player),
+    playerImageFallback: getPlayerImageFallbackSrc(player),
     text: `${team.name} signed ${player.name} to a ${years}-year contract worth ${formatMoney(salary)} per season.`
   });
 }
@@ -4098,6 +4123,7 @@ function recordFreeAgentAgreementTransaction(player, team, salary, years) {
     playerName: player.name,
     playerCA: getPlayerTransactionCA(player),
     playerImage: getFreeAgencyPlayerImagePath(player),
+    playerImageFallback: getPlayerImageFallbackSrc(player),
     text: `${team.name} reached a verbal agreement with ${player.name} on a ${years}-year deal worth ${formatMoney(salary)} per season.`
   });
 }
@@ -4113,6 +4139,7 @@ function recordWaivedTransaction(player, team) {
     playerName: player.name,
     playerCA: getPlayerTransactionCA(player),
     playerImage: getFreeAgencyPlayerImagePath(player),
+    playerImageFallback: getPlayerImageFallbackSrc(player),
     text: `${team.name} waived ${player.name}.`
   });
 }
@@ -4157,4 +4184,532 @@ function showFreeAgencyDealsList() {
       }
     }, 0);
   }, 0);
+}
+
+/* ======================================================
+   FREE AGENCY CONTRACT NEGOTIATION REDESIGN HELPERS
+====================================================== */
+
+function ensureFreeAgentNegotiationContractFields() {
+  if (!currentFreeAgentNegotiation) return;
+
+  if (!currentFreeAgentNegotiation.salaryDistribution) {
+    currentFreeAgentNegotiation.salaryDistribution = "Dec";
+  }
+
+  if (!currentFreeAgentNegotiation.contractType) {
+    currentFreeAgentNegotiation.contractType = "Standard";
+  }
+
+  if (!currentFreeAgentNegotiation.contractOption) {
+    currentFreeAgentNegotiation.contractOption = "None";
+  }
+
+  if (!currentFreeAgentNegotiation.playerOption) {
+    currentFreeAgentNegotiation.playerOption = "None";
+  }
+
+  if (!currentFreeAgentNegotiation.noTradeClause) {
+    currentFreeAgentNegotiation.noTradeClause = "No";
+  }
+
+  if (!currentFreeAgentNegotiation.tradeBonus) {
+    currentFreeAgentNegotiation.tradeBonus = "None";
+  }
+
+  if (!currentFreeAgentNegotiation.startingOpportunity) {
+    currentFreeAgentNegotiation.startingOpportunity = "Compete for role";
+  }
+
+  if (!currentFreeAgentNegotiation.developmentPlan) {
+    currentFreeAgentNegotiation.developmentPlan = "Veteran";
+  }
+}
+
+function setFreeAgentContractType(type) {
+  if (!currentFreeAgentNegotiation) return;
+
+  currentFreeAgentNegotiation.contractType = type;
+  updateFreeAgentNegotiationScreen();
+}
+
+function updateFreeAgentContractTypeButtons() {
+  if (!currentFreeAgentNegotiation) return;
+
+  const currentType = currentFreeAgentNegotiation.contractType || "Standard";
+
+  const map = {
+    "Standard": document.getElementById("fa-neg-contract-type-standard"),
+    "Two Way": document.getElementById("fa-neg-contract-type-two-way"),
+    "10 Day": document.getElementById("fa-neg-contract-type-10-day")
+  };
+
+  Object.keys(map).forEach(type => {
+    if (map[type]) {
+      map[type].classList.toggle("active", type === currentType);
+    }
+  });
+}
+
+function setFreeAgentSalaryDistribution(distribution) {
+  if (!currentFreeAgentNegotiation) return;
+
+  currentFreeAgentNegotiation.salaryDistribution = distribution || "Flat";
+  updateFreeAgentNegotiationScreen();
+}
+
+function getFreeAgentContractSeasonLabel(yearIndex) {
+  const baseYear = gameState && gameState.seasonStartYear
+    ? Number(gameState.seasonStartYear)
+    : new Date().getFullYear();
+
+  const startYear = baseYear + yearIndex;
+  const endYear = String(startYear + 1).slice(-2);
+
+  return `${startYear}-${endYear}`;
+}
+
+function getFreeAgentYearlySalaryBreakdown(salaryPerYear, years, distribution) {
+  const total = Number((Number(salaryPerYear || 0) * Number(years || 1)).toFixed(1));
+  const length = Math.max(1, Math.min(5, Number(years || 1)));
+
+  if (length === 1) {
+    return [total];
+  }
+
+  let weights = [];
+
+  if (distribution === "Dec" && length === 4) {
+    weights = [0.3, 0.2714286, 0.2285714, 0.2];
+  } else if (distribution === "Inc" && length === 4) {
+    weights = [0.2, 0.2285714, 0.2714286, 0.3];
+  } else if (distribution === "Dec") {
+    for (let i = 0; i < length; i++) {
+      weights.push(length - i);
+    }
+  } else if (distribution === "Inc") {
+    for (let i = 0; i < length; i++) {
+      weights.push(i + 1);
+    }
+  } else {
+    for (let i = 0; i < length; i++) {
+      weights.push(1);
+    }
+  }
+
+  const weightTotal = weights.reduce((sum, value) => sum + value, 0);
+  const values = weights.map(weight => Number(((total * weight) / weightTotal).toFixed(1)));
+
+  const firstValuesTotal = values.slice(0, -1).reduce((sum, value) => sum + value, 0);
+  values[values.length - 1] = Number((total - firstValuesTotal).toFixed(1));
+
+  return values;
+}
+
+function renderFreeAgentSalaryBreakdownTable() {
+  const body = document.getElementById("fa-neg-salary-breakdown-body");
+  const totalCell = document.getElementById("fa-neg-salary-breakdown-total");
+
+  if (!body || !currentFreeAgentNegotiation) return;
+
+  const salary = Number(currentFreeAgentNegotiation.salary || 0);
+  const years = Math.max(1, Math.min(5, Number(currentFreeAgentNegotiation.years || 1)));
+  const distribution = currentFreeAgentNegotiation.salaryDistribution || "Flat";
+  const salaries = getFreeAgentYearlySalaryBreakdown(salary, years, distribution);
+
+  body.innerHTML = salaries.map((value, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${getFreeAgentContractSeasonLabel(index)}</td>
+      <td>${formatMoney(value)}</td>
+    </tr>
+  `).join("");
+
+  const total = salaries.reduce((sum, value) => sum + value, 0);
+
+  if (totalCell) {
+    totalCell.textContent = formatMoney(total);
+  }
+
+  const explain = document.getElementById("fa-neg-distribution-explain");
+
+  if (explain) {
+    if (distribution === "Dec") {
+      explain.textContent = "Salary Distribution: Decreasing (Dec). Year 1 pays the most, then each season decreases. Total value stays the same.";
+    } else if (distribution === "Inc") {
+      explain.textContent = "Salary Distribution: Increasing (Inc). Year 1 pays the least, then each season increases. Total value stays the same.";
+    } else {
+      explain.textContent = "Salary Distribution: Flat. Each season pays the same amount. Total value stays the same.";
+    }
+  }
+}
+
+function updateFreeAgentDistributionButtons() {
+  if (!currentFreeAgentNegotiation) return;
+
+  const distribution = currentFreeAgentNegotiation.salaryDistribution || "Flat";
+
+  const buttons = {
+    Dec: document.getElementById("fa-neg-dist-dec"),
+    Flat: document.getElementById("fa-neg-dist-flat"),
+    Inc: document.getElementById("fa-neg-dist-inc")
+  };
+
+  Object.keys(buttons).forEach(key => {
+    if (buttons[key]) {
+      buttons[key].classList.toggle("active", key === distribution);
+    }
+  });
+}
+
+function setSelectValueIfExists(id, value) {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.value = value;
+  }
+}
+
+function getSelectValueIfExists(id, fallback) {
+  const element = document.getElementById(id);
+  return element ? element.value : fallback;
+}
+
+/* Override existing sync to include new contract fields */
+function syncFreeAgentNegotiationInputsFromState() {
+  if (!currentFreeAgentNegotiation) return;
+
+  ensureFreeAgentNegotiationContractFields();
+
+  setSelectValueIfExists("fa-neg-role-promise", currentFreeAgentNegotiation.rolePromise);
+  setSelectValueIfExists("fa-neg-minutes-promise", currentFreeAgentNegotiation.minutesPromise);
+  setSelectValueIfExists("fa-neg-contract-option", currentFreeAgentNegotiation.contractOption);
+  setSelectValueIfExists("fa-neg-player-option", currentFreeAgentNegotiation.playerOption);
+  setSelectValueIfExists("fa-neg-no-trade", currentFreeAgentNegotiation.noTradeClause);
+  setSelectValueIfExists("fa-neg-trade-bonus", currentFreeAgentNegotiation.tradeBonus);
+  setSelectValueIfExists("fa-neg-starting-opportunity", currentFreeAgentNegotiation.startingOpportunity);
+  setSelectValueIfExists("fa-neg-development-plan", currentFreeAgentNegotiation.developmentPlan);
+}
+
+/* Override existing input reader to include new contract fields */
+function readFreeAgentNegotiationInputsToState() {
+  if (!currentFreeAgentNegotiation) return;
+
+  ensureFreeAgentNegotiationContractFields();
+
+  currentFreeAgentNegotiation.rolePromise = getSelectValueIfExists("fa-neg-role-promise", currentFreeAgentNegotiation.rolePromise);
+  currentFreeAgentNegotiation.minutesPromise = getSelectValueIfExists("fa-neg-minutes-promise", currentFreeAgentNegotiation.minutesPromise);
+  currentFreeAgentNegotiation.contractOption = getSelectValueIfExists("fa-neg-contract-option", currentFreeAgentNegotiation.contractOption);
+  currentFreeAgentNegotiation.playerOption = getSelectValueIfExists("fa-neg-player-option", currentFreeAgentNegotiation.playerOption);
+  currentFreeAgentNegotiation.noTradeClause = getSelectValueIfExists("fa-neg-no-trade", currentFreeAgentNegotiation.noTradeClause);
+  currentFreeAgentNegotiation.tradeBonus = getSelectValueIfExists("fa-neg-trade-bonus", currentFreeAgentNegotiation.tradeBonus);
+  currentFreeAgentNegotiation.startingOpportunity = getSelectValueIfExists("fa-neg-starting-opportunity", currentFreeAgentNegotiation.startingOpportunity);
+  currentFreeAgentNegotiation.developmentPlan = getSelectValueIfExists("fa-neg-development-plan", currentFreeAgentNegotiation.developmentPlan);
+}
+
+/* Override openFreeAgentOffer only to seed the new fields */
+function openFreeAgentOffer(playerId) {
+  const result = findPlayerById(playerId);
+
+  if (!result || !result.freeAgent) {
+    addInboxMessage("Negotiation Unavailable", "That player is not currently a free agent.", "staff");
+    refreshAll();
+    return;
+  }
+
+  const selectedTeam = getSelectedTeam();
+
+  if (!selectedTeam) {
+    addInboxMessage("Negotiation Unavailable", "No selected team was found.", "staff");
+    refreshAll();
+    return;
+  }
+
+  if (!canNegotiateWithFreeAgents()) {
+    addInboxMessage("Negotiation Closed", "Free agency is currently closed. Negotiations open June 30.", "staff");
+    refreshAll();
+    return;
+  }
+
+  if (!canUserSignStandardPlayer()) {
+    const status = getTeamRosterStatus(gameState.selectedTeamId);
+
+    showRosterBlockPopup({
+      ...status,
+      problems: [
+        `You do not have an open standard roster spot. Current standard contracts: ${status.standardCount}/${status.maxStandard}.`
+      ]
+    });
+
+    return;
+  }
+
+  const player = result.player;
+  const expectedSalary = getFreeAgentExpectedSalary(player);
+  const expectedYears = getFreeAgentExpectedYears(player);
+
+  currentFreeAgentOfferPlayerId = playerId;
+
+  currentFreeAgentNegotiation = {
+    playerId: Number(player.id || player.playerId),
+    teamId: selectedTeam.id,
+    salary: Math.max(1, Number((expectedSalary - 2).toFixed(1))),
+    years: expectedYears,
+    rolePromise: getExpectedFreeAgentRole(player),
+    minutesPromise: getExpectedFreeAgentMinutes(player),
+
+    salaryDistribution: "Dec",
+    contractType: "Standard",
+    contractOption: "None",
+    playerOption: "None",
+    noTradeClause: "No",
+    tradeBonus: "None",
+    startingOpportunity: "Compete for role",
+    developmentPlan: "Veteran",
+
+    suggested: false,
+    changedFields: {},
+    status: "preparing"
+  };
+
+  gameState.blockingNegotiation = {
+    type: "free-agency",
+    playerId: Number(player.id || player.playerId)
+  };
+
+  showSecondaryScreen("free-agency-negotiation-screen");
+  displayFreeAgentNegotiationScreen();
+}
+
+/* Override display to fill new contract labels */
+function displayFreeAgentNegotiationScreen() {
+  const player = getFreeAgentNegotiationPlayer();
+  const selectedTeam = getSelectedTeam();
+
+  if (!player || !selectedTeam || !currentFreeAgentNegotiation) {
+    cancelFreeAgentNegotiation();
+    return;
+  }
+
+  ensureFreeAgentNegotiationContractFields();
+  syncFreeAgentNegotiationInputsFromState();
+
+  setText("fa-neg-subtitle", `${player.name} contract discussion`);
+  setText("fa-neg-date", formatDate(gameState.currentDate));
+  setText("fa-neg-cap-space", formatMoney(getCapSpace(selectedTeam.id)));
+  setText("fa-neg-contract-team", selectedTeam.name || "Your Team");
+  setText("fa-neg-contract-player", player.name);
+
+  const rosterStatus = getTeamRosterStatus(selectedTeam.id);
+  setText("fa-neg-roster-spots", Math.max(0, rosterStatus.maxStandard - rosterStatus.standardCount));
+
+  const sizeParts = [];
+  if (player.height) sizeParts.push(player.height);
+  if (player.weight) sizeParts.push(`${player.weight} lbs`);
+
+  setText("fa-neg-player-name", player.name);
+  setText("fa-neg-player-position-age", `${player.primaryPosition || "--"} · Age ${player.age || "--"}`);
+  setText("fa-neg-player-size", sizeParts.length ? sizeParts.join(" · ") : "");
+  setText("fa-neg-player-type", player.playerType || "Free Agent");
+
+  renderFreeAgentNegotiationPlayerFace(player);
+
+  setText("fa-neg-media-reputation", player.mediaDescription || "Unknown");
+  setText("fa-neg-projected-ceiling", player.projectedCeiling || "Unknown");
+
+  const freeAgentType = getFreeAgentContractTypeLabel(player);
+  setText("fa-neg-free-agent-type", freeAgentType);
+  setText("fa-neg-contract-fa-type", `${freeAgentType} Free Agent`);
+
+  setText("fa-neg-expected-salary", `${formatMoney(getFreeAgentExpectedSalary(player))} / year`);
+  setText("fa-neg-expected-years", `${getFreeAgentExpectedYears(player)} year${getFreeAgentExpectedYears(player) === 1 ? "" : "s"}`);
+  setText("fa-neg-expected-role", getExpectedFreeAgentRole(player));
+  setText("fa-neg-expected-minutes", getExpectedFreeAgentMinutes(player));
+  setText("fa-neg-current-interest", player.interest || "Neutral");
+  setText("fa-neg-market-status", getFreeAgentMarketLabel(player));
+
+  displayFreeAgentPriorities(player);
+  updateFreeAgentNegotiationScreen();
+}
+
+/* Override update function to drive the new paper contract */
+function updateFreeAgentNegotiationScreen() {
+  const player = getFreeAgentNegotiationPlayer();
+
+  if (!player || !currentFreeAgentNegotiation) return;
+
+  ensureFreeAgentNegotiationContractFields();
+  readFreeAgentNegotiationInputsToState();
+
+  const salary = Number(currentFreeAgentNegotiation.salary || 0);
+  const years = Math.max(1, Math.min(5, Number(currentFreeAgentNegotiation.years || 1)));
+  const totalValue = Number((salary * years).toFixed(1));
+
+  const salaryInput = document.getElementById("fa-neg-offer-salary-input");
+
+if (salaryInput && document.activeElement !== salaryInput) {
+  salaryInput.value = Number(salary || 0).toFixed(1);
+}
+  setText("fa-neg-offer-impact", `-${formatMoney(salary)}`);
+
+  const yearButtons = document.querySelectorAll(".fa-neg-year-buttons button");
+
+  yearButtons.forEach(button => {
+    button.classList.toggle("active", Number(button.textContent.trim()) === years);
+  });
+
+  updateFreeAgentDistributionButtons();
+  renderFreeAgentSalaryBreakdownTable();
+  updateFreeAgentContractTypeButtons();
+
+  const score = getFreeAgentOfferScore();
+  const meter = document.getElementById("fa-offer-meter-fill");
+
+  if (meter) {
+    meter.className = `fa-offer-meter-fill ${getOfferScoreClass(score)}`;
+    meter.style.width = `${Math.max(5, Math.min(100, score))}%`;
+  }
+
+  setText("fa-neg-offer-summary", getFreeAgentOfferSummary(score));
+
+  const expectedSalary = getFreeAgentExpectedSalary(player);
+  const expectedYears = getFreeAgentExpectedYears(player);
+  const expectedRole = getExpectedFreeAgentRole(player);
+  const expectedMinutes = getExpectedFreeAgentMinutes(player);
+
+  setOfferFieldState(
+    "fa-offer-field-salary",
+    currentFreeAgentNegotiation.changedFields.salary
+      ? "agent-changed"
+      : salary >= expectedSalary
+        ? "field-good"
+        : "field-warning",
+    currentFreeAgentNegotiation.changedFields.salary
+      ? "Agent changed salary request"
+      : salary >= expectedSalary
+        ? "Meets asking price"
+        : "Below asking price"
+  );
+
+  setOfferFieldState(
+    "fa-offer-field-years",
+    currentFreeAgentNegotiation.changedFields.years
+      ? "agent-changed"
+      : years >= expectedYears
+        ? "field-good"
+        : "field-warning",
+    currentFreeAgentNegotiation.changedFields.years
+      ? "Agent changed years request"
+      : years >= expectedYears
+        ? "Meets expected years"
+        : "Below expected years"
+  );
+
+  setOfferFieldState(
+    "fa-offer-field-role",
+    currentFreeAgentNegotiation.changedFields.role
+      ? "agent-changed"
+      : getRolePromiseScore(currentFreeAgentNegotiation.rolePromise) >= getRolePromiseScore(expectedRole)
+        ? "field-good"
+        : "field-warning",
+    currentFreeAgentNegotiation.changedFields.role
+      ? "Agent changed role request"
+      : getRolePromiseScore(currentFreeAgentNegotiation.rolePromise) >= getRolePromiseScore(expectedRole)
+        ? "Meets expected role"
+        : "Below expected role"
+  );
+
+  setOfferFieldState(
+    "fa-offer-field-minutes",
+    currentFreeAgentNegotiation.changedFields.minutes
+      ? "agent-changed"
+      : getMinutesPromiseScore(currentFreeAgentNegotiation.minutesPromise) >= getMinutesPromiseScore(expectedMinutes)
+        ? "field-good"
+        : "field-warning",
+    currentFreeAgentNegotiation.changedFields.minutes
+      ? "Agent changed minutes request"
+      : getMinutesPromiseScore(currentFreeAgentNegotiation.minutesPromise) >= getMinutesPromiseScore(expectedMinutes)
+        ? "Meets expected minutes"
+        : "Below expected minutes"
+  );
+
+  setOfferFieldState(
+    "fa-offer-field-optional",
+    currentFreeAgentNegotiation.changedFields.optional ? "agent-changed" : "",
+    currentFreeAgentNegotiation.changedFields.optional ? "Agent added optional promise" : "Optional"
+  );
+
+  updateFreeAgentTeamVisionLine();
+  updateFreeAgentFinancialImpact();
+  updateFreeAgentNegotiationNotes(score);
+}
+
+function updateFreeAgentTeamVisionLine() {
+  const line = document.getElementById("fa-neg-team-vision-line");
+
+  if (!line || !currentFreeAgentNegotiation) return;
+
+  const player = getFreeAgentNegotiationPlayer();
+  const playerName = player?.name || "this player";
+
+  const role = currentFreeAgentNegotiation.rolePromise || "rotation";
+  const minutes = currentFreeAgentNegotiation.minutesPromise || "No Promise";
+  const development = currentFreeAgentNegotiation.developmentPlan || "Veteran";
+
+  line.textContent = `“We see ${playerName} in a ${role.toLowerCase()} role, with ${minutes.toLowerCase()}, and a ${development.toLowerCase()} development path.”`;
+}
+
+/* Override financial impact only to also fill the compact paper fields */
+function updateFreeAgentFinancialImpact() {
+  const selectedTeam = getSelectedTeam();
+
+  if (!selectedTeam || !currentFreeAgentNegotiation) return;
+
+  const payroll = getRosterPayroll(selectedTeam.id);
+  const cap = gameState.salaryCap || SALARY_CAP;
+  const taxLine = getLuxuryTaxLine();
+  const firstApron = getFirstApronLine();
+  const secondApron = getSecondApronLine();
+
+  const afterPayroll = payroll + currentFreeAgentNegotiation.salary;
+
+  setFinanceValue("fa-neg-before-cap", cap - payroll);
+  setFinanceValue("fa-neg-before-payroll", payroll);
+  setFinanceValue("fa-neg-before-tax-room", taxLine - payroll);
+  setFinanceValue("fa-neg-before-first-apron", firstApron - payroll);
+  setFinanceValue("fa-neg-before-second-apron", secondApron - payroll);
+
+  setFinanceValue("fa-neg-after-cap", cap - afterPayroll);
+  setFinanceValue("fa-neg-after-payroll", afterPayroll);
+  setFinanceValue("fa-neg-after-tax-room", taxLine - afterPayroll);
+  setFinanceValue("fa-neg-after-first-apron", firstApron - afterPayroll);
+  setFinanceValue("fa-neg-after-second-apron", secondApron - afterPayroll);
+
+  setText("fa-neg-offer-impact", `-${formatMoney(currentFreeAgentNegotiation.salary)}`);
+}
+
+function setFreeAgentOfferSalaryFromInput() {
+  if (!currentFreeAgentNegotiation) return;
+
+  const input = document.getElementById("fa-neg-offer-salary-input");
+  if (!input) return;
+
+  const rawValue = Number(input.value);
+
+  if (!Number.isFinite(rawValue)) {
+    input.value = Number(currentFreeAgentNegotiation.salary || 1).toFixed(1);
+    return;
+  }
+
+  const cleanedValue = Math.max(1, Math.min(100, Number(rawValue.toFixed(1))));
+
+  currentFreeAgentNegotiation.salary = cleanedValue;
+
+  if (!currentFreeAgentNegotiation.changedFields) {
+    currentFreeAgentNegotiation.changedFields = {};
+  }
+
+  currentFreeAgentNegotiation.changedFields.salary = true;
+
+  updateFreeAgentNegotiationScreen();
 }

@@ -643,12 +643,12 @@ function displayFrontOfficeGM() {
   const gm = gameState.generalManager;
 
   if (gm) {
-    setText("front-office-gm-name", gm.fullName || "Your GM");
+    setText("front-office-gm-name", gm.name || gm.fullName || "Your GM");
     setText(
       "front-office-gm-info",
-      `${gm.background || "General Manager"} from ${gm.hometown || "Unknown Hometown"}`
+      `${gm.role || "General Manager"} · ${gm.age || 35} · ${gm.nationality || "United States"}`
     );
-    setText("front-office-background-label", gm.background || "General Manager");
+    setText("front-office-background-label", gm.role || "General Manager");
   } else {
     setText("front-office-gm-name", "Your GM");
     setText("front-office-gm-info", "Create a GM to show information here.");

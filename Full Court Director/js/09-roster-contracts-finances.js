@@ -538,6 +538,8 @@ function getTeamRosterStatus(teamId) {
   };
 }
 
+
+
 function getRosterIllegalMessage(status) {
   if (!status || !status.problems || status.problems.length === 0) {
     return "Your roster does not meet the current league rules.";
@@ -986,6 +988,99 @@ function renderContractStatusTable(years) {
   }).join("");
 }
 
+function convertContractCapValueToMillions(value) {
+  const number = Number(value || 0);
+
+  // New salary cap table may use full dollars.
+  // Game salaries use millions.
+  if (Math.abs(number) > 1000) {
+    return number / 1000000;
+  }
+
+  return number;
+}
+
+function getContractCapInfoForYear(selectedYear) {
+  const startYear = Number(selectedYear?.startYear || gameState?.seasonStartYear || 2026);
+
+  const longLabel = `${startYear}-${startYear + 1}`;
+  const shortLabel = `${startYear}-${String(startYear + 1).slice(-2)}`;
+
+  let capInfo = null;
+
+  if (typeof getSalaryCapInfoForSeason === "function") {
+    capInfo =
+      getSalaryCapInfoForSeason(longLabel) ||
+      getSalaryCapInfoForSeason(shortLabel) ||
+      getSalaryCapInfoForSeason(selectedYear?.label);
+  }
+
+  if (!capInfo && typeof SALARY_CAP_TABLE !== "undefined") {
+    capInfo =
+      SALARY_CAP_TABLE[longLabel] ||
+      SALARY_CAP_TABLE[shortLabel] ||
+      SALARY_CAP_TABLE[selectedYear?.label];
+  }
+
+  if (!capInfo && typeof getCurrentSalaryCapInfo === "function") {
+    capInfo = getCurrentSalaryCapInfo();
+  }
+
+  if (!capInfo) {
+    capInfo = {
+      salaryCap: CONTRACT_CAP_LINES.cap,
+      luxuryTax: CONTRACT_CAP_LINES.tax,
+      firstApron: CONTRACT_CAP_LINES.apronOne,
+      secondApron: CONTRACT_CAP_LINES.apronTwo
+    };
+  }
+
+  const salaryCap = convertContractCapValueToMillions(capInfo.salaryCap || capInfo.cap);
+  const luxuryTax = convertContractCapValueToMillions(capInfo.luxuryTax || capInfo.tax);
+  const firstApron = convertContractCapValueToMillions(capInfo.firstApron || capInfo.apronOne);
+  const secondApron = convertContractCapValueToMillions(capInfo.secondApron || capInfo.apronTwo);
+
+  return {
+    seasonLabel: shortLabel,
+    salaryFloor: Math.round(salaryCap * 0.9),
+    salaryCap,
+    luxuryTax,
+    firstApron,
+    secondApron
+  };
+}
+
+function getContractChartMax(capInfo, totalPayroll) {
+  const highestLine = Math.max(
+    capInfo.secondApron || 0,
+    capInfo.firstApron || 0,
+    capInfo.luxuryTax || 0,
+    capInfo.salaryCap || 0,
+    totalPayroll || 0,
+    CONTRACT_CHART_MAX || 220
+  );
+
+  return Math.ceil((highestLine + 10) / 20) * 20;
+}
+
+function updateContractCapScaleLabels(chartMax) {
+  const scale = document.querySelector("#contracts-screen .contracts-cap-scale-labels");
+  if (!scale) return;
+
+  const step = chartMax <= 260 ? 20 : 40;
+  const labels = [];
+
+  for (let value = chartMax; value >= 0; value -= step) {
+    labels.push(`<span>$${value}M</span>`);
+  }
+
+  if (!labels.some(label => label.includes("$0M"))) {
+    labels.push(`<span>$0</span>`);
+  }
+
+  scale.innerHTML = labels.join("");
+}
+
 function renderContractCapVisual(selectedYear) {
   const graph = document.getElementById("contracts-cap-graphic");
   const legend = document.getElementById("contracts-cap-legend-list");
@@ -994,7 +1089,9 @@ function renderContractCapVisual(selectedYear) {
   const capSpaceLabel = document.getElementById("contracts-cap-space");
   const rosterSpotsLabel = document.getElementById("contracts-roster-spots");
 
-  if (!graph || !legend) return;
+  if (!graph || !legend || !selectedYear) return;
+
+  const capInfo = getContractCapInfoForYear(selectedYear);
 
   const roster = [...getRosterByTeamId(gameState.selectedTeamId)]
     .map((player, index) => {
@@ -1008,10 +1105,13 @@ function renderContractCapVisual(selectedYear) {
     .sort((a, b) => b.salary - a.salary);
 
   const totalPayroll = roster.reduce((sum, item) => sum + item.salary, 0);
-  const capSpace = CONTRACT_CAP_LINES.cap - totalPayroll;
+  const capSpace = capInfo.salaryCap - totalPayroll;
+  const chartMax = getContractChartMax(capInfo, totalPayroll);
+
+  updateContractCapScaleLabels(chartMax);
 
   if (capYearLabel) {
-    capYearLabel.textContent = selectedYear.label;
+    capYearLabel.textContent = selectedYear.label || capInfo.seasonLabel;
   }
 
   if (totalPayrollLabel) {
@@ -1020,6 +1120,8 @@ function renderContractCapVisual(selectedYear) {
 
   if (capSpaceLabel) {
     capSpaceLabel.textContent = formatMoney(capSpace);
+    capSpaceLabel.classList.toggle("negative-cap-space", capSpace < 0);
+    capSpaceLabel.classList.toggle("positive-cap-space", capSpace >= 0);
   }
 
   if (rosterSpotsLabel) {
@@ -1028,12 +1130,12 @@ function renderContractCapVisual(selectedYear) {
   }
 
   graph.innerHTML = `
-    ${renderContractCapMarker(CONTRACT_CAP_LINES.apronTwo, "2nd Apron", "contracts-cap-marker-apron-two")}
-    ${renderContractCapMarker(CONTRACT_CAP_LINES.apronOne, "1st Apron", "contracts-cap-marker-apron-one")}
-    ${renderContractCapMarker(CONTRACT_CAP_LINES.tax, "Luxury Tax", "contracts-cap-marker-tax")}
-    ${renderContractCapMarker(CONTRACT_CAP_LINES.cap, "Salary Cap", "contracts-cap-marker-cap")}
-    ${renderContractCapMarker(CONTRACT_CAP_LINES.floor, "Salary Floor", "contracts-cap-marker-floor")}
-    ${renderContractSalaryBlocks(roster)}
+    ${renderContractCapMarker(capInfo.secondApron, "2nd Apron", "contracts-cap-marker-apron-two", chartMax)}
+    ${renderContractCapMarker(capInfo.firstApron, "1st Apron", "contracts-cap-marker-apron-one", chartMax)}
+    ${renderContractCapMarker(capInfo.luxuryTax, "Luxury Tax", "contracts-cap-marker-tax", chartMax)}
+    ${renderContractCapMarker(capInfo.salaryCap, "Salary Cap", "contracts-cap-marker-cap", chartMax)}
+    ${renderContractCapMarker(capInfo.salaryFloor, "Salary Floor", "contracts-cap-marker-floor", chartMax)}
+    ${renderContractSalaryBlocks(roster, chartMax)}
   `;
 
   legend.innerHTML = roster.length
@@ -1055,24 +1157,27 @@ function renderContractCapVisual(selectedYear) {
     `;
 }
 
-function renderContractCapMarker(value, label, className) {
-  const bottomPercent = Math.min(100, Math.max(0, (value / CONTRACT_CHART_MAX) * 100));
+function renderContractCapMarker(value, label, className, chartMax = CONTRACT_CHART_MAX) {
+  const bottomPercent = Math.min(
+    100,
+    Math.max(0, (Number(value || 0) / Math.max(1, chartMax)) * 100)
+  );
 
   return `
     <div
       class="contracts-cap-marker ${className}"
       style="bottom: ${bottomPercent}%;"
     >
-      <span>${label}</span>
+      <span>${label} · ${formatMoney(value)}</span>
     </div>
   `;
 }
 
-function renderContractSalaryBlocks(rosterItems) {
+function renderContractSalaryBlocks(rosterItems, chartMax = CONTRACT_CHART_MAX) {
   let currentBottom = 0;
 
   return rosterItems.map(item => {
-    const heightPercent = Math.max(1.2, (item.salary / CONTRACT_CHART_MAX) * 100);
+    const heightPercent = Math.max(1.2, (item.salary / Math.max(1, chartMax)) * 100);
     const safeBottom = Math.min(100, currentBottom);
     const safeHeight = Math.max(0, Math.min(heightPercent, 100 - safeBottom));
 

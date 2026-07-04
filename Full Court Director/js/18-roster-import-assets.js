@@ -183,6 +183,10 @@ function applyRosterImportPackToPlayer(player, playerImport) {
   if (playerImport.portrait) {
     player.portrait = playerImport.portrait;
   }
+
+  if (playerImport.playerimage !== undefined) {
+    player.playerimage = String(playerImport.playerimage || "").trim();
+  }
 }
 
 function displayDashboardNextGameLogo() {
@@ -447,36 +451,15 @@ function refreshScheduleOpponentNamesFromTeams() {
   }
 }
 function normalizePlayerPortraitPath(imagePath) {
-  const cleanPath = String(imagePath || "").trim();
-
-  if (!cleanPath) return "";
-
-  if (/^(https?:|data:|blob:|\/)/i.test(cleanPath)) {
-    return cleanPath;
-  }
-
-  if (cleanPath.includes("/")) {
-    return cleanPath;
-  }
-
-  return `images/players/${cleanPath}`;
+  return typeof normalizePlayerImagePath === "function"
+    ? normalizePlayerImagePath(imagePath)
+    : String(imagePath || "").trim();
 }
 
 function getPlayerPortraitPath(player) {
-  if (!player) return "";
-
-  return normalizePlayerPortraitPath(
-    player.portrait ||
-    player.faceImage ||
-    player.image ||
-    player.imagePath ||
-    player.imageUrl ||
-    player.photo ||
-    player.photoPath ||
-    player.headshot ||
-    player.sourceImageUrl ||
-    ""
-  );
+  return typeof getPlayerImageSrc === "function"
+    ? getPlayerImageSrc(player)
+    : "";
 }
 
 function escapePlayerFaceAttr(value) {
@@ -499,20 +482,9 @@ function getPlayerFaceHTML(player, className = "player-face-placeholder") {
     `;
   }
 
-  const imagePath = getPlayerPortraitPath(player);
-
-  if (imagePath) {
-    return `
-      <div class="${className}">
-        <img src="${escapePlayerFaceAttr(imagePath)}" alt="${escapePlayerFaceAttr(player.name || "Player")}" onerror="this.parentElement.classList.add('player-silhouette'); this.remove();" />
-      </div>
-    `;
-  }
-
   return `
-    <div class="${className} player-silhouette">
-      <div class="silhouette-head"></div>
-      <div class="silhouette-body"></div>
+    <div class="${className}">
+      ${getPlayerImageHTML(player, "", player.name || "Player")}
     </div>
   `;
 }
@@ -820,6 +792,9 @@ function applyCommunityPlayerUpdates(playerUpdates) {
 
     if (update.name) player.name = update.name;
     if (update.image) player.image = update.image;
+    if (update.playerimage !== undefined) {
+      player.playerimage = String(update.playerimage || "").trim();
+    }
     if (update.jerseyNumber) player.jerseyNumber = update.jerseyNumber;
     if (update.primaryPosition) player.primaryPosition = update.primaryPosition;
     if (update.secondaryPosition) player.secondaryPosition = update.secondaryPosition;

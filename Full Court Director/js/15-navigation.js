@@ -112,6 +112,7 @@ const navigationSections = {
   "free-agency": {
     defaultScreen: "free-agency-screen",
     tabs: [
+      { label: "Pre-Free Agency", screenId: "pre-free-agency-screen" },
       { label: "Market", screenId: "free-agency-screen" }
     ]
   },
@@ -120,6 +121,10 @@ const navigationSections = {
   defaultScreen: "standings-screen",
   tabs: [
     { label: "Standings", screenId: "standings-screen" },
+    { label: "News", screenId: "news-screen" },
+    { label: "The Cup", screenId: "cup-screen" },
+    { label: "Playoffs", screenId: "playoffs-screen" },
+    { label: "Salary Cap", screenId: "salary-cap-screen" },
     { label: "Power Rankings", screenId: "power-rankings-screen" },
     { label: "Rosters", screenId: "league-rosters-screen" },
     { label: "Transactions", screenId: "league-transactions-screen" },
@@ -316,8 +321,16 @@ if (screenId === "standings-screen") {
   displayStandings();
 }
 
+if (screenId === "salary-cap-screen" && typeof displaySalaryCapScreen === "function") {
+  displaySalaryCapScreen();
+}
+
 if (screenId === "free-agency-screen") {
   displayFreeAgency();
+}
+
+if (screenId === "pre-free-agency-screen" && typeof renderPreFreeAgencyScreen === "function") {
+  renderPreFreeAgencyScreen();
 }
 
 if (screenId === "scouting-screen") {
@@ -1316,6 +1329,8 @@ function refreshFcdTopNavGM() {
   if (!nameEl && !avatarEl) return;
 
   const gmName =
+    gameState?.generalManager?.name ||
+    gameState?.generalManager?.fullName ||
     gameState?.gmName ||
     gameState?.userGMName ||
     gameState?.userGmName ||
@@ -1327,13 +1342,16 @@ function refreshFcdTopNavGM() {
   }
 
   if (avatarEl) {
-    const initials = gmName
-      .split(" ")
-      .filter(Boolean)
-      .map((word) => word.charAt(0))
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
+    const gm = gameState?.generalManager;
+    const initials = gm?.firstName && gm?.lastName
+      ? `${gm.firstName.charAt(0)}${gm.lastName.charAt(0)}`.toUpperCase()
+      : gmName
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
 
     avatarEl.textContent = initials || "GM";
   }

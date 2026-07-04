@@ -490,10 +490,6 @@
   cursor: not-allowed;
 }
 
-.gm-hair-red {
-  background: #9a3412;
-}
-
 .gm-hub-dock button.active {
   background: linear-gradient(180deg, #2563eb, #1d4ed8);
   box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.28);

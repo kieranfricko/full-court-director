@@ -1927,26 +1927,11 @@ function getGameplanCardNameParts(fullName) {
 }
 
 function renderGameplanCardPlayerImage(player, cardSize) {
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : (player.portrait || player.image || player.imagePath || player.photo || player.photoPath || player.headshot || "");
-
-  if (imagePath) {
-    return `
-      <img
-        class="league-card-player-image"
-        src="${escapeGameplanIdentityAttr(imagePath)}"
-        alt="${escapeGameplanIdentityAttr(player.name || "Player")}"
-      >
-    `;
-  }
-
-  return `
-    <div class="league-card-silhouette">
-      <div class="league-card-silhouette-head"></div>
-      <div class="league-card-silhouette-body"></div>
-    </div>
-  `;
+  return getPlayerImageHTML(
+    player,
+    "league-card-player-image",
+    player.name || "Player"
+  );
 }
 
 function renderGameplanCardTeamLogo(team) {
@@ -3468,6 +3453,10 @@ function rollInjuriesForCompletedGame(teamAId, teamBId) {
     const player = injury.player;
     const playerTeamId = player.teamId;
 
+    if (typeof addMajorInjuryNews === "function") {
+      addMajorInjuryNews(injury, playerTeamId);
+    }
+
     if (Number(playerTeamId) === Number(gameState.selectedTeamId)) {
       addInboxMessage(
         "Injury Update",
@@ -4642,20 +4631,7 @@ function openGameplanPlayerPicker(settingKey, field) {
 }
 
 function renderGameplanIdentityPlayerFace(player) {
-  const imagePath = typeof getPlayerPortraitPath === "function"
-    ? getPlayerPortraitPath(player)
-    : (player.portrait || player.image || player.imagePath || player.photo || player.photoPath || player.headshot || "");
-
-  if (imagePath) {
-    return `<img src="${escapeGameplanIdentityAttr(imagePath)}" alt="${escapeGameplanIdentityAttr(player.name || "Player")}" onerror="this.remove();">`;
-  }
-
-  return `
-    <div class="identity-player-silhouette">
-      <div></div>
-      <span></span>
-    </div>
-  `;
+  return getPlayerImageHTML(player, "", player.name || "Player");
 }
 
 function selectGameplanIdentityOption(settingKey, value) {

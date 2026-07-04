@@ -16,6 +16,7 @@ function startGame() {
     tradeHistory: [],
     transactions: [],
     leagueTransactions: [],
+    newsItems: [],
     formalTradeOffers: [],
     tradeRoom: null,
     powerRankings: null,
@@ -41,7 +42,8 @@ function startGame() {
       cupWinners: []
     },
     seasonReadyForRollover: false,
-    finalsCompletedDate: null
+    finalsCompletedDate: null,
+    scheduleReleasedForSeason: getSeasonLabel(startYear)
   };
 
    gameState.staff = createAllTeamStaff();
@@ -111,6 +113,7 @@ function refreshAll() {
     normalizeAllContracts();
     ensureRotation();
     ensureTeamStats();
+    ensureSalaryCapState();
     updateFreeAgentInterest();
     updateGMHeaderDisplay();
 
@@ -148,7 +151,14 @@ if (typeof displayLeagueScheduleScreen === "function") {
 
 displayStandings();
   displayLeague();
+  displaySalaryCapScreen();
   displayFreeAgency();
+  if (
+    currentSecondaryScreen === "pre-free-agency-screen" &&
+    typeof renderPreFreeAgencyScreen === "function"
+  ) {
+    renderPreFreeAgencyScreen();
+  }
   initializeTradeCenter();
   displayDraftScoutingPage();
   displayDraftBoardPage();
@@ -212,7 +222,16 @@ function loadGame() {
 function normalizeGameStateAfterLoad() {
   if (!gameState) return;
 
+  if (typeof normalizeAllContractRules === "function") {
+    normalizeAllContractRules();
+  }
+
+  if (typeof normalizeGeneralManager === "function") {
+    gameState.generalManager = normalizeGeneralManager(gameState.generalManager);
+  }
+
   gameState.currentDate = new Date(gameState.currentDate);
+  if (!Array.isArray(gameState.newsItems)) gameState.newsItems = [];
 
   if (gameState.finalsCompletedDate) {
     gameState.finalsCompletedDate = new Date(gameState.finalsCompletedDate);
@@ -246,10 +265,19 @@ function normalizeGameStateAfterLoad() {
     ) {
       normalizeGames(gameState.pendingLeagueSchedule.cup.games);
     }
+
+    if (!gameState.scheduleReleasedForSeason) {
+      const releasedYear = Number(gameState.pendingLeagueSchedule.seasonStartYear);
+      if (Number.isFinite(releasedYear)) {
+        gameState.scheduleReleasedForSeason = getSeasonLabel(releasedYear);
+      }
+    }
   }
 
   if (!Array.isArray(gameState.leagueSchedule)) gameState.leagueSchedule = [];
   if (!gameState.leagueScheduleMeta) gameState.leagueScheduleMeta = null;
+
+  ensureSalaryCapState();
 
   if (typeof ensureLeagueScheduleForCurrentSeason === "function") {
     ensureLeagueScheduleForCurrentSeason();

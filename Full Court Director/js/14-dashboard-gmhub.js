@@ -3072,8 +3072,8 @@ function getOffseasonHubEvents() {
       title: "Training Camp",
       date: new Date(year, 8, 25),
       actionType: "training-camp",
-      buttonLabel: "Begin Training Camp",
-      required: true
+      buttonLabel: "View Training Camp",
+      required: false
     }
   ];
 }
@@ -3155,8 +3155,7 @@ function blockIfOffseasonHubActionRequired() {
   const messageMap = {
     "start_offseason": "The Finals are complete. Start the offseason before advancing.",
     "draft_lottery": "The League Draft Lottery is available. Complete the lottery before advancing.",
-    "league_draft": "The League Draft is available. Complete the draft before advancing.",
-    "training_camp": "Training Camp is available. Begin Training Camp before advancing into the new season."
+    "league_draft": "The League Draft is available. Complete the draft before advancing."
   };
 
   showModal(
@@ -3365,12 +3364,8 @@ function handleOffseasonHubAction(actionType) {
   }
 
   if (action === "training-camp") {
-    if (typeof startNextSeason === "function") {
-      startNextSeason();
-    } else {
-      showMainSection("gameplan");
-      showSecondaryScreen("rotation-screen");
-    }
+    showMainSection("gameplan");
+    showSecondaryScreen("rotation-screen");
 
     refreshAll();
     return;
@@ -3602,11 +3597,140 @@ function displayDashboardContextButtons() {
   }
 }
 
+function navigateFromDashboardContext(sectionKey, screenId) {
+  if (
+    typeof showMainSection !== "function" ||
+    typeof showSecondaryScreen !== "function"
+  ) {
+    console.warn("[Dashboard Context] Navigation is not available.");
+    return false;
+  }
+
+  if (!document.getElementById(screenId)) {
+    console.warn(`[Dashboard Context] Screen not available: ${screenId}`);
+    return false;
+  }
+
+  showMainSection(sectionKey);
+  showSecondaryScreen(screenId);
+  return true;
+}
+
+function dashboardContextFeatureNotReady(label) {
+  console.info(`[Dashboard Context] ${label} is not available yet.`);
+}
+
+function handleDashboardContextButtonClick() {
+  const button = document.getElementById("dashboard-context-action-button");
+  const label = String(
+    button?.textContent ||
+    getDashboardContextAction().label ||
+    ""
+  ).trim();
+
+  switch (label) {
+    case "Financial Planning":
+    case "Preseason":
+    case "Owner Meeting":
+    case "All-Star Weekend":
+    case "Draft Combine":
+    case "League Meeting":
+    case "Summer League":
+      dashboardContextFeatureNotReady(label);
+      return;
+
+    case "View Schedule":
+    case "Rivals Week":
+      navigateFromDashboardContext("schedule", "schedule-screen");
+      return;
+
+    case "Training Camp":
+      navigateFromDashboardContext("gameplan", "training-screen");
+      return;
+
+    case "Season Hub":
+      navigateFromDashboardContext("schedule", "calendar-screen");
+      return;
+
+    case "The Cup":
+      navigateFromDashboardContext("competitions", "cup-screen");
+      return;
+
+    case "Trade Center":
+    case "Trade Deadline":
+      navigateFromDashboardContext("trade", "transfers-screen");
+      return;
+
+    case "Free Agents":
+    case "Free Agency":
+      navigateFromDashboardContext("free-agency", "free-agency-screen");
+      return;
+
+    case "Pre-Free Agency":
+      navigateFromDashboardContext("free-agency", "pre-free-agency-screen");
+      return;
+
+    case "Roster Management":
+      navigateFromDashboardContext("team", "roster-screen");
+      return;
+
+    case "Scouting":
+      navigateFromDashboardContext("draft", "scouting-screen");
+      return;
+
+    case "Playoff Picture":
+    case "Play-In Tournament":
+    case "Playoffs":
+      navigateFromDashboardContext("competitions", "playoffs-screen");
+      return;
+
+    case "Contracts":
+      navigateFromDashboardContext("team", "contracts-screen");
+      return;
+
+    case "Draft Lottery":
+      if (typeof runDraftLottery === "function") {
+        runDraftLottery();
+      } else {
+        console.warn("[Dashboard Context] Draft Lottery event is not available.");
+      }
+      return;
+
+    case "Draft":
+      if (typeof enterDraftFromDashboard === "function") {
+        enterDraftFromDashboard();
+      } else {
+        console.warn("[Dashboard Context] Draft Night is not available.");
+      }
+      return;
+
+    case "Rookie Contracts":
+      navigateFromDashboardContext("draft", "rookie-signing-screen");
+      return;
+
+    case "Front Office":
+      navigateFromDashboardContext("front-office", "front-office-overview-screen");
+      return;
+
+    default:
+      console.warn(`[Dashboard Context] No navigation is configured for: ${label || "Unknown"}`);
+  }
+}
+
 function handleDashboardContextAction() {
   const button = document.getElementById("dashboard-context-action-button");
   const action = button ? button.dataset.action : getDashboardContextAction().action;
 
-if (action === "calendar-context-label") return;
+if (action === "pre-free-agency") {
+  showMainSection("free-agency");
+  showSecondaryScreen("pre-free-agency-screen");
+  return;
+}
+
+if (action === "calendar-context-label") {
+  handleDashboardContextButtonClick();
+  return;
+}
 
 if (action === "awards-ceremony") {
   if (typeof openAwardsCeremonyFromDashboard === "function") {
@@ -3714,15 +3838,6 @@ if (action === "view-playoffs") {
     } else {
       showMainSection("free-agency");
       showSecondaryScreen("free-agency-screen");
-    }
-
-    refreshAll();
-    return;
-  }
-
-  if (action === "start-new-season") {
-    if (typeof startNextSeason === "function") {
-      startNextSeason();
     }
 
     refreshAll();
@@ -4041,7 +4156,8 @@ function displayDashboard() {
   setText("dashboard-team-level-label", "Team Level");
 
   const payroll = getTeamPayroll(gameState.selectedTeamId);
-  const capSpace = Math.round((gameState.salaryCap || SALARY_CAP) - payroll);
+  const dashboardCapInfo = getDashboardSalaryCapInfo();
+  const capSpace = Math.round(dashboardCapInfo.salaryCap - payroll);
 
   setText("dashboard-payroll", `$${payroll}M`);
   setText("dashboard-cap-space", capSpace >= 0 ? `$${capSpace}M` : `-$${Math.abs(capSpace)}M`);
@@ -4070,7 +4186,7 @@ if (userLogo) {
     displayDashboardCompactNextGame(selectedTeam);
     displayDashboardSeasonOverview(selectedTeam);
     displayNextBigEventCard();
-    displayDashboardScheduleStrip();
+    renderDashboardScheduleBar();
 
     if (typeof runGMHubPhoneConversationChecks === "function") {
       runGMHubPhoneConversationChecks();
@@ -4082,6 +4198,7 @@ if (userLogo) {
     displayDashboardContextButtons();
     displayDashboardOffseasonHub();
     displayDashboardBottomCards();
+    displayDashboardCountdown();
 }
 
 function displayDashboardCompactNextGame(selectedTeam) {
@@ -4267,7 +4384,9 @@ function displayDashboardBottomCards() {
 
   displayDashboardStartingFive(selectedTeam);
   displayDashboardFinancesSummary(selectedTeam);
+  displayDashboardKeyDates();
   displayDashboardInjuriesSummary(selectedTeam);
+  displayDashboardRosterMetrics(selectedTeam);
 }
 
 function getDashboardStartingFivePlayers() {
@@ -4373,40 +4492,124 @@ function displayDashboardStartingFive() {
     .join("");
 }
 
+function convertDashboardCapValueToMillions(value) {
+  const number = Number(value || 0);
+
+  // Salary cap table uses full dollars, but player salaries/payroll use millions.
+  if (Math.abs(number) > 1000) {
+    return number / 1000000;
+  }
+
+  return number;
+}
+
+function getDashboardSalaryCapSeasonLabel(dateValue) {
+  const date = dateValue ? new Date(dateValue) : new Date(gameState.currentDate);
+
+  if (Number.isNaN(date.getTime())) {
+    return gameState.seasonLabel || "2026-2027";
+  }
+
+  const year = date.getFullYear();
+  const month = date.getMonth(); // Jan = 0, Jun = 5
+  const day = date.getDate();
+
+  // In this game, new cap year begins on June 17 Financial Planning.
+  const seasonStartYear = month > 5 || (month === 5 && day >= 17)
+    ? year
+    : year - 1;
+
+  return `${seasonStartYear}-${seasonStartYear + 1}`;
+}
+
+function getDashboardSalaryCapInfo() {
+  const seasonLabel = getDashboardSalaryCapSeasonLabel(gameState?.currentDate);
+  let capInfo = null;
+
+  if (typeof getSalaryCapInfoForSeason === "function") {
+    capInfo = getSalaryCapInfoForSeason(seasonLabel);
+  }
+
+  if (!capInfo && typeof getCurrentSalaryCapInfo === "function") {
+    capInfo = getCurrentSalaryCapInfo();
+  }
+
+  if (!capInfo && typeof SALARY_CAP_TABLE !== "undefined") {
+    capInfo = SALARY_CAP_TABLE[seasonLabel];
+  }
+
+  if (!capInfo && gameState) {
+    capInfo = {
+      salaryCap: gameState.salaryCap || SALARY_CAP || 165,
+      luxuryTax: gameState.luxuryTax || gameState.luxuryTaxLine || 201,
+      firstApron: gameState.firstApron || gameState.firstApronLine || 209,
+      secondApron: gameState.secondApron || gameState.secondApronLine || 222
+    };
+  }
+
+  if (!capInfo) {
+    capInfo = {
+      salaryCap: 165,
+      luxuryTax: 201,
+      firstApron: 209,
+      secondApron: 222
+    };
+  }
+
+  return {
+    seasonLabel,
+    salaryCap: convertDashboardCapValueToMillions(capInfo.salaryCap || capInfo.cap),
+    luxuryTax: convertDashboardCapValueToMillions(capInfo.luxuryTax || capInfo.tax || capInfo.luxuryTaxLine),
+    firstApron: convertDashboardCapValueToMillions(capInfo.firstApron || capInfo.apronOne || capInfo.firstApronLine),
+    secondApron: convertDashboardCapValueToMillions(capInfo.secondApron || capInfo.apronTwo || capInfo.secondApronLine)
+  };
+}
+
+function formatDashboardSignedMoney(value) {
+  const number = Number(value || 0);
+
+  if (number < 0) {
+    return `-${formatMoney(Math.abs(number))}`;
+  }
+
+  return formatMoney(number);
+}
+
 function displayDashboardFinancesSummary(selectedTeam) {
-  const salaryCap = Number(gameState.salaryCap || SALARY_CAP);
+  if (!selectedTeam) return;
+
+  const capInfo = getDashboardSalaryCapInfo();
+
   const payroll =
     typeof getRosterPayroll === "function"
       ? getRosterPayroll(selectedTeam.id)
       : getTeamPayroll(selectedTeam.id);
-  const capSpace = salaryCap - payroll;
-  const luxuryTax =
-    typeof getLuxuryTaxLine === "function"
-      ? getLuxuryTaxLine()
-      : Math.round(salaryCap * 1.215);
-  const firstApron =
-    typeof getFirstApronLine === "function"
-      ? getFirstApronLine()
-      : luxuryTax + 7;
-  const secondApron =
-    typeof getSecondApronLine === "function"
-      ? getSecondApronLine()
-      : luxuryTax + 17.5;
-  const capUsage = Math.max(
-    0,
-    Math.min(100, Math.round((payroll / Math.max(1, salaryCap)) * 100))
-  );
 
-  setText("dashboard-bottom-cap-space", formatDashboardMoney(capSpace));
+  const salaryCap = capInfo.salaryCap;
+  const luxuryTax = capInfo.luxuryTax;
+  const firstApron = capInfo.firstApron;
+  const secondApron = capInfo.secondApron;
+
+  const capSpace = salaryCap - payroll;
+
+  setText("dashboard-bottom-current-payroll", formatMoney(payroll));
+  setText("dashboard-bottom-cap-space", formatDashboardSignedMoney(capSpace));
   setText("dashboard-bottom-salary-cap", formatMoney(salaryCap));
   setText("dashboard-bottom-luxury-tax", formatMoney(luxuryTax));
   setText("dashboard-bottom-first-apron", formatMoney(firstApron));
   setText("dashboard-bottom-second-apron", formatMoney(secondApron));
 
   const ring = document.getElementById("dashboard-cap-space-ring");
+
   if (ring) {
+    const capUsage = Math.max(
+      0,
+      Math.min(100, Math.round((payroll / Math.max(1, salaryCap)) * 100))
+    );
+
     ring.style.setProperty("--dashboard-cap-usage", `${capUsage}%`);
     ring.classList.toggle("over-cap", capSpace < 0);
+    ring.classList.toggle("under-cap", capSpace >= 0);
   }
 }
 
@@ -4435,7 +4638,7 @@ function displayDashboardInjuriesSummary() {
 
   if (injuredPlayers.length === 0) {
     container.innerHTML =
-      '<div class="dashboard-no-injuries">No current injuries.</div>';
+      '<div class="dashboard-no-injuries">league headlines coming later.</div>';
     return;
   }
 
@@ -4541,6 +4744,127 @@ function isDashboardPlayoffsContextActive() {
   return current >= playoffStart;
 }
 
+function getDateOnlyValue(dateValue) {
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return 0;
+  }
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  ).getTime();
+}
+
+function getDashboardSeasonStartYear() {
+  if (gameState && Number.isFinite(Number(gameState.seasonStartYear))) {
+    return Number(gameState.seasonStartYear);
+  }
+
+  const date = new Date(gameState?.currentDate || Date.now());
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  return month >= 6 ? year : year - 1;
+}
+
+function getDashboardMajorDateList() {
+  const seasonStartYear = getDashboardSeasonStartYear();
+  const nextYear = seasonStartYear + 1;
+
+  return [
+    {
+      title: "Opening Night",
+      date: new Date(seasonStartYear, 9, 22),
+      actionType: "opening-night"
+    },
+    {
+      title: "Trade Deadline",
+      date: new Date(nextYear, 1, 12),
+      actionType: "trade-deadline"
+    },
+    {
+      title: "Playoffs",
+      date: new Date(nextYear, 3, 18),
+      actionType: "playoffs"
+    },
+    {
+      title: "Finals",
+      date: new Date(nextYear, 5, 1),
+      actionType: "finals"
+    },
+    {
+      title: "Draft",
+      date: new Date(nextYear, 5, 20),
+      actionType: "draft"
+    },
+    {
+      title: "Free Agency",
+      date: new Date(nextYear, 5, 30),
+      actionType: "free-agency"
+    },
+
+    /* Next season Opening Night, so the countdown never runs out after FA */
+    {
+      title: "Opening Night",
+      date: new Date(seasonStartYear + 1, 9, 22),
+      actionType: "opening-night"
+    }
+  ];
+}
+
+function getNextDashboardMajorDate() {
+  if (!gameState || !gameState.currentDate) return null;
+
+  const todayValue = getDateOnlyValue(gameState.currentDate);
+
+  return getDashboardMajorDateList()
+    .filter(event => getDateOnlyValue(event.date) >= todayValue)
+    .sort((a, b) => getDateOnlyValue(a.date) - getDateOnlyValue(b.date))[0] || null;
+}
+
+function getDaysUntilDashboardDate(dateValue) {
+  const todayValue = getDateOnlyValue(gameState.currentDate);
+  const targetValue = getDateOnlyValue(dateValue);
+
+  return Math.max(
+    0,
+    Math.round((targetValue - todayValue) / (1000 * 60 * 60 * 24))
+  );
+}
+
+function displayDashboardCountdown() {
+  const titleElement = document.getElementById("dashboard-countdown-event-name");
+  const daysElement = document.getElementById("dashboard-countdown-days");
+  const labelElement = document.getElementById("dashboard-countdown-days-label");
+
+  if (!titleElement || !daysElement) return;
+
+  const nextEvent = getNextDashboardMajorDate();
+
+  if (!nextEvent) {
+    titleElement.textContent = "Opening Night";
+    daysElement.textContent = "0";
+
+    if (labelElement) {
+      labelElement.textContent = "Days";
+    }
+
+    return;
+  }
+
+  const days = getDaysUntilDashboardDate(nextEvent.date);
+
+  titleElement.textContent = nextEvent.title;
+  daysElement.textContent = days;
+
+  if (labelElement) {
+    labelElement.textContent = days === 1 ? "Day" : "Days";
+  }
+}
+
 function getDashboardCalendarContextLabel() {
   const current = new Date(gameState.currentDate);
   current.setHours(0, 0, 0, 0);
@@ -4564,8 +4888,7 @@ function getDashboardCalendarContextLabel() {
     current.getMonth() === date.getMonth() &&
     current.getDate() === date.getDate();
 
-  if (between(new Date(seasonYear, 7, 15), new Date(seasonYear, 7, 17))) return "Financial Planning";
-  if (between(new Date(seasonYear, 7, 18), new Date(seasonYear, 8, 21))) return "View Schedule";
+  if (between(new Date(seasonYear, 7, 15), new Date(seasonYear, 8, 21))) return "View Schedule";
   if (between(new Date(seasonYear, 8, 22), new Date(seasonYear, 9, 4))) return "Training Camp";
   if (between(new Date(seasonYear, 9, 5), new Date(seasonYear, 9, 21))) return "Preseason";
   if (between(new Date(seasonYear, 9, 22), new Date(seasonYear, 10, 10))) return "Season Hub";
@@ -4583,7 +4906,8 @@ function getDashboardCalendarContextLabel() {
   if (sameDay(new Date(nextYear, 3, 15))) return "Playoff Picture";
   if (between(new Date(nextYear, 3, 16), new Date(nextYear, 3, 19))) return "Play-In Tournament";
   if (current >= new Date(nextYear, 3, 20) && (!finalsEnd || current <= finalsEnd)) return "Playoffs";
-  if (finalsEnd && current > finalsEnd && current <= new Date(nextYear, 5, 17)) return "Contracts";
+  if (sameDay(new Date(nextYear, 5, 17))) return "Financial Planning";
+  if (finalsEnd && current > finalsEnd && current <= new Date(nextYear, 5, 16)) return "Contracts";
   if (sameDay(new Date(nextYear, 5, 18))) return "Draft Lottery";
   if (sameDay(new Date(nextYear, 5, 19))) return "Draft Combine";
   if (between(new Date(nextYear, 5, 20), new Date(nextYear, 5, 21))) return "Draft";
@@ -4606,11 +4930,26 @@ function getDashboardContextAction() {
     };
   }
 
+  if (
+    typeof getOffseasonContractPhase === "function" &&
+    getOffseasonContractPhase(gameState.currentDate) === "PRE_FREE_AGENCY" &&
+    getDashboardDateKey() >= 622
+  ) {
+    return {
+      visible: true,
+      label: "Pre-Free Agency",
+      action: "pre-free-agency",
+      className: "free-agency"
+    };
+  }
+
+  const label = getDashboardCalendarContextLabel();
+
   return {
     visible: true,
-    label: getDashboardCalendarContextLabel(),
+    label,
     action: "calendar-context-label",
-    className: "roster"
+    className: label === "The Cup" ? "cup" : "roster"
   };
 
   const dateKey = getDashboardDateKey();
@@ -4696,14 +5035,6 @@ if (isDashboardPlayoffsContextActive()) {
       };
     }
 
-    if (dateKey >= 925) {
-      return {
-        visible: true,
-        label: "Start New Season",
-        action: "start-new-season",
-        className: "new-season"
-      };
-    }
   }
 
   return {
@@ -4712,6 +5043,235 @@ if (isDashboardPlayoffsContextActive()) {
     action: "review-roster",
     className: "roster"
   };
+}
+
+function getDashboardUpcomingKeyDates(limit = 2) {
+  if (!gameState || !gameState.started || !gameState.currentDate) {
+    return [];
+  }
+
+  if (typeof getNextBigEventList !== "function") {
+    return [];
+  }
+
+  const todayValue = typeof getDateOnlyValue === "function"
+    ? getDateOnlyValue(gameState.currentDate)
+    : new Date(gameState.currentDate).setHours(0, 0, 0, 0);
+
+  return getNextBigEventList()
+    .filter(event => event && event.date)
+    .filter(event => {
+      const eventValue = typeof getDateOnlyValue === "function"
+        ? getDateOnlyValue(event.date)
+        : new Date(event.date).setHours(0, 0, 0, 0);
+
+      return eventValue >= todayValue;
+    })
+    .sort((a, b) => {
+      const aValue = typeof getDateOnlyValue === "function"
+        ? getDateOnlyValue(a.date)
+        : new Date(a.date).setHours(0, 0, 0, 0);
+
+      const bValue = typeof getDateOnlyValue === "function"
+        ? getDateOnlyValue(b.date)
+        : new Date(b.date).setHours(0, 0, 0, 0);
+
+      return aValue - bValue;
+    })
+    .slice(0, limit);
+}
+
+function displayDashboardKeyDates() {
+  const container = document.getElementById("dashboard-key-dates-list");
+  if (!container) return;
+
+  const events = getDashboardUpcomingKeyDates(2);
+
+  if (events.length === 0) {
+    container.innerHTML = `
+      <div class="dashboard-key-dates-empty">
+        <div class="dashboard-calendar-placeholder" aria-hidden="true">▦</div>
+        <p>No key dates scheduled yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = events.map(event => {
+    const days = typeof getDaysUntilBigEvent === "function"
+      ? getDaysUntilBigEvent(event.date)
+      : Math.max(0, Math.round((new Date(event.date) - new Date(gameState.currentDate)) / (1000 * 60 * 60 * 24)));
+
+    const countdownText = typeof getNextBigEventCountdownText === "function"
+      ? getNextBigEventCountdownText(days)
+      : days === 0 ? "Today" : days === 1 ? "1 Day" : `${days} Days`;
+
+    const dateText = typeof formatDate === "function"
+      ? formatDate(event.date)
+      : new Date(event.date).toLocaleDateString();
+
+    const action = event.actionType || "";
+
+    return `
+      <div class="dashboard-key-date-row" ${action ? `onclick="handleNextBigEventClick('${action}')"` : ""}>
+        <div class="dashboard-key-date-main">
+          <span>${event.label || "Key Date"}</span>
+          <strong>${event.title || "Upcoming Event"}</strong>
+          <em>${dateText}</em>
+        </div>
+
+        <div class="dashboard-key-date-countdown">
+          ${countdownText}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function getDashboardPlayerId(player) {
+  if (!player) return null;
+
+  return Number(
+    player.id ??
+    player.playerId ??
+    player.personId ??
+    0
+  );
+}
+
+function getDashboardPlayerYearsPro(player) {
+  if (!player) return 0;
+
+  return Number(
+    player.yearsPro ??
+    player.yearsExperience ??
+    player.proYears ??
+    player.experience ??
+    0
+  ) || 0;
+}
+
+function getDashboardPlayerStatSource(player) {
+  if (!player) return {};
+
+  return player.seasonStats || player.stats || player;
+}
+
+function getDashboardPlayerGames(player) {
+  const source = getDashboardPlayerStatSource(player);
+
+  return Number(
+    source.games ??
+    source.gamesPlayed ??
+    source.gp ??
+    source.G ??
+    0
+  ) || 0;
+}
+
+function getDashboardPlayerPPG(player) {
+  const source = getDashboardPlayerStatSource(player);
+
+  const directPPG = Number(
+    source.ppg ??
+    source.PPG ??
+    source.pointsPerGame ??
+    source.points_per_game
+  );
+
+  if (Number.isFinite(directPPG) && directPPG > 0) {
+    return directPPG;
+  }
+
+  const games = getDashboardPlayerGames(player);
+
+  const totalPoints = Number(
+    source.points ??
+    source.pts ??
+    source.PTS ??
+    0
+  ) || 0;
+
+  if (!games) return 0;
+
+  return totalPoints / games;
+}
+
+function getDashboardRosterMetrics(teamId) {
+  const roster = typeof getRosterByTeamId === "function"
+    ? getRosterByTeamId(teamId)
+    : gameState.rosters[teamId] || [];
+
+  const rosterCount = roster.length;
+  const maxRoster = Number(MAX_ROSTER_SIZE || 15);
+
+  const avgAge = rosterCount
+    ? roster.reduce((sum, player) => sum + Number(player.age || 0), 0) / rosterCount
+    : 0;
+
+  const avgExp = rosterCount
+    ? roster.reduce((sum, player) => sum + getDashboardPlayerYearsPro(player), 0) / rosterCount
+    : 0;
+
+  const starters = typeof getDashboardStartingFivePlayers === "function"
+    ? getDashboardStartingFivePlayers()
+    : [];
+
+  const starterPlayers = starters
+    .map(slot => slot.player)
+    .filter(Boolean);
+
+  const starterIds = new Set(
+    starterPlayers.map(player => getDashboardPlayerId(player))
+  );
+
+  const benchPlayers = roster.filter(player => {
+    const id = getDashboardPlayerId(player);
+    return !starterIds.has(id);
+  });
+
+  const starterPPG = starterPlayers.reduce(
+    (sum, player) => sum + getDashboardPlayerPPG(player),
+    0
+  );
+
+  const benchPPG = benchPlayers.reduce(
+    (sum, player) => sum + getDashboardPlayerPPG(player),
+    0
+  );
+
+  return {
+    avgAge,
+    avgExp,
+    rosterCount,
+    maxRoster,
+    starterPPG,
+    benchPPG
+  };
+}
+
+function renderDashboardRosterMetric(label, value) {
+  return `
+    <div class="dashboard-roster-metric">
+      <span>${label}</span>
+      <strong>${value}</strong>
+    </div>
+  `;
+}
+
+function displayDashboardRosterMetrics(selectedTeam) {
+  const container = document.getElementById("dashboard-roster-metrics");
+  if (!container || !selectedTeam) return;
+
+  const metrics = getDashboardRosterMetrics(selectedTeam.id);
+
+container.innerHTML = `
+  ${renderDashboardRosterMetric("Age", metrics.avgAge.toFixed(1))}
+  ${renderDashboardRosterMetric("Exp", metrics.avgExp.toFixed(1))}
+  ${renderDashboardRosterMetric("Size", `${metrics.rosterCount}/${metrics.maxRoster}`)}
+  ${renderDashboardRosterMetric("STRT PPG", metrics.starterPPG.toFixed(1))}
+  ${renderDashboardRosterMetric("BNCH PPG", metrics.benchPPG.toFixed(1))}
+`;
 }
 
 function displayStartOffseasonButton() {
@@ -5253,80 +5813,228 @@ function getDashboardGameTypeLabel(nextGame) {
   return "Regular Season";
 }
 
+function getDashboardScheduleDateKey(dateValue) {
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getFiveDayScheduleWindow(currentDate) {
+  const centerDate = new Date(currentDate);
+  if (Number.isNaN(centerDate.getTime())) return [];
+
+  centerDate.setHours(12, 0, 0, 0);
+
+  return [-2, -1, 0, 1, 2].map(offset => {
+    const date = new Date(centerDate);
+    date.setDate(centerDate.getDate() + offset);
+    return date;
+  });
+}
+
+function getUserTeamGameForDate(date) {
+  if (!gameState) return null;
+
+  const dateKey = getDashboardScheduleDateKey(date);
+  const userTeamId = Number(gameState.selectedTeamId);
+  const userSchedule = Array.isArray(gameState.userSchedule) ? gameState.userSchedule : [];
+
+  const userGame = userSchedule.find(game =>
+    getDashboardScheduleDateKey(game.date) === dateKey &&
+    !(typeof isCancelledFutureGame === "function" && isCancelledFutureGame(game))
+  );
+
+  if (userGame) return userGame;
+
+  const leagueSchedule = Array.isArray(gameState.leagueSchedule) ? gameState.leagueSchedule : [];
+  const leagueGame = leagueSchedule.find(game => {
+    if (getDashboardScheduleDateKey(game.date) !== dateKey) return false;
+
+    return [
+      game.homeTeamId,
+      game.awayTeamId,
+      game.teamAId,
+      game.teamBId,
+      game.homeId,
+      game.awayId
+    ].some(teamId => Number(teamId) === userTeamId);
+  });
+
+  if (!leagueGame) return null;
+
+  const homeTeamId = Number(leagueGame.homeTeamId ?? leagueGame.teamAId ?? leagueGame.homeId);
+  const awayTeamId = Number(leagueGame.awayTeamId ?? leagueGame.teamBId ?? leagueGame.awayId);
+  const isHome = homeTeamId === userTeamId;
+  const opponentId = isHome ? awayTeamId : homeTeamId;
+  const opponent = getTeamById(opponentId) || getBaseTeamById(opponentId);
+
+  return {
+    ...leagueGame,
+    home: isHome,
+    opponentId,
+    opponentName: opponent?.name || "Opponent",
+    opponentAbbrev: opponent?.abbrev || opponent?.abbreviation || "OPP"
+  };
+}
+
+function getImportantEventsForDate(date) {
+  const dateKey = getDashboardScheduleDateKey(date);
+  const events = [];
+
+  if (typeof getFcdSeasonCalendarEvents === "function") {
+    const seasonEvents = getFcdSeasonCalendarEvents(
+      Number(gameState?.seasonStartYear || new Date(date).getFullYear())
+    );
+
+    seasonEvents.forEach(event => {
+      if (getDashboardScheduleDateKey(event.date) === dateKey) {
+        events.push(event.name);
+      }
+    });
+  }
+
+  [
+    gameState?.calendarEvents,
+    gameState?.scheduleEvents,
+    gameState?.teamEvents
+  ].forEach(source => {
+    if (!Array.isArray(source)) return;
+
+    source.forEach(event => {
+      if (getDashboardScheduleDateKey(event.date) !== dateKey) return;
+      const label = event.title || event.name || event.label || event.type;
+      if (label) events.push(String(label));
+    });
+  });
+
+  return [...new Set(events)];
+}
+
+function formatScheduleBarDate(date) {
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  }).format(date).toUpperCase();
+}
+
+function getDashboardScheduleGameType(game) {
+  const competition = String(game?.competition || game?.type || "").toLowerCase();
+
+  if (game?.cupGame || competition.includes("cup")) return "The Cup";
+  if (game?.playInGame || competition.includes("play-in")) return "Play-In";
+  if (game?.playoffGame || competition.includes("playoff") || competition.includes("final")) {
+    return "Playoffs";
+  }
+  if (competition.includes("preseason")) return "Preseason";
+  return game?.competition || "Regular Season";
+}
+
+function renderScheduleBarGame(game) {
+  const opponent = getTeamById(game.opponentId) || getBaseTeamById(game.opponentId);
+  const abbreviation =
+    game.opponentAbbrev ||
+    opponent?.abbrev ||
+    opponent?.abbreviation ||
+    String(game.opponentName || "OPP").slice(0, 3).toUpperCase();
+  const isPlayed = game.played || game.completed || !!game.boxScore;
+  const matchup = isPlayed && game.result
+    ? game.result
+    : `${game.home ? "vs" : "@"} ${abbreviation}`;
+  const logo = opponent && typeof getTeamLogoHTML === "function"
+    ? getTeamLogoHTML(opponent, "team-logo-placeholder dashboard-schedule-bar-logo")
+    : "";
+
+  return `
+    <div class="dashboard-schedule-bar-game">
+      <div>
+        <strong>${matchup}</strong>
+        <small>${getDashboardScheduleGameType(game)}</small>
+      </div>
+      ${logo}
+    </div>
+  `;
+}
+
+function renderScheduleBarEvents(events, hasGame) {
+  const visibleEvents = events.slice(0, hasGame ? 2 : 3);
+  if (!visibleEvents.length) return "";
+
+  return `
+    <div class="dashboard-schedule-bar-events">
+      ${visibleEvents.map(event => `
+        <span class="dashboard-schedule-event-pill" title="${event}">
+          ${event}
+        </span>
+      `).join("")}
+    </div>
+  `;
+}
+
+function getDashboardScheduleFallbackLabel(date) {
+  const phase = typeof getSeasonPhase === "function" ? getSeasonPhase() : "";
+  const dateKey = getDashboardScheduleDateKey(date);
+  const currentKey = getDashboardScheduleDateKey(gameState?.currentDate);
+
+  if (phase === "Training Camp" && dateKey === currentKey) return "Training Camp";
+  if (phase === "Playoffs") return "Recovery";
+  return "Off Day";
+}
+
+function renderDashboardScheduleBar() {
+  const container = document.getElementById("dashboard-schedule-bar");
+  if (!container || !gameState?.currentDate) return;
+
+  const currentKey = getDashboardScheduleDateKey(gameState.currentDate);
+  const days = getFiveDayScheduleWindow(gameState.currentDate);
+
+  container.innerHTML = days.map(date => {
+    const isCurrent = getDashboardScheduleDateKey(date) === currentKey;
+    const game = getUserTeamGameForDate(date);
+    const events = getImportantEventsForDate(date);
+    const fallback = getDashboardScheduleFallbackLabel(date);
+
+    let primaryHtml = "";
+
+    if (game) {
+      primaryHtml = renderScheduleBarGame(game);
+    } else if (events.length) {
+      primaryHtml = `
+        <div class="dashboard-schedule-bar-primary dashboard-schedule-event-primary">
+          <span class="dashboard-schedule-event-pill" title="${events[0]}">
+            ${events[0]}
+          </span>
+        </div>
+      `;
+    } else {
+      primaryHtml = `
+        <div class="dashboard-schedule-bar-primary">
+          <strong title="${fallback}">${fallback}</strong>
+        </div>
+      `;
+    }
+
+    const secondaryEvents = game
+      ? events
+      : events.slice(1);
+
+    return `
+      <div class="dashboard-schedule-day${isCurrent ? " current" : ""}">
+        <div class="dashboard-schedule-day-date">${formatScheduleBarDate(date)}</div>
+        ${primaryHtml}
+        ${renderScheduleBarEvents(secondaryEvents, !!game)}
+        <div class="dashboard-schedule-node" aria-hidden="true"></div>
+      </div>
+    `;
+  }).join("");
+}
+
 function displayDashboardScheduleStrip() {
-  const recentContainer = document.getElementById("dashboard-recent-results");
-  const upcomingContainer = document.getElementById("dashboard-upcoming-games");
-
-  if (!recentContainer || !upcomingContainer || !gameState || !gameState.userSchedule) return;
-
-  recentContainer.innerHTML = "";
-  upcomingContainer.innerHTML = "";
-
-  const timelineContainer = document.createElement("div");
-  timelineContainer.className = "dashboard-schedule-timeline";
-
-  const recentGames = gameState.userSchedule
-    .filter(game => game.played)
-    .slice(-2);
-
-  const upcomingGames = gameState.userSchedule
-    .filter(game => !game.played && !isCancelledFutureGame(game))
-    .filter(game => new Date(game.date) >= new Date(gameState.currentDate))
-    .slice(0, 3);
-
-  const games = [...recentGames, ...upcomingGames];
-
-  if (games.length === 0) {
-    timelineContainer.innerHTML = `
-      <div class="dashboard-schedule-empty">
-        No schedule items yet.
-      </div>
-    `;
-  }
-
-  for (let game of games) {
-    const item = document.createElement("div");
-    const opponent = getTeamById(game.opponentId) || getBaseTeamById(game.opponentId);
-    const isPlayed = game.played || !!game.boxScore;
-    const won = game.result && game.result.startsWith("W");
-
-    item.className = isPlayed
-      ? won
-        ? "dashboard-schedule-item result-win"
-        : "dashboard-schedule-item result-loss"
-      : "dashboard-schedule-item upcoming-game";
-
-    item.innerHTML = `
-      <div class="dashboard-schedule-item-copy">
-        <strong>${isPlayed ? getClickableScoreHtml(game) : formatShortDate(game.date)}</strong>
-        <span>${game.home ? "vs" : "at"} ${game.opponentAbbrev || game.opponentName}</span>
-
-        ${
-          isPlayed
-            ? `<button type="button" class="dashboard-box-score-button" onclick="openBoxScore('${game.id}')">Box Score</button>`
-            : `<small>${game.competition || "Regular Season"}</small>`
-        }
-      </div>
-
-      <div class="dashboard-schedule-item-logo">
-        ${
-          opponent && typeof getTeamLogoHTML === "function"
-            ? getTeamLogoHTML(opponent, "team-logo-placeholder dashboard-schedule-logo")
-            : `<span class="dashboard-schedule-logo-fallback">${game.opponentAbbrev || "OPP"}</span>`
-        }
-      </div>
-    `;
-
-    timelineContainer.appendChild(item);
-  }
-
-  recentContainer.appendChild(timelineContainer);
-
-  const upcomingSection = upcomingContainer.closest(".dashboard-schedule-section");
-
-  if (upcomingSection) {
-    upcomingSection.style.display = "none";
-  }
+  renderDashboardScheduleBar();
 }
 
 function createDashboardScheduleCard(game) {
@@ -5727,7 +6435,7 @@ function showStartPanel(panelId) {
   }
 
   if (panelId === "gm-creation-panel") {
-    updateGMPreview();
+    initializeGMCreationFlow();
   }
 }
 
@@ -5743,98 +6451,68 @@ function getInputValue(id, fallback = "") {
   return value || fallback;
 }
 
-function collectCreatedGM() {
-  const firstName = getInputValue("gm-first-name", "Test");
-  const lastName = getInputValue("gm-last-name", "GM");
-  const age = Number(getInputValue("gm-age", "35"));
-  const nationality = getInputValue("gm-nationality", "United States");
-  const hometown = getInputValue("gm-hometown", "Test City");
-  const background = getInputValue("gm-background", "Former Scout");
-
-  const skinTone = getInputValue("gm-skin-tone", "light");
-  const hairStyle = getInputValue("gm-hair-style", "short");
-  const hairColor = getInputValue("gm-hair-color", "brown");
-  const facialHair = getInputValue("gm-facial-hair", "none");
-  const glasses = getInputValue("gm-glasses", "no");
-  const suitColor = getInputValue("gm-suit-color", "navy");
+function normalizeGeneralManager(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const combinedName = String(source.name || source.fullName || value || "").trim();
+  const nameParts = combinedName.split(/\s+/).filter(Boolean);
+  const firstName = String(source.firstName || nameParts[0] || "Test").trim() || "Test";
+  const lastName = String(
+    source.lastName ||
+    (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "") ||
+    "GM"
+  ).trim() || "GM";
+  const parsedAge = Number(source.age);
+  const age = Number.isFinite(parsedAge) && parsedAge >= 18 && parsedAge <= 80
+    ? Math.round(parsedAge)
+    : 35;
+  const nationality = String(source.nationality || "United States").trim() || "United States";
+  const name = `${firstName} ${lastName}`.trim();
 
   return {
     firstName,
     lastName,
-    fullName: `${firstName} ${lastName}`,
-    age: Number.isFinite(age) ? age : 35,
+    name,
+    fullName: name,
+    age,
     nationality,
-    hometown,
-    background,
-    appearance: {
-      skinTone,
-      hairStyle,
-      hairColor,
-      facialHair,
-      glasses,
-      suitColor
-    }
+    role: "General Manager"
   };
 }
 
-function updateGMPreview() {
-  const gm = collectCreatedGM();
+function collectCreatedGM() {
+  return normalizeGeneralManager({
+    firstName: getInputValue("gm-first-name"),
+    lastName: getInputValue("gm-last-name"),
+    age: Number(getInputValue("gm-age")),
+    nationality: getInputValue("gm-nationality")
+  });
+}
 
-  const nameElement = document.getElementById("gm-preview-name");
-  const descriptionElement = document.getElementById("gm-preview-description");
-  const faceElement = document.getElementById("gm-preview-face");
-  const hairElement = document.getElementById("gm-preview-hair");
-  const glassesElement = document.getElementById("gm-preview-glasses");
-  const beardElement = document.getElementById("gm-preview-beard");
+function validateCreatedGMForm() {
+  const firstName = getInputValue("gm-first-name");
+  const lastName = getInputValue("gm-last-name");
+  const age = Number(getInputValue("gm-age"));
+  const nationality = getInputValue("gm-nationality");
 
-  if (nameElement) {
-    nameElement.textContent = gm.fullName;
+  if (!firstName) return "Please enter a first name for your GM.";
+  if (!lastName) return "Please enter a last name for your GM.";
+  if (!Number.isFinite(age) || !Number.isInteger(age) || age < 18 || age > 80) {
+    return "GM age must be a whole number between 18 and 80.";
   }
+  if (!nationality) return "Please enter a nationality for your GM.";
 
-  if (descriptionElement) {
-    descriptionElement.textContent = `${gm.background} from ${gm.hometown}`;
-  }
-
-  if (faceElement) {
-    faceElement.className = "gm-preview-face";
-    faceElement.classList.add(`gm-skin-${gm.appearance.skinTone}`);
-  }
-
-  if (hairElement) {
-    hairElement.className = "gm-preview-hair";
-    hairElement.classList.add(`gm-hair-${gm.appearance.hairColor}`);
-    hairElement.classList.add(`gm-hair-${gm.appearance.hairStyle}`);
-  }
-
-  if (glassesElement) {
-    glassesElement.className = "gm-preview-glasses";
-
-    if (gm.appearance.glasses === "yes") {
-      glassesElement.classList.add("gm-glasses-yes");
-    }
-  }
-
-  if (beardElement) {
-    beardElement.className = "gm-preview-beard";
-
-    if (gm.appearance.facialHair !== "none") {
-      beardElement.classList.add(`gm-beard-${gm.appearance.facialHair}`);
-    }
-  }
+  return "";
 }
 
 function continueToTeamSelect() {
+  const validationMessage = validateCreatedGMForm();
+
+  if (validationMessage) {
+    alert(validationMessage);
+    return;
+  }
+
   const gm = collectCreatedGM();
-
-  if (!gm.firstName || !gm.lastName) {
-    alert("Please enter a first and last name for your GM.");
-    return;
-  }
-
-  if (gm.age < 18 || gm.age > 90) {
-    alert("GM age must be between 18 and 90.");
-    return;
-  }
 
   pendingCreatedGM = gm;
 
@@ -5842,6 +6520,15 @@ function continueToTeamSelect() {
 }
 
 function startGameWithCreatedGM() {
+  if (!pendingCreatedGM) {
+    const validationMessage = validateCreatedGMForm();
+    if (validationMessage) {
+      alert(validationMessage);
+      showStartPanel("gm-creation-panel");
+      return;
+    }
+  }
+
   const gm = pendingCreatedGM || collectCreatedGM();
   const teamSelect = document.getElementById("team-select");
   const selectedTeamId = teamSelect ? Number(teamSelect.value || 1) : 1;
@@ -6064,23 +6751,12 @@ function updateStartTeamPreview() {
 }
 
 function startQuickTestSave() {
-  pendingCreatedGM = {
+  pendingCreatedGM = normalizeGeneralManager({
     firstName: "Test",
     lastName: "GM",
-    fullName: "Test GM",
     age: 35,
-    nationality: "United States",
-    hometown: "Philadelphia, Pennsylvania",
-    background: "Former Scout",
-    appearance: {
-      skinTone: "light",
-      hairStyle: "short",
-      hairColor: "brown",
-      facialHair: "none",
-      glasses: "no",
-      suitColor: "navy"
-    }
-  };
+    nationality: "United States"
+  });
 
   const teamSelect = document.getElementById("team-select");
 
@@ -6108,43 +6784,20 @@ function startQuickTestSave() {
 function updateGMHeaderDisplay() {
   if (!gameState || !gameState.generalManager) return;
 
-  const gm = gameState.generalManager;
+  const gm = normalizeGeneralManager(gameState.generalManager);
+  gameState.generalManager = gm;
   const selectedTeam = typeof getSelectedTeam === "function" ? getSelectedTeam() : null;
 
   const roleElement = document.getElementById("header-role");
 
   if (roleElement) {
-    roleElement.textContent = `${gm.fullName} · General Manager${selectedTeam ? ` of ${selectedTeam.name}` : ""}`;
+    roleElement.textContent = `${gm.name} · General Manager${selectedTeam ? ` of ${selectedTeam.name}` : ""}`;
   }
+
+  if (typeof refreshFcdTopNavGM === "function") refreshFcdTopNavGM();
 }
 
 function initializeGMCreationFlow() {
-  const gmInputIds = [
-    "gm-first-name",
-    "gm-last-name",
-    "gm-age",
-    "gm-nationality",
-    "gm-hometown",
-    "gm-background",
-    "gm-skin-tone",
-    "gm-hair-style",
-    "gm-hair-color",
-    "gm-facial-hair",
-    "gm-glasses",
-    "gm-suit-color"
-  ];
-
-  gmInputIds.forEach(id => {
-    const element = document.getElementById(id);
-
-    if (element) {
-      element.addEventListener("input", updateGMPreview);
-      element.addEventListener("change", updateGMPreview);
-    }
-  });
-
-  updateGMPreview();
-
   if (typeof populateTeamSelect === "function") {
     populateTeamSelect();
   }
